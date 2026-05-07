@@ -194,19 +194,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 }
 .lg-title{font-family:'Bebas Neue',sans-serif;font-size:1.85rem;letter-spacing:.06em;line-height:1;}
 .lg-total{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted);}
-.lg-rows{padding:.5rem 0;}
+.lg-rows{padding:.3rem 0;}
 .lg-row{
   display:flex;align-items:center;gap:1rem;
-  padding:.7rem 1.6rem;border-bottom:1px solid var(--border);
+  padding:.35rem 1.2rem;border-bottom:1px solid var(--border);
 }
 .lg-row:last-child{border-bottom:none;}
-.lg-rank{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--dim);width:18px;text-align:right;flex-shrink:0;}
-.lg-name{font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:.05em;min-width:150px;flex-shrink:0;}
-.lg-bar-wrap{flex:1;display:flex;flex-direction:column;gap:3px;}
-.lg-bar-bg{height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;}
-.lg-bar-fill{height:100%;border-radius:5px;transition:width .7s ease;}
-.lg-count{font-family:'Bebas Neue',sans-serif;font-size:2rem;min-width:46px;text-align:right;flex-shrink:0;}
-.lg-qual{font-family:'DM Mono',monospace;font-size:.73rem;min-width:50px;text-align:right;flex-shrink:0;}
+.lg-rank{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--dim);width:16px;text-align:right;flex-shrink:0;}
+.lg-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.05em;min-width:130px;flex-shrink:0;}
+.lg-bar-wrap{flex:1;display:flex;flex-direction:column;gap:2px;}
+.lg-bar-bg{height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.lg-bar-fill{height:100%;border-radius:4px;transition:width .7s ease;}
+.lg-count{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;min-width:36px;text-align:right;flex-shrink:0;}
+.lg-qual{font-family:'DM Mono',monospace;font-size:.68rem;min-width:46px;text-align:right;flex-shrink:0;}
 
 /* ─── SCREEN 4: Totals + In Progress ─── */
 .summary-screen-grid{display:flex;flex-direction:column;gap:1.4rem;}
@@ -229,17 +229,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .leg-item{display:flex;align-items:center;gap:6px;font-size:.73rem;color:var(--muted);}
 .leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .chart-wrap{position:relative;width:100%;flex:1;min-height:0;}
-.rank-row{display:flex;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--border);}
+.rank-row{display:flex;align-items:center;gap:1rem;padding:.35rem 0;border-bottom:1px solid var(--border);}
 .rank-row:last-child{border-bottom:none;}
-.rk-num{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--dim);width:18px;text-align:right;flex-shrink:0;}
-.rk-name{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.05em;min-width:140px;flex-shrink:0;}
-.rk-bars{flex:1;display:flex;flex-direction:column;gap:4px;}
+.rk-num{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--dim);width:16px;text-align:right;flex-shrink:0;}
+.rk-name{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.05em;min-width:120px;flex-shrink:0;}
+.rk-bars{flex:1;display:flex;flex-direction:column;gap:3px;}
 .rk-bar-row{display:flex;align-items:center;gap:6px;}
-.rk-bar-bg{flex:1;height:7px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.rk-bar-bg{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
 .rk-bar-fill{height:100%;border-radius:3px;transition:width .8s ease;}
-.rk-bar-val{font-family:'DM Mono',monospace;font-size:.63rem;width:22px;text-align:right;flex-shrink:0;}
-.rk-total{font-family:'Bebas Neue',sans-serif;font-size:1.55rem;min-width:44px;text-align:right;flex-shrink:0;}
-.rk-qual{font-family:'DM Mono',monospace;font-size:.73rem;min-width:50px;text-align:right;flex-shrink:0;}
+.rk-bar-val{font-family:'DM Mono',monospace;font-size:.58rem;width:20px;text-align:right;flex-shrink:0;}
+.rk-total{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;min-width:36px;text-align:right;flex-shrink:0;}
+.rk-qual{font-family:'DM Mono',monospace;font-size:.68rem;min-width:46px;text-align:right;flex-shrink:0;}
 
 /* Manual controls */
 .screen-controls{display:flex;align-items:center;gap:.6rem;}
@@ -774,6 +774,11 @@ const LV_COLOR  = {'Lot-Level Design':'var(--lot)','Community-Level Design':'var
 const LV_COLHEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
 const D_COLORS  = ['#7C83FD','#4FC3F7','#69F0AE','#FFB74D','#FF8A65','#CE93D8','#80DEEA','#FFCC02','#F48FB1','#A5D6A7'];
 const ROTATE_MS = 20000;
+/* Fine-grained token — write access to design-andon repo contents only */
+const GH_IP_TOKEN = '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';
+const GH_IP_USER  = 'markkevinolivar';
+const GH_IP_REPO  = 'design-andon';
+const GH_IP_FILE  = 'ip.json';
 const DEFAULT_NEW_HIRES = [
   'Jonna Joy Calabia',
   'Brent Kliford Mara',
@@ -907,6 +912,7 @@ function parseDesignCSV(text, firstLoad){
     document.getElementById('board').style.display='flex';
     startRotation();
     startAutoReload();
+    fetchIPFromGitHub();
   } else {
     showStatus(`↻ Refreshed — ${rawRows.length} rows`,'success');
     setTimeout(()=>{const el=document.getElementById('status-bar');if(el)el.style.display='none';},3000);
@@ -917,7 +923,10 @@ function parseDesignCSV(text, firstLoad){
 
 function startAutoReload(){
   stopAutoReload();
-  autoReloadTimer=setInterval(()=>{ if(designURL) fetchDesignCSV(false); }, AUTO_RELOAD_MS);
+  autoReloadTimer=setInterval(()=>{
+    if(designURL) fetchDesignCSV(false);
+    fetchIPFromGitHub();
+  }, AUTO_RELOAD_MS);
 }
 
 function stopAutoReload(){
@@ -2077,7 +2086,23 @@ function saveSLATargets(){
 }
 
 /* ── NEW HIRES OVERLAY ── */
+const ADMIN_PASSWORD = 'sunpower2026';
+
+function checkAdminPassword(callback){
+  const pw = prompt('Enter admin password:');
+  if(pw === null) return; /* cancelled */
+  if(pw === ADMIN_PASSWORD){
+    callback();
+  } else {
+    alert('Incorrect password.');
+  }
+}
+
 function openNewHires(){
+  checkAdminPassword(_openNewHires);
+}
+
+function _openNewHires(){
   const allDesigners=[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].sort();
   document.getElementById('nh-grid').innerHTML=allDesigners.map(d=>`
     <label style="display:flex;align-items:center;gap:.75rem;padding:.4rem .2rem;cursor:pointer;border-radius:6px;">
@@ -2129,7 +2154,7 @@ function renderScreen1(designers,rows){
           const qD=d.qual!==null?Math.round(d.qual)+'%':'—';
           const qC=qColor(d.qual);
           const pct=Math.round(d.count/maxCount*100);
-          return `<div class="lg-row" style="flex-direction:column;align-items:flex-start;gap:.35rem;">
+          return `<div class="lg-row" style="flex-direction:column;align-items:flex-start;gap:.2rem;">
             <div style="display:flex;align-items:center;gap:.5rem;">
               <div class="lg-rank">${i+1}</div>
               <div class="lg-name">${engr(d.name)}${newHires.includes(d.name)?` <span class="new-hire-tag" style="font-size:.5rem;padding:1px 5px;vertical-align:middle;">NEW HIRE</span>`:''}</div>
@@ -2253,7 +2278,7 @@ function renderRank(designers,rows){
   document.getElementById('rank-list').innerHTML=ranked.map((d,i)=>{
     const qD=d.qual!==null?Math.round(d.qual)+'%':'—';
     const qC=qColor(d.qual);
-    return `<div class="rank-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;">
+    return `<div class="rank-row" style="flex-direction:column;align-items:flex-start;gap:.15rem;">
       <div style="display:flex;align-items:center;gap:.5rem;">
         <div class="rk-num">${i+1}</div>
         <div class="rk-name">${engr(d.name)}${newHires.includes(d.name)?` <span class="new-hire-tag" style="font-size:.5rem;padding:1px 5px;vertical-align:middle;">NEW HIRE</span>`:''}</div>
@@ -2282,6 +2307,10 @@ function renderRank(designers,rows){
 
 /* ── IN PROGRESS PANEL ── */
 function openIP(){
+  checkAdminPassword(_openIP);
+}
+
+function _openIP(){
   document.getElementById('ip-grid').innerHTML=`
     <div class="ip-designer-row">
       <div class="ip-levels">
@@ -2313,12 +2342,50 @@ function saveIP(){
     inProgress[l]=el?Math.max(0,parseInt(el.value)||0):0;
   });
   try{ localStorage.setItem('andon_ip', JSON.stringify(inProgress)); }catch(e){}
+  pushIPToGitHub();
   closeIP();
   renderBoard();
 }
 
 /* total in-progress for a level */
 function ipTotal(level){ return inProgress[level]||0; }
+
+/* ── IN PROGRESS GITHUB SYNC ── */
+function pushIPToGitHub(){
+  if(!GH_IP_TOKEN||GH_IP_TOKEN==='YOUR_FINE_GRAINED_TOKEN_HERE') return;
+  const apiUrl='https://api.github.com/repos/'+GH_IP_USER+'/'+GH_IP_REPO+'/contents/'+GH_IP_FILE;
+  const headers={
+    'Authorization':'token '+GH_IP_TOKEN,
+    'Accept':'application/vnd.github.v3+json',
+    'Content-Type':'application/json',
+    'User-Agent':'andon-board'
+  };
+  const encoded=btoa(JSON.stringify(inProgress,null,2));
+  /* Must get current SHA before updating */
+  fetch(apiUrl,{headers})
+    .then(r=>r.ok?r.json():null)
+    .then(data=>{
+      const body={message:'Update ip.json',content:encoded};
+      if(data&&data.sha) body.sha=data.sha;
+      return fetch(apiUrl,{method:'PUT',headers,body:JSON.stringify(body)});
+    })
+    .then(r=>{ if(!r.ok) console.warn('IP push failed:',r.status); })
+    .catch(e=>console.warn('IP push error:',e));
+}
+
+function fetchIPFromGitHub(){
+  const url='https://raw.githubusercontent.com/'+GH_IP_USER+'/'+GH_IP_REPO+'/main/'+GH_IP_FILE+'?t='+Date.now();
+  fetch(url,{cache:'no-cache'})
+    .then(r=>r.ok?r.json():null)
+    .then(data=>{
+      if(data&&typeof data==='object'&&!Array.isArray(data)){
+        inProgress=data;
+        try{ localStorage.setItem('andon_ip',JSON.stringify(inProgress)); }catch(e){}
+        if(rawRows.length) renderBoard();
+      }
+    })
+    .catch(()=>{});
+}
 
 setInterval(updateTs,60000);
 </script>

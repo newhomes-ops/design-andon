@@ -369,6 +369,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <button class="btn-xs hi" onclick="openIP()" style="border-color:rgba(255,183,77,.4);color:#FFB74D;" id="ip-btn">✎ In Progress</button>
         <button class="btn-xs hi" onclick="openNewHires()" style="border-color:rgba(206,147,216,.4);color:#CE93D8;">✎ New Hires</button>
+        <button class="btn-xs hi" onclick="openSettings()" style="border-color:rgba(124,131,253,.4);color:#a5a9ff;">⚙ Settings</button>
       </div>
       <div class="live-pill">LIVE</div>
       <div class="ts" id="ts"></div>
@@ -723,6 +724,34 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 </div>
 
+<!-- SETTINGS OVERLAY -->
+<div class="ip-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="ip-panel" style="max-width:460px;">
+    <div class="ip-panel-header">
+      <div class="ip-panel-title">⚙ <span>Settings</span></div>
+      <button class="ip-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1.1rem;margin-bottom:1.4rem;">
+      <div>
+        <div style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">GitHub Token <span style="color:var(--dim);font-size:.58rem;">(for In Progress sync)</span></div>
+        <input type="password" id="settings-gh-token" placeholder="github_pat_..."
+          style="width:100%;font-size:.82rem;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);box-sizing:border-box;">
+        <div id="settings-token-status" style="font-size:.68rem;margin-top:.35rem;color:var(--dim);"></div>
+      </div>
+      <div>
+        <div style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Admin Password <span style="color:var(--dim);font-size:.58rem;">(for In Progress &amp; New Hires)</span></div>
+        <input type="password" id="settings-password" placeholder="Leave blank to keep current"
+          style="width:100%;font-size:.82rem;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);box-sizing:border-box;">
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:var(--dim);margin-bottom:1rem;">These are saved to your browser only — never stored in code or sent anywhere.</div>
+    <div class="ip-actions">
+      <button class="ip-cancel" onclick="closeSettings()">Cancel</button>
+      <button class="ip-save" onclick="saveSettings()">Save settings</button>
+    </div>
+  </div>
+</div>
+
 <!-- NEW HIRES OVERLAY -->
 <div class="ip-overlay" id="nh-overlay" onclick="if(event.target===this)closeNewHires()">
   <div class="ip-panel" style="max-width:420px;">
@@ -774,11 +803,11 @@ const LV_COLOR  = {'Lot-Level Design':'var(--lot)','Community-Level Design':'var
 const LV_COLHEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
 const D_COLORS  = ['#7C83FD','#4FC3F7','#69F0AE','#FFB74D','#FF8A65','#CE93D8','#80DEEA','#FFCC02','#F48FB1','#A5D6A7'];
 const ROTATE_MS = 20000;
-/* Fine-grained token — write access to design-andon repo contents only */
-const GH_IP_TOKEN = 'REPLACE_ME';
+/* Token loaded from localStorage — never stored in code */
 const GH_IP_USER  = 'markkevinolivar';
 const GH_IP_REPO  = 'design-andon';
 const GH_IP_FILE  = 'ip.json';
+function getGHToken(){ try{ return localStorage.getItem('andon_gh_token')||''; }catch(e){ return ''; } }
 const DEFAULT_NEW_HIRES = [
   'Jonna Joy Calabia',
   'Brent Kliford Mara',
@@ -958,10 +987,6 @@ function applyFilters(){
     }
     return true;
   });
-  if(!filteredRows.length && rawRows.length){
-    filteredRows=[...rawRows];
-    console.warn('Date filter returned 0 rows — showing all data');
-  }
   renderBoard();
 }
 
@@ -2086,16 +2111,47 @@ function saveSLATargets(){
 }
 
 /* ── NEW HIRES OVERLAY ── */
-const ADMIN_PASSWORD = 'sunpower2026';
+const DEFAULT_ADMIN_PASSWORD = 'sunpower2026';
+function getAdminPassword(){ try{ return localStorage.getItem('andon_admin_pw')||DEFAULT_ADMIN_PASSWORD; }catch(e){ return DEFAULT_ADMIN_PASSWORD; } }
 
 function checkAdminPassword(callback){
   const pw = prompt('Enter admin password:');
-  if(pw === null) return; /* cancelled */
-  if(pw === ADMIN_PASSWORD){
+  if(pw === null) return;
+  if(pw === getAdminPassword()){
     callback();
   } else {
     alert('Incorrect password.');
   }
+}
+
+/* ── SETTINGS ── */
+function openSettings(){
+  const tokenInput = document.getElementById('settings-gh-token');
+  const pwInput    = document.getElementById('settings-password');
+  const status     = document.getElementById('settings-token-status');
+  /* Show masked token if saved */
+  const saved = getGHToken();
+  if(tokenInput) tokenInput.value = saved ? saved : '';
+  if(pwInput)    pwInput.value = '';
+  if(status)     status.textContent = saved ? '✓ Token saved in this browser' : 'No token saved yet';
+  document.getElementById('settings-overlay').classList.add('open');
+}
+
+function closeSettings(){
+  document.getElementById('settings-overlay').classList.remove('open');
+}
+
+function saveSettings(){
+  const token = document.getElementById('settings-gh-token').value.trim();
+  const pw    = document.getElementById('settings-password').value.trim();
+  if(token){
+    try{ localStorage.setItem('andon_gh_token', token); }catch(e){}
+  }
+  if(pw){
+    try{ localStorage.setItem('andon_admin_pw', pw); }catch(e){}
+  }
+  closeSettings();
+  alert('Settings saved to this browser.');
 }
 
 function openNewHires(){
@@ -2352,10 +2408,11 @@ function ipTotal(level){ return inProgress[level]||0; }
 
 /* ── IN PROGRESS GITHUB SYNC ── */
 function pushIPToGitHub(){
-  if(!GH_IP_TOKEN||GH_IP_TOKEN==='YOUR_FINE_GRAINED_TOKEN_HERE') return;
+  const token = getGHToken();
+  if(!token) return;
   const apiUrl='https://api.github.com/repos/'+GH_IP_USER+'/'+GH_IP_REPO+'/contents/'+GH_IP_FILE;
   const headers={
-    'Authorization':'token '+GH_IP_TOKEN,
+    'Authorization':'token '+token,
     'Accept':'application/vnd.github.v3+json',
     'Content-Type':'application/json',
     'User-Agent':'andon-board'

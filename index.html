@@ -17,8 +17,8 @@
   --border:     rgba(255,255,255,0.06);
   --border2:    rgba(255,255,255,0.11);
   --text:       #eef0f4;
-  --muted:      rgba(238,240,244,0.42);
-  --dim:        rgba(238,240,244,0.18);
+  --muted:      rgba(238,240,244,0.75);
+  --dim:        rgba(238,240,244,0.50);
   --lot:        #4FC3F7;
   --lot-bg:     rgba(79,195,247,0.08);
   --community:  #69F0AE;
@@ -36,8 +36,8 @@ body.light-mode {
   --border:     rgba(0,0,0,0.08);
   --border2:    rgba(0,0,0,0.15);
   --text:       #0a0a0a;
-  --muted:      rgba(10,10,10,0.52);
-  --dim:        rgba(10,10,10,0.28);
+  --muted:      #333333;
+  --dim:        #666666;
   --lot:        #0277BD;
   --lot-bg:     rgba(2,119,189,0.07);
   --community:  #2E7D32;
@@ -46,6 +46,7 @@ body.light-mode {
   --coml-bg:    rgba(247,148,29,0.08);
   --quality:    #6A1B9A;
   --accent:     #F7941D;
+  --border-radius-md: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{font-size:18px;}
@@ -282,6 +283,13 @@ body.light-mode .btn-xs:hover { color:#F7941D; border-color:#F7941D; }
 body.light-mode .live-pill { color:#F7941D; }
 body.light-mode .live-pill::before { background:#F7941D; box-shadow:0 0 10px #F7941D; }
 body.light-mode .ts { color:rgba(255,255,255,0.5); }
+body.light-mode .leg-item { color:#111111; }
+body.light-mode .panel-title { color:#333333; opacity:1 !important; }
+body.light-mode .section-label { color:#111111 !important; }
+body.light-mode .d-name, body.light-mode .lg-name, body.light-mode .rk-name { color:#0a0a0a; }
+body.light-mode .lg-rank, body.light-mode .rk-num { color:#555555; }
+body.light-mode .lg-qual, body.light-mode .rk-qual, body.light-mode .rk-bar-val { color:#333333; }
+
 body.light-mode #theme-btn { color:#ffffff; border-color:rgba(255,255,255,0.25); }
 body.light-mode .screen-dot { border-color:rgba(255,255,255,0.3); }
 body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
@@ -848,7 +856,7 @@ const LV_COLHEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0A
 const D_COLORS  = ['#7C83FD','#4FC3F7','#69F0AE','#FFB74D','#FF8A65','#CE93D8','#80DEEA','#FFCC02','#F48FB1','#A5D6A7'];
 const ROTATE_MS = 20000;
 /* Token loaded from localStorage — never stored in code */
-const GH_IP_USER  = 'markkevinolivar';
+const GH_IP_USER  = 'MarkKevinOlivar';
 const GH_IP_REPO  = 'design-andon';
 const GH_IP_FILE  = 'ip.json';
 function getGHToken(){ try{ return localStorage.getItem('andon_gh_token')||''; }catch(e){ return ''; } }
@@ -940,8 +948,8 @@ function colDateJ(r){ return parseDate(colJ(r)); }
 /* ── DRAG-DROP / FILE ── */
 function showStatus(msg,type){const el=document.getElementById('status-bar');el.textContent=msg;el.className='status-bar '+type;el.style.display='block';}
 
-let designURL = 'https://raw.githubusercontent.com/markkevinolivar/design-andon/main/design.csv';
-let fpyURL    = 'https://raw.githubusercontent.com/markkevinolivar/design-andon/main/fpy.csv';
+let designURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/design.csv';
+let fpyURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/fpy.csv';
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
 const AUTO_RELOAD_MS = 5 * 60 * 1000;
@@ -1265,11 +1273,11 @@ function renderScreen3(designers,rows){
 function cc(){
   const light=document.body.classList.contains('light-mode');
   return {
-    tick:       light?'rgba(10,10,10,.6)' :'rgba(238,240,244,.55)',
-    tickFade:   light?'rgba(10,10,10,.45)':'rgba(238,240,244,.35)',
-    tickDim:    light?'rgba(10,10,10,.32)':'rgba(238,240,244,.3)',
+    tick:       light?'#111111'           :'#ffffff',
+    tickFade:   light?'#333333'           :'rgba(255,255,255,.85)',
+    tickDim:    light?'#555555'           :'rgba(255,255,255,.65)',
     grid:       light?'rgba(0,0,0,.08)'   :'rgba(255,255,255,.05)',
-    purple:     light?'rgba(106,27,154,.8)':'rgba(206,147,216,.7)',
+    purple:     light?'rgba(106,27,154,.9)':'rgba(206,147,216,.85)',
   };
 }
 
@@ -2487,7 +2495,7 @@ function pushIPToGitHub(){
 }
 
 function fetchIPFromGitHub(){
-  const url='https://raw.githubusercontent.com/'+GH_IP_USER+'/'+GH_IP_REPO+'/main/'+GH_IP_FILE+'?t='+Date.now();
+  const url='https://raw.githubusercontent.com/MarkKevinOlivar/'+GH_IP_REPO+'/main/'+GH_IP_FILE+'?t='+Date.now();
   fetch(url,{cache:'no-cache'})
     .then(r=>r.ok?r.json():null)
     .then(data=>{

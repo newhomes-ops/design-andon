@@ -276,7 +276,7 @@ body.light-mode #sla-targets-overlay,
 body.light-mode #settings-overlay { background:rgba(0,0,0,0.45); }
 body.light-mode .slicer-btn { border-color:rgba(0,0,0,0.15); color:var(--muted); }
 body.light-mode .slicer-btn:hover { color:var(--text); border-color:var(--text); }
-body.light-mode .slicer-btn.active { background:#F7941D; border-color:#F7941D; color:#fff; }
+body.light-mode .slicer-btn.active { background:#e53935; border-color:#e53935; color:#fff; }
 body.light-mode .rotate-bar { background:rgba(0,0,0,0.08); }
 body.light-mode .rotate-bar-fill { background:#F7941D; }
 body.light-mode .new-hire-tag { background:rgba(247,148,29,0.12); color:#F7941D; border-color:rgba(247,148,29,0.3); }
@@ -317,7 +317,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
   background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;
 }
 .slicer-btn:hover{color:var(--text);border-color:var(--text);}
-.slicer-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.slicer-btn.active{background:#e53935;color:#fff;border-color:#e53935;}
 
 /* NEW HIRE tag */
 .new-hire-tag{
@@ -604,40 +604,32 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         </div>
       </div>
 
-      <!-- TOP: Summary cards + level/overall -->
-      <div style="display:grid;grid-template-columns:1fr 300px;gap:1rem;margin-bottom:1rem;max-height:38%;min-height:0;">
+      <!-- Overall summary tiles -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem;" id="peq-tiles"></div>
 
-        <!-- LEFT: Designer summary cards -->
-        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.5rem;">Period Summary — by Designer</div>
-          <div id="peq-designer-grid" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem;min-height:0;"></div>
-        </div>
-
-        <!-- RIGHT: Doughnut + Overall -->
-        <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;">
-          <div class="panel" style="flex:1;display:flex;flex-direction:column;">
-            <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.5rem;">Design Mix</div>
-            <div style="position:relative;flex:1;min-height:0;">
-              <canvas id="peq-donut" role="img" aria-label="Design level breakdown pie chart"></canvas>
-            </div>
-          </div>
-          <div class="panel">
-            <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.5rem;">Overall</div>
-            <div id="peq-overall"></div>
-          </div>
-        </div>
+      <!-- Middle: Designer avg cards -->
+      <div class="panel" style="margin-bottom:1rem;max-height:30%;min-height:0;display:flex;flex-direction:column;">
+        <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.5rem;">Avg Daily Productivity — by Designer</div>
+        <div id="peq-designer-grid" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem;min-height:0;"></div>
       </div>
 
-      <!-- BOTTOM: Daily productivity table -->
+      <!-- Bottom: table with daily/weekly toggle -->
       <div class="panel" style="flex:1;min-height:0;display:flex;flex-direction:column;">
-        <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:.6rem;">Daily Productivity — % per designer per day</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+          <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);">Productivity Table</div>
+          <div style="display:flex;gap:.35rem;">
+            <button class="slicer-btn active" id="peq-view-daily" onclick="setPEQView('daily')">Daily</button>
+            <button class="slicer-btn" id="peq-view-weekly" onclick="setPEQView('weekly')">Weekly</button>
+            <button class="slicer-btn" id="peq-view-quarterly" onclick="setPEQView('quarterly')">Quarterly</button>
+          </div>
+        </div>
         <div id="peq-daily-table" style="flex:1;overflow:auto;min-height:0;"></div>
       </div>
 
     </div>
 
 <!-- SCREEN 4: Lot-Level Weekly Report -->
-    <div class="screen" id="screen-8">
+    <div class="screen" id="screen-5">
       <div class="section-label" style="color:var(--lot);margin-bottom:.8rem;">LOT-LEVEL TEAM REPORT</div>
       <div class="bottom-panels" style="grid-template-columns:1fr;min-height:0;">
         <div class="panel">
@@ -672,7 +664,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     </div>
 
     <!-- SCREEN 5: Community-Level Weekly Report -->
-    <div class="screen" id="screen-8">
+    <div class="screen" id="screen-6">
       <div class="section-label" style="color:var(--community);margin-bottom:.8rem;">COMMUNITY-LEVEL TEAM REPORT</div>
       <div class="bottom-panels" style="grid-template-columns:1fr;min-height:0;">
         <div class="panel">
@@ -707,7 +699,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     </div>
 
     <!-- SCREEN 6: SLA Report -->
-    <div class="screen" id="screen-8">
+    <div class="screen" id="screen-7">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
         <div class="section-label" style="color:#CE93D8;margin-bottom:0;">SLA REPORT</div>
         <!-- Slicers inline with title -->
@@ -737,8 +729,8 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
             <div style="display:flex;align-items:center;gap:.6rem;">
               <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);">By design type</div>
               <div style="display:flex;gap:.3rem;">
-                <button class="slicer-btn active" id="sla-metric-avg" onclick="setSLAMetric('avg')">Average</button>
-                <button class="slicer-btn" id="sla-metric-p50" onclick="setSLAMetric('p50')">P.50</button>
+                <button class="slicer-btn" id="sla-metric-avg" onclick="setSLAMetric('avg')">Average</button>
+                <button class="slicer-btn active" id="sla-metric-p50" onclick="setSLAMetric('p50')">P.50</button>
                 <button class="slicer-btn" id="sla-metric-p90" onclick="setSLAMetric('p90')">P.90</button>
               </div>
             </div>
@@ -967,9 +959,9 @@ let slaTargets = {
   p90: {...DEFAULT_SLA_TARGETS.p90},
 };
 let slaTypeCharts = {}; /* keyed by design type */
-let slaTypeMetric = 'avg'; /* avg | p50 | p90 */
+let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
-let fpyRawRows=[], fpyChart=null, peqDonutChart=null;
+let fpyRawRows=[], fpyChart=null, peqDonutChart=null, peqView='daily';
 let s7SelYear=null, s7SelQ=null, s7SelMonth=null;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
@@ -2114,194 +2106,263 @@ function renderScreen8(designers,rows){
   if(!designers) designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
   if(!rows) rows=filteredRows;
 
-  /* Sync quarter slicer */
+  /* Quarter slicer */
   const qSlicer=document.getElementById('peq-q-slicer-0');
   if(qSlicer&&!qSlicer.children.length){
     const availQSet=new Set();
     rawRows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))availQSet.add(d.getFullYear()+'-Q'+getQuarter(d));});
-    const availQs=[...availQSet].sort();
-    qSlicer.innerHTML=availQs.map(yq=>`<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${yq}</button>`).join('');
+    qSlicer.innerHTML=[...availQSet].sort().map(yq=>`<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${yq}</button>`).join('');
     syncScreenQuarterSlicers();
   }
 
-  /* Per-designer */
+  /* Count working days in period */
+  const dateSet=new Set();
+  rows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))dateSet.add(toYMD(d));});
+  const dates=[...dateSet].sort();
+  const workDays=dates.length||1;
+
+  /* Per-designer avg daily */
   const designerData=designers.map(d=>{
     const dRows=rows.filter(r=>colI(r)===d);
     let totalEquiv=0; const byType={};
     dRows.forEach(r=>{const type=colG(r);const eq=getEquiv(type);totalEquiv+=eq;byType[type]=(byType[type]||0)+1;});
-    return {name:d,total:dRows.length,equiv:totalEquiv,byType};
-  }).sort((a,b)=>b.equiv-a.equiv);
+    const avgDaily=totalEquiv/workDays;
+    return {name:d,total:dRows.length,equiv:totalEquiv,avgDaily,byType};
+  }).sort((a,b)=>b.avgDaily-a.avgDaily);
 
-  const maxEquiv=Math.max(1,...designerData.map(d=>d.equiv));
+  const maxAvg=Math.max(0.01,...designerData.map(d=>d.avgDaily));
 
+  /* ── SUMMARY TILES ── */
+  const teamTotalEquiv=designerData.reduce((s,d)=>s+d.equiv,0);
+  const teamAvgDaily=teamTotalEquiv/workDays;
+  const teamAvgPct=Math.round(teamAvgDaily*100);
+  const topDesigner=designerData[0];
+  const tileColor=teamAvgPct>=100?'#69F0AE':teamAvgPct>=75?'#a5d6a7':teamAvgPct>=50?'#FFB74D':'#FF8A65';
+  document.getElementById('peq-tiles').innerHTML=`
+    <div style="background:var(--surface2);padding:.9rem 1.2rem;">
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Team Avg / Day</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${tileColor}">${teamAvgPct}%</div>
+      <div style="font-size:.65rem;color:var(--muted)">${workDays} working day${workDays!==1?'s':''}</div>
+    </div>
+    <div style="background:var(--surface2);padding:.9rem 1.2rem;">
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Total Units</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#80DEEA">${rows.length}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${designers.length} designers</div>
+    </div>
+    <div style="background:var(--surface2);padding:.9rem 1.2rem;">
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Top Performer</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1.2;color:#80DEEA">${topDesigner?topDesigner.name.split(' ').slice(-1)[0]:'—'}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${topDesigner?Math.round(topDesigner.avgDaily*100)+'% avg/day':'—'}</div>
+    </div>
+    <div style="background:var(--surface2);padding:.9rem 1.2rem;">
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Avg Units/Day</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#80DEEA">${(rows.length/workDays).toFixed(1)}</div>
+      <div style="font-size:.65rem;color:var(--muted)">across team</div>
+    </div>`;
+
+  /* ── DESIGNER CARDS (avg daily) ── */
   document.getElementById('peq-designer-grid').innerHTML=designerData.map((d,i)=>{
-    const pct=Math.round(d.equiv/maxEquiv*100);
+    const pct=Math.round(d.avgDaily*100);
+    const barPct=Math.round(d.avgDaily/maxAvg*100);
     const isNew=newHires.includes(d.name);
-    const pctScore=Math.round(d.equiv*100);
-    const fteColor=pctScore>=100?'#69F0AE':pctScore>=50?'#FFB74D':'#FF8A65';
-    return `<div style="background:var(--surface2);border-radius:10px;padding:.6rem .9rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem;">
-        <div style="display:flex;align-items:center;gap:.5rem;">
-          <span style="font-size:.62rem;color:var(--dim);font-family:'DM Mono',monospace;">${i+1}</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.04em;">${engr(d.name)}</span>
-          ${isNew?`<span class="new-hire-tag" style="font-size:.5rem;padding:1px 5px;">NEW HIRE</span>`:''}
+    const fteColor=pct>=100?'#69F0AE':pct>=75?'#a5d6a7':pct>=50?'#FFB74D':'#FF8A65';
+    return `<div style="background:var(--surface2);border-radius:8px;padding:.5rem .8rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+        <div style="display:flex;align-items:center;gap:.4rem;">
+          <span style="font-size:.6rem;color:var(--dim);font-family:'DM Mono',monospace;">${i+1}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;">${engr(d.name)}</span>
+          ${isNew?`<span class="new-hire-tag" style="font-size:.48rem;padding:1px 4px;">NH</span>`:''}
         </div>
         <div style="display:flex;align-items:baseline;gap:.3rem;">
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:${fteColor};">${pctScore}%</span>
-          <span style="font-size:.68rem;color:var(--dim);margin-left:.3rem;">${d.total} units</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:${fteColor};">${pct}%</span>
+          <span style="font-size:.58rem;color:var(--dim);">avg/day · ${d.total} units</span>
         </div>
       </div>
-      <div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:${fteColor};border-radius:4px;"></div>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.35rem;">
-        ${Object.entries(d.byType).map(([type,count])=>`<span style="font-size:.58rem;color:var(--muted);background:var(--border);border-radius:4px;padding:1px 5px;">${type}: ${count} × ${Math.round(getEquiv(type)*100)}%</span>`).join('')}
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${barPct}%;background:${fteColor};border-radius:3px;"></div>
       </div>
     </div>`;
   }).join('');
 
-  /* Design mix doughnut */
-  const LV_HEX={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
-  const levelEquiv={};
-  LEVELS.forEach(l=>levelEquiv[l]={total:0,equiv:0});
-  rows.forEach(r=>{const level=getLevel(colG(r));if(!LEVELS.includes(level))return;levelEquiv[level].total++;levelEquiv[level].equiv+=getEquiv(colG(r));});
-
-  const totalUnitsAll=LEVELS.reduce((s,l)=>s+levelEquiv[l].total,0);
-  if(peqDonutChart){peqDonutChart.destroy();peqDonutChart=null;}
-  const donutCtx=document.getElementById('peq-donut');
-  if(donutCtx&&totalUnitsAll>0){
-    peqDonutChart=new Chart(donutCtx,{
-      type:'doughnut',
-      data:{
-        labels:LEVELS.map(l=>LV_SHORT[l]+' ('+Math.round(levelEquiv[l].total/totalUnitsAll*100)+'%)'),
-        datasets:[{
-          data:LEVELS.map(l=>levelEquiv[l].total),
-          backgroundColor:['#4FC3F766','#69F0AE66','#FFB74D66'],
-          borderColor:['#4FC3F7','#69F0AE','#FFB74D'],
-          borderWidth:2,hoverOffset:6,
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,cutout:'60%',
-        plugins:{
-          legend:{display:true,position:'bottom',labels:{color:cc().tick,font:{size:12},padding:10,boxWidth:12}},
-          tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' units'}}
-        }
-      }
-    });
-  }
-
-  /* Overall */
-  const totalEquiv=Object.values(levelEquiv).reduce((s,v)=>s+v.equiv,0);
-  const totalUnits=rows.length;
-  const avgPerDes=designers.length>0?Math.round(totalEquiv/designers.length*100)+'%':'0%';
-  document.getElementById('peq-overall').innerHTML=`
-    <div style="text-align:center;padding:.4rem 0;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;color:#80DEEA;">${Math.round(totalEquiv*100)}%</div>
-      <div style="font-size:.68rem;color:var(--muted);margin-bottom:.7rem;">Team productivity</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
-        <div style="background:var(--surface2);border-radius:8px;padding:.5rem;">
-          <div style="font-size:.58rem;color:var(--dim);">Total units</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--text);">${totalUnits}</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:.5rem;">
-          <div style="font-size:.58rem;color:var(--dim);">Avg productivity</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--text);">${avgPerDes}</div>
-        </div>
-      </div>
-    </div>`;
-  /* ── DAILY PRODUCTIVITY TABLE ── */
-  /* Get all unique dates in range */
-  const dateSet=new Set();
-  rows.forEach(r=>{
-    const d=parseDate(colJ(r));
-    if(d&&!isNaN(d)) dateSet.add(toYMD(d));
-  });
-  const dates=[...dateSet].sort();
-
-  if(!dates.length){
-    document.getElementById('peq-daily-table').innerHTML=`<div style="padding:1rem;font-size:.8rem;color:var(--dim);">No data for selected period.</div>`;
-    return;
-  }
-
-  /* Day labels: Mon 5/1, Tue 5/2 etc */
-  const DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  function dayLabel(ymd){
-    const parts=ymd.split('-');
-    const d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
-    return `${DAY_NAMES[d.getDay()]}<br>${parseInt(parts[1])}/${parseInt(parts[2])}`;
-  }
-
-  /* Build designer × day matrix */
-  const matrix={};
-  designers.forEach(d=>{matrix[d]={};});
-  rows.forEach(r=>{
-    const d=parseDate(colJ(r));
-    if(!d||isNaN(d))return;
-    const dk=toYMD(d);
-    const des=colI(r);
-    const type=colG(r);
-    if(!matrix[des]) matrix[des]={};
-    matrix[des][dk]=(matrix[des][dk]||0)+getEquiv(type);
-  });
+  /* ── TABLE (daily or weekly) ── */
+  /* Update toggle buttons */
+  const db=document.getElementById('peq-view-daily');
+  const wb=document.getElementById('peq-view-weekly');
+  const qb=document.getElementById('peq-view-quarterly');
+  if(db) db.classList.toggle('active',peqView==='daily');
+  if(wb) wb.classList.toggle('active',peqView==='weekly');
+  if(qb) qb.classList.toggle('active',peqView==='quarterly');
 
   function cellColor(pct){
-    if(pct===null) return 'transparent';
+    if(pct===null||pct===undefined) return 'transparent';
     if(pct>=100) return 'rgba(105,240,174,.18)';
     if(pct>=75)  return 'rgba(105,240,174,.09)';
     if(pct>=50)  return 'rgba(255,183,77,.15)';
     return 'rgba(255,138,101,.15)';
   }
   function cellTextColor(pct){
-    if(pct===null) return 'var(--dim)';
+    if(pct===null||pct===undefined) return 'var(--dim)';
     if(pct>=100) return '#69F0AE';
     if(pct>=75)  return '#a5d6a7';
     if(pct>=50)  return '#FFB74D';
     return '#FF8A65';
   }
 
-  /* Sort designers by period avg */
-  const sortedDes=designers.slice().sort((a,b)=>{
-    const avgA=dates.reduce((s,dk)=>s+(matrix[a][dk]||0),0)/dates.length;
-    const avgB=dates.reduce((s,dk)=>s+(matrix[b][dk]||0),0)/dates.length;
-    return avgB-avgA;
-  });
-
-  /* Team averages per day */
-  const teamAvgByDay=dates.map(dk=>{
-    const vals=sortedDes.map(d=>matrix[d][dk]||0);
-    return vals.reduce((s,v)=>s+v,0)/vals.length;
-  });
-
-  const tableHTML=`<table class="peq-table">
-    <thead>
-      <tr>
+  if(peqView==='daily'){
+    if(!dates.length){document.getElementById('peq-daily-table').innerHTML=`<div style="padding:1rem;font-size:.8rem;color:var(--dim);">No data.</div>`;return;}
+    const DAY=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function dayLabel(ymd){const p=ymd.split('-');const d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));return DAY[d.getDay()]+'<br>'+parseInt(p[1])+'/'+parseInt(p[2]);}
+    /* Build matrix */
+    const matrix={};
+    designers.forEach(d=>{matrix[d]={};});
+    rows.forEach(r=>{
+      const d=parseDate(colJ(r));if(!d||isNaN(d))return;
+      const dk=toYMD(d);const des=colI(r);const type=colG(r);
+      if(!matrix[des])matrix[des]={};
+      matrix[des][dk]=(matrix[des][dk]||0)+getEquiv(type);
+    });
+    const sortedDes=designerData.map(d=>d.name);
+    const teamByDay=dates.map(dk=>{const vals=sortedDes.map(d=>matrix[d][dk]||0);return vals.reduce((s,v)=>s+v,0)/vals.length;});
+    document.getElementById('peq-daily-table').innerHTML=`<table class="peq-table">
+      <thead><tr>
         <th class="name-col">Designer</th>
         ${dates.map(dk=>`<th>${dayLabel(dk)}</th>`).join('')}
         <th class="avg-col">Avg</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${sortedDes.map(d=>{
-        const dayVals=dates.map(dk=>matrix[d][dk]!==undefined?Math.round(matrix[d][dk]*100):null);
-        const filledDays=dayVals.filter(v=>v!==null);
-        const avg=filledDays.length?Math.round(filledDays.reduce((s,v)=>s+v,0)/filledDays.length):null;
-        const isNew=newHires.includes(d);
-        return `<tr>
-          <td class="name-col">${engr(d)}${isNew?` <span class="new-hire-tag" style="font-size:.48rem;padding:1px 4px;">NH</span>`:''}</td>
-          ${dayVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v+'%':'—'}</td>`).join('')}
-          <td class="avg-col" style="color:${cellTextColor(avg)};">${avg!==null?avg+'%':'—'}</td>
-        </tr>`;
-      }).join('')}
-      <tr class="team-row">
-        <td class="name-col" style="color:var(--muted);">Team Avg</td>
-        ${teamAvgByDay.map(v=>{const p=Math.round(v*100);return `<td style="color:${cellTextColor(p)};">${p}%</td>`}).join('')}
-        <td class="avg-col" style="color:${cellTextColor(Math.round(teamAvgByDay.reduce((s,v)=>s+v,0)/teamAvgByDay.length*100))};">${Math.round(teamAvgByDay.reduce((s,v)=>s+v,0)/teamAvgByDay.length*100)}%</td>
-      </tr>
-    </tbody>
-  </table>`;
+      </tr></thead>
+      <tbody>
+        ${sortedDes.map(d=>{
+          const dayVals=dates.map(dk=>matrix[d][dk]!==undefined?Math.round(matrix[d][dk]*100):null);
+          const filled=dayVals.filter(v=>v!==null);
+          const avg=filled.length?Math.round(filled.reduce((s,v)=>s+v,0)/filled.length):null;
+          const isNew=newHires.includes(d);
+          return `<tr>
+            <td class="name-col">${engr(d)}${isNew?` <span class="new-hire-tag" style="font-size:.48rem;padding:1px 4px;">NH</span>`:''}</td>
+            ${dayVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v+'%':'—'}</td>`).join('')}
+            <td class="avg-col" style="color:${cellTextColor(avg)};">${avg!==null?avg+'%':'—'}</td>
+          </tr>`;
+        }).join('')}
+        <tr class="team-row">
+          <td class="name-col" style="color:var(--muted);">Team Avg</td>
+          ${teamByDay.map(v=>{const p=Math.round(v*100);return `<td style="color:${cellTextColor(p)};">${p}%</td>`;}).join('')}
+          <td class="avg-col" style="color:${cellTextColor(Math.round(teamByDay.reduce((s,v)=>s+v,0)/teamByDay.length*100))};">${Math.round(teamByDay.reduce((s,v)=>s+v,0)/teamByDay.length*100)}%</td>
+        </tr>
+      </tbody>
+    </table>`;
+  } else {
+    /* Weekly view — group by ISO week */
+    const weekMap={};
+    designers.forEach(d=>{weekMap[d]={};});
+    rows.forEach(r=>{
+      const d=parseDate(colJ(r));if(!d||isNaN(d))return;
+      const wk=isoWeek(d);const des=colI(r);const type=colG(r);
+      if(!weekMap[des])weekMap[des]={};
+      if(!weekMap[des][wk])weekMap[des][wk]={equiv:0,days:new Set()};
+      weekMap[des][wk].equiv+=getEquiv(type);
+      weekMap[des][wk].days.add(toYMD(d));
+    });
+    const weekSet=new Set();
+    rows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))weekSet.add(isoWeek(d));});
+    const weeks=[...weekSet].sort();
+    /* Days per week across all designers */
+    const daysPerWeek={};
+    weeks.forEach(wk=>{
+      const allDays=new Set();
+      designers.forEach(d=>{if(weekMap[d][wk])weekMap[d][wk].days.forEach(day=>allDays.add(day));});
+      daysPerWeek[wk]=Math.max(1,allDays.size);
+    });
+    const sortedDes=designerData.map(d=>d.name);
+    const teamByWeek=weeks.map(wk=>{
+      const vals=sortedDes.map(d=>weekMap[d][wk]?weekMap[d][wk].equiv/daysPerWeek[wk]:0);
+      return vals.reduce((s,v)=>s+v,0)/vals.length;
+    });
+    document.getElementById('peq-daily-table').innerHTML=`<table class="peq-table">
+      <thead><tr>
+        <th class="name-col">Designer</th>
+        ${weeks.map(wk=>`<th>${wk.replace('-W','<br>W')}</th>`).join('')}
+        <th class="avg-col">Avg</th>
+      </tr></thead>
+      <tbody>
+        ${sortedDes.map(d=>{
+          const wkVals=weeks.map(wk=>weekMap[d][wk]?Math.round(weekMap[d][wk].equiv/daysPerWeek[wk]*100):null);
+          const filled=wkVals.filter(v=>v!==null);
+          const avg=filled.length?Math.round(filled.reduce((s,v)=>s+v,0)/filled.length):null;
+          const isNew=newHires.includes(d);
+          return `<tr>
+            <td class="name-col">${engr(d)}${isNew?` <span class="new-hire-tag" style="font-size:.48rem;padding:1px 4px;">NH</span>`:''}</td>
+            ${wkVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v+'%':'—'}</td>`).join('')}
+            <td class="avg-col" style="color:${cellTextColor(avg)};">${avg!==null?avg+'%':'—'}</td>
+          </tr>`;
+        }).join('')}
+        <tr class="team-row">
+          <td class="name-col" style="color:var(--muted);">Team Avg</td>
+          ${teamByWeek.map(v=>{const p=Math.round(v*100);return `<td style="color:${cellTextColor(p)};">${p}%</td>`;}).join('')}
+          <td class="avg-col" style="color:${cellTextColor(Math.round(teamByWeek.reduce((s,v)=>s+v,0)/teamByWeek.length*100))};">${Math.round(teamByWeek.reduce((s,v)=>s+v,0)/teamByWeek.length*100)}%</td>
+        </tr>
+      </tbody>
+    </table>`;
+  }
 
-  document.getElementById('peq-daily-table').innerHTML=tableHTML;
+  if(peqView==='quarterly'){
+    /* Quarterly view — group by Year-Q */
+    const qMap={};
+    designers.forEach(d=>{qMap[d]={};});
+    rows.forEach(r=>{
+      const d=parseDate(colJ(r));if(!d||isNaN(d))return;
+      const qKey=d.getFullYear()+'-Q'+getQuarter(d);
+      const des=colI(r);const type=colG(r);
+      if(!qMap[des])qMap[des]={};
+      if(!qMap[des][qKey])qMap[des][qKey]={equiv:0,days:new Set()};
+      qMap[des][qKey].equiv+=getEquiv(type);
+      qMap[des][qKey].days.add(toYMD(d));
+    });
+    const qSet=new Set();
+    rows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))qSet.add(d.getFullYear()+'-Q'+getQuarter(d));});
+    const quarters=[...qSet].sort();
+    /* Days per quarter across all designers */
+    const daysPerQ={};
+    quarters.forEach(qk=>{
+      const allDays=new Set();
+      designers.forEach(d=>{if(qMap[d][qk])qMap[d][qk].days.forEach(day=>allDays.add(day));});
+      daysPerQ[qk]=Math.max(1,allDays.size);
+    });
+    const sortedDes=designerData.map(d=>d.name);
+    const teamByQ=quarters.map(qk=>{
+      const vals=sortedDes.map(d=>qMap[d][qk]?qMap[d][qk].equiv/daysPerQ[qk]:0);
+      return vals.reduce((s,v)=>s+v,0)/vals.length;
+    });
+    document.getElementById('peq-daily-table').innerHTML=`<table class="peq-table">
+      <thead><tr>
+        <th class="name-col">Designer</th>
+        ${quarters.map(qk=>`<th>${qk}</th>`).join('')}
+        <th class="avg-col">Avg</th>
+      </tr></thead>
+      <tbody>
+        ${sortedDes.map(d=>{
+          const qVals=quarters.map(qk=>qMap[d][qk]?Math.round(qMap[d][qk].equiv/daysPerQ[qk]*100):null);
+          const filled=qVals.filter(v=>v!==null);
+          const avg=filled.length?Math.round(filled.reduce((s,v)=>s+v,0)/filled.length):null;
+          const isNew=newHires.includes(d);
+          return `<tr>
+            <td class="name-col">${engr(d)}${isNew?` <span class="new-hire-tag" style="font-size:.48rem;padding:1px 4px;">NH</span>`:''}</td>
+            ${qVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v+'%':'—'}</td>`).join('')}
+            <td class="avg-col" style="color:${cellTextColor(avg)};">${avg!==null?avg+'%':'—'}</td>
+          </tr>`;
+        }).join('')}
+        <tr class="team-row">
+          <td class="name-col" style="color:var(--muted);">Team Avg</td>
+          ${teamByQ.map(v=>{const p=Math.round(v*100);return `<td style="color:${cellTextColor(p)};">${p}%</td>`;}).join('')}
+          <td class="avg-col" style="color:${cellTextColor(Math.round(teamByQ.reduce((s,v)=>s+v,0)/teamByQ.length*100))};">${Math.round(teamByQ.reduce((s,v)=>s+v,0)/teamByQ.length*100)}%</td>
+        </tr>
+      </tbody>
+    </table>`;
+  }
+}
+
+function setPEQView(view){
+  peqView=view;
+  renderScreen8();
+}
+function openPEQSettings(){
   checkAdminPassword(()=>{
     const types=Object.keys(DEFAULT_PEQ_WEIGHTS);
     document.getElementById('peq-weights-grid').innerHTML=types.map(t=>{

@@ -100,7 +100,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   font-family:'DM Sans',sans-serif;font-size:.73rem;padding:.38rem .85rem;
   border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap;
 }
-.btn-xs:hover{color:var(--text);border-color:var(--text);}
+.btn-xs.active,.btn-last7.active{background:#e53935;color:#fff;border-color:#e53935;}
 .btn-xs.hi:hover{color:var(--accent);border-color:var(--accent);}
 
 .live-pill{display:flex;align-items:center;gap:7px;font-size:.68rem;color:var(--muted);letter-spacing:.07em;}
@@ -452,7 +452,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         <input type="date" id="sf-from-0" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-0').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-0" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-0').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()">Last 7 work days</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGN PIPELINE</div>
 
@@ -536,7 +536,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         <input type="date" id="sf-from-1" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-1').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-1" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-1').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()">Last 7 work days</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGNER PERFORMANCE</div>
       <div class="designer-grid" id="designer-grid"></div>
@@ -551,7 +551,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         <input type="date" id="sf-from-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-2').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()">Last 7 work days</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">LEVEL BREAKDOWN</div>
       <div class="level-group-grid" id="level-group-grid"></div>
@@ -566,7 +566,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         <input type="date" id="sf-from-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-3').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-3').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()">Last 7 work days</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DAILY OUTPUT &amp; RANKING</div>
       <div class="bottom-panels">
@@ -599,7 +599,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
           <input type="date" id="sf-from-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-8').value)">
           <span style="font-size:.68rem;color:var(--dim);">to</span>
           <input type="date" id="sf-to-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-8').value, this.value)">
-          <button class="btn-xs" onclick="resetScreenFilter()">Last 7 work days</button>
+          <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
           <button class="btn-xs hi" onclick="openPEQSettings()" style="border-color:rgba(128,222,234,.4);color:#80DEEA;">✎ Edit weights</button>
         </div>
       </div>
@@ -855,7 +855,10 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     </div>
     <div style="display:flex;flex-direction:column;gap:1.1rem;margin-bottom:1.4rem;">
       <div>
-        <div style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">GitHub Token <span style="color:var(--dim);font-size:.58rem;">(for In Progress sync)</span></div>
+        <div style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">Screen Visibility</div>
+        <div id="settings-screen-visibility" style="display:flex;flex-direction:column;gap:.4rem;"></div>
+      </div>
+      <div>
         <input type="password" id="settings-gh-token" placeholder="github_pat_..."
           style="width:100%;font-size:.82rem;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);box-sizing:border-box;">
         <div id="settings-token-status" style="font-size:.68rem;margin-top:.35rem;color:var(--dim);"></div>
@@ -962,6 +965,7 @@ let slaTypeCharts = {}; /* keyed by design type */
 let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
 let fpyRawRows=[], fpyChart=null, peqDonutChart=null, peqView='daily';
+let hiddenScreens=new Set(); /* screen indices to hide from rotation */
 let s7SelYear=null, s7SelQ=null, s7SelMonth=null;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
@@ -1071,6 +1075,7 @@ function parseDesignCSV(text, firstLoad){
     try{ const t=localStorage.getItem('andon_sla_targets'); if(t){ const p=JSON.parse(t); if(p&&typeof p==='object'&&p.avg) slaTargets={avg:{...DEFAULT_SLA_TARGETS.avg,...p.avg},p50:{...DEFAULT_SLA_TARGETS.p50,...p.p50},p90:{...DEFAULT_SLA_TARGETS.p90,...p.p90}}; } }catch(e){}
     try{ const n=localStorage.getItem('andon_new_hires'); if(n){ const p=JSON.parse(n); if(Array.isArray(p)) newHires=p; } }catch(e){}
     try{ const w=localStorage.getItem('andon_peq_weights'); if(w){ const p=JSON.parse(w); if(p&&typeof p==='object') peqWeights={...DEFAULT_PEQ_WEIGHTS,...p}; } }catch(e){}
+      try{ const h=localStorage.getItem('andon_hidden_screens'); if(h){ const p=JSON.parse(h); if(Array.isArray(p)) hiddenScreens=new Set(p); } else { hiddenScreens=new Set([4]); } }catch(e){ hiddenScreens=new Set([4]); }
     document.getElementById('loading-overlay').style.display='none';
     document.getElementById('board').style.display='flex';
     startRotation();
@@ -1152,9 +1157,10 @@ function buildScreenQuarterSlicers(){
 }
 
 function syncScreenQuarterSlicers(){
-  /* Highlight the active quarter button if from/to matches a quarter exactly */
-  [0,1,2,3].forEach(i=>{
-    const el=document.getElementById('screen-q-slicer-'+i);
+  /* All quarter slicer containers */
+  const slicerIds=['screen-q-slicer-0','screen-q-slicer-1','screen-q-slicer-2','screen-q-slicer-3','peq-q-slicer-0'];
+  slicerIds.forEach(id=>{
+    const el=document.getElementById(id);
     if(!el) return;
     el.querySelectorAll('.slicer-btn').forEach(btn=>{
       const yq=btn.dataset.qtr;
@@ -1162,11 +1168,21 @@ function syncScreenQuarterSlicers(){
       const [yr,q]=yq.split('-Q');
       const qStart=new Date(parseInt(yr),(parseInt(q)-1)*3,1);
       const qEnd  =new Date(parseInt(yr),parseInt(q)*3,0);
-      const matchFrom=sfFrom===toYMD(qStart);
-      const matchTo  =sfTo===toYMD(qEnd);
-      btn.classList.toggle('active', matchFrom&&matchTo);
+      btn.classList.toggle('active', sfFrom===toYMD(qStart)&&sfTo===toYMD(qEnd));
     });
   });
+  /* Highlight "Last 7 work days" buttons when active */
+  const last7Active=isLast7WorkDays();
+  document.querySelectorAll('.btn-last7').forEach(btn=>btn.classList.toggle('active',last7Active));
+}
+
+function isLast7WorkDays(){
+  /* Check if current sfFrom/sfTo matches last 7 work days from max date */
+  const dates=rawRows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d));
+  if(!dates.length) return false;
+  const maxDate=new Date(Math.max(...dates));
+  const minDate=lastNWorkDays(7,maxDate);
+  return sfFrom===toYMD(minDate)&&sfTo===toYMD(maxDate);
 }
 
 function applyQuarterFilter(yq){
@@ -1224,7 +1240,12 @@ function resetBar(){
   bar.style.width='0%';
 }
 
-function nextScreen(){goTo((currentScreen+1)%9);}
+function nextScreen(){
+  let next=(currentScreen+1)%9;
+  let tries=0;
+  while(hiddenScreens.has(next)&&tries<9){ next=(next+1)%9; tries++; }
+  goTo(next);
+}
 
 function goTo(i){
   document.querySelectorAll('.screen').forEach((s,si)=>{
@@ -1232,6 +1253,7 @@ function goTo(i){
   });
   document.querySelectorAll('.screen-dot').forEach((d,di)=>{
     d.classList.toggle('active',di===i);
+    d.style.opacity=hiddenScreens.has(di)?'0.25':'1';
   });
   currentScreen=i;
   if(i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
@@ -2576,11 +2598,21 @@ function openSettings(){
   const tokenInput = document.getElementById('settings-gh-token');
   const pwInput    = document.getElementById('settings-password');
   const status     = document.getElementById('settings-token-status');
-  /* Show masked token if saved */
   const saved = getGHToken();
   if(tokenInput) tokenInput.value = saved ? saved : '';
   if(pwInput)    pwInput.value = '';
   if(status)     status.textContent = saved ? '✓ Token saved in this browser' : 'No token saved yet';
+
+  /* Screen visibility */
+  const SCREEN_NAMES=['Design Pipeline','Designer Performance','Level Breakdown','Daily Output & Ranking','Productivity Equivalency','Lot-Level Team Report','Community-Level Team Report','SLA Report','FPY Report'];
+  const vis=document.getElementById('settings-screen-visibility');
+  if(vis) vis.innerHTML=SCREEN_NAMES.map((name,i)=>`
+    <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;">
+      <input type="checkbox" id="screen-vis-${i}" ${hiddenScreens.has(i)?'':'checked'}
+        style="width:14px;height:14px;accent-color:#e53935;cursor:pointer;">
+      <span style="font-size:.8rem;color:var(--text);">${name}</span>
+    </label>`).join('');
+
   document.getElementById('settings-overlay').classList.add('open');
 }
 
@@ -2591,14 +2623,19 @@ function closeSettings(){
 function saveSettings(){
   const token = document.getElementById('settings-gh-token').value.trim();
   const pw    = document.getElementById('settings-password').value.trim();
-  if(token){
-    try{ localStorage.setItem('andon_gh_token', token); }catch(e){}
+  if(token){ try{ localStorage.setItem('andon_gh_token', token); }catch(e){} }
+  if(pw){    try{ localStorage.setItem('andon_admin_pw', pw);    }catch(e){} }
+
+  /* Save screen visibility */
+  hiddenScreens=new Set();
+  for(let i=0;i<9;i++){
+    const el=document.getElementById('screen-vis-'+i);
+    if(el&&!el.checked) hiddenScreens.add(i);
   }
-  if(pw){
-    try{ localStorage.setItem('andon_admin_pw', pw); }catch(e){}
-  }
+  try{ localStorage.setItem('andon_hidden_screens',JSON.stringify([...hiddenScreens])); }catch(e){}
+
   closeSettings();
-  alert('Settings saved to this browser.');
+  alert('Settings saved.');
 }
 
 function openNewHires(){

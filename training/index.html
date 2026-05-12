@@ -555,9 +555,9 @@ function detail(el){
       <thead><tr><th class="nc">Course</th>${weeks.map(w=>`<th>${wkLabel(w)}</th>`).join('')}</tr></thead>
       <tbody>`;
 
-  ['p1','p2','p3','p4'].forEach(ph=>{
-    const rows=bph_[ph]||[];if(!rows.length)return;
-    h+=`<tr class="gph"><td class="nc" colspan="${weeks.length+1}" style="color:${PC[ph]};padding-left:10px">${PL[ph]}</td></tr>`;
+  getPhases().forEach(ph=>{
+    const rows=bph_[ph.id]||[];if(!rows.length)return;
+    h+=`<tr class="gph"><td class="nc" colspan="${weeks.length+1}" style="color:${ph.color};padding-left:10px">${ph.name}</td></tr>`;
     rows.forEach(({c,e})=>{
       const bc=e.result==='pass'?'#1D9E75':e.result==='fail'?'#E24B4A':e.result==='ip'?'#EF9F27':PC[ph];
       const st=d2t(e.startDate),en=d2t(e.endDate||e.startDate);
@@ -752,7 +752,7 @@ function goStep2(){
     pc.forEach(c=>{
       const ex=existingMap[c.id]||{};
       html+=`<div class="sched-row">
-        <div><div class="sched-name" title="${c.name}">${c.name}</div><div class="sched-phase" style="color:${PC[ph]}">${c.duration} days</div></div>
+        <div><div class="sched-name" title="${c.name}">${c.name}</div><div class="sched-phase" style="color:${ph.color}">${c.duration} days</div></div>
         <input type="date" class="date-input" id="sd-${c.id}" value="${ex.startDate||t.startDate||''}" placeholder="Start"/>
         <input type="date" class="date-input" id="ed-${c.id}" value="${ex.endDate||''}" placeholder="End"/>
       </div>`;
@@ -785,7 +785,7 @@ function saveAssign(){
   newPlan.sort((a,b)=>{
     const ca=S.courses.find(x=>x.id===a.courseId),cb=S.courses.find(x=>x.id===b.courseId);
     if(!ca||!cb)return 0;
-    const po=['p1','p2','p3','p4'];
+    const po=getPhases().map(p=>p.id);
     if(po.indexOf(ca.phase)!==po.indexOf(cb.phase))return po.indexOf(ca.phase)-po.indexOf(cb.phase);
     return S.courses.indexOf(ca)-S.courses.indexOf(cb);
   });
@@ -853,7 +853,9 @@ function saveResult(){
 
 // ── COURSES TAB ───────────────────────────────────────────────────
 function courses(el){
-  const cs=S.courses||[],bph_={p1:[],p2:[],p3:[],p4:[]};
+  const cs=S.courses||[];
+  const bph_={};
+  getPhases().forEach(p=>bph_[p.id]=[]);
   cs.forEach(c=>(bph_[c.phase]=bph_[c.phase]||[]).push(c));
   const avg=cs.length?(cs.reduce((a,c)=>a+c.required,0)/cs.length).toFixed(1):'-';
   let h=`<div class="metrics">
@@ -1326,7 +1328,7 @@ function roster(el){
         phaseCourses.forEach(c=>{
           const lv=m.skills[c.id];
           const lvLabel=['','Not acquired','Foundational','Guided','Independent','Expert'][lv]||lv;
-          h+=`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:99px;background:${PC[ph]}15;color:${PC[ph]};border:1px solid ${PC[ph]}40">
+          h+=`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:99px;background:${ph.color}15;color:${ph.color};border:1px solid ${ph.color}40">
             <strong>${lv}</strong> ${c.name}
           </span>`;
         });

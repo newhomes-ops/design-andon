@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NH Design Team — Training Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1E3A5F;--blue:#2E6DB4;--ltblue:#E6F1FB;
+  --teal:#1D9E75;--ltgreen:#EAF3DE;--dkgreen:#27500A;
+  --amber:#EF9F27;--ltamber:#FAEEDA;--dkamber:#633806;
+  --red:#E24B4A;--ltred:#FCEBEB;--dkred:#791F1F;
+  --purple:#7F77DD;--ltpurple:#EEEDFE;--dkpurple:#3C3489;
+  --border:#E0E0E0;--border2:#C8C8C8;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --bg:#fff;--bg2:#F8F9FA;--bg3:#F0F2F4;
+  --r:8px;--rl:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg2);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.topbar{background:var(--navy);color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+.brand{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.brand em{opacity:.55;font-style:normal;font-weight:400}
+.tr{display:flex;align-items:center;gap:10px}
+.sync{font-size:11px;color:rgba(255,255,255,.65);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600}
+.pill-v{background:rgba(255,255,255,.13);color:rgba(255,255,255,.85)}
+.pill-e{background:#1D9E75;color:#fff}
+#wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:22px}
+.tab{padding:9px 20px;font-size:13px;font-weight:500;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;color:var(--text3);margin-bottom:-2px;transition:color .12s}
+.tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+.tab:hover:not(.on){color:var(--text);background:var(--bg3)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:34px;font-size:13px;border-radius:var(--r);cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;white-space:nowrap;transition:all .1s}
+.btn:hover{background:var(--bg3)}.btn:active{transform:scale(.98)}
+.bp{background:var(--navy);color:#fff;border-color:var(--navy)}.bp:hover{background:#27518A;border-color:#27518A}
+.bd{color:var(--dkred);border-color:#F09595;background:transparent}.bd:hover{background:var(--ltred)}
+.bg_{border:none;background:transparent;color:var(--text3)}.bg_:hover{background:var(--bg3);color:var(--text)}
+.sm{height:30px;padding:0 11px;font-size:12px}
+.ic{width:30px;height:30px;padding:0;justify-content:center;font-size:14px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px}
+.chd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ct{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.metric{background:var(--bg);border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px}
+.ml{font-size:11px;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.mv{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.ms{font-size:11px;color:var(--text3);margin-top:3px}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.st{font-size:16px;font-weight:700;color:var(--text)}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.fg label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{width:100%;font-size:13px;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:inherit;height:34px}
+.fg textarea{height:auto;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(46,109,180,.12)}
+.tag{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;white-space:nowrap}
+.t1{background:var(--ltgreen);color:var(--dkgreen)}.t2{background:var(--ltblue);color:#0C447C}
+.t3{background:var(--ltamber);color:var(--dkamber)}.t4{background:var(--ltpurple);color:var(--dkpurple)}
+.tpass{background:var(--ltgreen);color:var(--dkgreen)}.tfail{background:var(--ltred);color:var(--dkred)}
+.av{border-radius:50%;background:var(--ltblue);display:flex;align-items:center;justify-content:center;font-weight:700;color:#185FA5;flex-shrink:0}
+.av-s{width:32px;height:32px;font-size:12px}.av-m{width:40px;height:40px;font-size:14px}.av-l{width:48px;height:48px;font-size:16px}
+.pr{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0}
+.pp{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:3px}
+.pt{width:100px;height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.pf{height:100%;border-radius:99px;background:var(--teal);transition:width .3s}
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.lrow:last-child{border-bottom:none}
+.ri{flex:1;min-width:0}
+.rn{font-size:14px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rs{font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
+.modal{background:var(--bg);border-radius:var(--rl);border:1px solid var(--border2);padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.mt{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.mf{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.go{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r)}
+.gt{border-collapse:collapse;min-width:500px;width:100%}
+.gt th{background:var(--navy);color:#fff;font-size:10px;padding:6px 3px;text-align:center;white-space:nowrap;font-weight:500}
+.gt th.nc{text-align:left;min-width:155px;padding-left:10px;position:sticky;left:0;z-index:2;background:var(--navy)}
+.gt td{font-size:11px;padding:0;border-bottom:1px solid var(--border);height:28px;vertical-align:middle}
+.gt td.nc{padding:0 8px 0 10px;position:sticky;left:0;background:var(--bg);z-index:1;border-right:1px solid var(--border2);max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:12px}
+.gt tr:hover td{background:var(--bg2)}.gt tr:hover td.nc{background:var(--bg2)}
+.gph td{background:var(--bg3);font-size:10px;font-weight:700;color:var(--text2);height:22px;text-transform:uppercase;letter-spacing:.05em}
+.gph td.nc{background:var(--bg3)}
+.bc{padding:3px 1px}.bar{height:16px;border-radius:3px;margin:0 1px}
+.rb{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;white-space:nowrap}
+.rn_{background:var(--bg3);color:var(--text3)}.rp{background:var(--ltgreen);color:var(--dkgreen)}
+.ri_{background:var(--ltamber);color:var(--dkamber)}.rf{background:var(--ltred);color:var(--dkred)}
+.mw{overflow-x:auto}
+.mx{border-collapse:collapse;width:100%}
+.mx th{font-size:11px;padding:7px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);white-space:nowrap;font-weight:600;text-align:center}
+.mx th:first-child{text-align:left;min-width:180px}
+.mx td{font-size:12px;padding:6px 10px;border:1px solid var(--border);text-align:center}
+.mx td:first-child{text-align:left;color:var(--text)}
+.lv{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.l0{background:var(--bg3);color:var(--text3)}.l1{background:#FCEBEB;color:#791F1F}
+.l2{background:#FEF3E2;color:#7D4800}.l3{background:var(--ltamber);color:var(--dkamber)}
+.l4{background:var(--ltgreen);color:var(--dkgreen)}.l5{background:#E1F5EE;color:#085041}
+.al{border-radius:var(--r);padding:10px 14px;font-size:12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+.ai{background:var(--ltblue);border:1px solid #B5D4F4;color:#0C447C}
+.ao{background:var(--ltgreen);border:1px solid #97C459;color:var(--dkgreen)}
+.aw{background:var(--ltamber);border:1px solid var(--amber);color:var(--dkamber)}
+.ae{background:var(--ltred);border:1px solid #F09595;color:var(--dkred)}
+.div{height:1px;background:var(--border);margin:20px 0}
+.empty{text-align:center;padding:48px 20px;color:var(--text3);font-size:13px}
+.ei{font-size:40px;margin-bottom:10px}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lh{font-size:12px;color:var(--text3);display:inline-flex;align-items:center;gap:5px}
+code{font-family:'Courier New',monospace;background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">&#9729; Training Manager <em>NH Design Team</em></div>
+  <div class="tr">
+    <span class="sync" id="sync"></span>
+    <span class="pill pill-v" id="pill">&#128274; View only</span>
+    <button class="btn sm" id="ubtn" style="background:rgba(255,255,255,.13);color:#fff;border-color:rgba(255,255,255,.25)" onclick="openAuth()">Unlock editing</button>
+    <button class="btn sm" id="lbtn" style="display:none;background:rgba(255,255,255,.13);color:#fff;border-color:rgba(255,255,255,.25)" onclick="lockEdit()">&#128274; Lock</button>
+  </div>
+</div>
+<div id="wrap">
+  <div class="tabs">
+    <button class="tab on" id="tab-trainees" onclick="go('trainees')">Trainees</button>
+    <button class="tab" id="tab-courses" onclick="go('courses')">Courses &amp; skill matrix</button>
+    <button class="tab" id="tab-settings" onclick="go('settings')">&#9881; Settings</button>
+  </div>
+  <div id="ct"></div>
+</div>
+
+<!-- AUTH -->
+<div class="modal-bg" id="m-auth" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+<div class="modal" style="max-width:420px">
+  <div class="mt">&#128274; Unlock editing</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Enter the shared GitHub Personal Access Token. It is never stored — you re-enter it each session.</p>
+  <div class="fg" style="margin-bottom:10px"><label>GitHub token</label><input type="password" id="ai" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/></div>
+  <div id="aerr" class="al ae" style="display:none">&#10060; <span id="aerrm">Invalid token or repository not found.</span></div>
+  <div class="mf">
+    <button class="btn sm" onclick="cm('m-auth')">Cancel</button>
+    <button class="btn bp sm" id="aok" onclick="doAuth()"><span id="aokt">Unlock</span></button>
+  </div>
+</div></div>
+
+<!-- COURSE -->
+<div class="modal-bg" id="m-course" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+<div class="modal">
+  <div class="mt" id="cm-t">Add course</div>
+  <div class="form-row">
+    <div class="fg" style="flex:2"><label>Course name *</label><input id="cm-n" placeholder="e.g. IPlot Training"/></div>
+    <div class="fg"><label>Phase</label><select id="cm-p">
+      <option value="p1">Phase 1 — NH Onboarding</option>
+      <option value="p2">Phase 2 — Lot-Level</option>
+      <option value="p3">Phase 3 — Community-Level</option>
+      <option value="p4">Phase 4 — Compliance</option>
+    </select></div>
+  </div>
+  <div class="form-row">
+    <div class="fg"><label>Duration (weeks)</label><input id="cm-d" type="number" min="1" max="12" value="1"/></div>
+    <div class="fg"><label>Required level (1–5)</label><input id="cm-r" type="number" min="1" max="5" value="4"/></div>
+  </div>
+  <div class="fg"><label>Description</label><textarea id="cm-desc" rows="2" style="height:58px"></textarea></div>
+  <div class="mf"><button class="btn sm" onclick="cm('m-course')">Cancel</button><button class="btn bp sm" onclick="saveCourse()">Save course</button></div>
+</div></div>
+
+<!-- TRAINEE -->
+<div class="modal-bg" id="m-trainee" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+<div class="modal">
+  <div class="mt" id="tm-t">Add new trainee</div>
+  <input type="hidden" id="tm-eid"/>
+  <div class="form-row">
+    <div class="fg" style="flex:2"><label>Full name *</label><input id="tm-n" placeholder="e.g. Juan Cruz"/></div>
+    <div class="fg"><label>Role / ID</label><input id="tm-r" placeholder="e.g. NCG 6"/></div>
+  </div>
+  <div class="form-row">
+    <div class="fg"><label>Trainer name</label><input id="tm-tr" placeholder="Your name"/></div>
+    <div class="fg"><label>Start work week</label><input id="tm-ww" type="number" min="1" max="52" value="16"/></div>
+  </div>
+  <div class="fg" style="margin-bottom:4px"><label>Onboarding notes</label><textarea id="tm-no" rows="2" style="height:50px" placeholder="Optional..."></textarea></div>
+  <div class="mf"><button class="btn sm" onclick="cm('m-trainee')">Cancel</button><button class="btn bp sm" id="tm-ok" onclick="saveTrainee()">Add trainee</button></div>
+</div></div>
+
+<!-- RESULT -->
+<div class="modal-bg" id="m-result" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+<div class="modal" style="max-width:440px">
+  <div class="mt" id="rm-t">Record result</div>
+  <input type="hidden" id="rm-tid"/><input type="hidden" id="rm-cid"/>
+  <div class="form-row">
+    <div class="fg"><label>Result *</label><select id="rm-res">
+      <option value="none">— Pending —</option>
+      <option value="pass">&#10003; Passed</option>
+      <option value="ip">&#9203; In progress</option>
+      <option value="fail">&#10007; Failed / Needs retry</option>
+    </select></div>
+    <div class="fg"><label>Score / Grade</label><input id="rm-sc" placeholder="e.g. 92% or Pass"/></div>
+  </div>
+  <div class="form-row">
+    <div class="fg"><label>Completion date</label><input id="rm-dt" type="date"/></div>
+    <div class="fg"><label>Assessed by</label><input id="rm-as" placeholder="Trainer name"/></div>
+  </div>
+  <div class="fg"><label>Notes</label><textarea id="rm-no" rows="2" style="height:52px" placeholder="Observations, next steps, retry plan..."></textarea></div>
+  <div class="mf"><button class="btn sm" onclick="cm('m-result')">Cancel</button><button class="btn bp sm" onclick="saveResult()">Save result</button></div>
+</div></div>
+
+<script>
+const PC={p1:'#1D9E75',p2:'#185FA5',p3:'#E67E22',p4:'#7F77DD'};
+const PL={p1:'Phase 1: NH Onboarding',p2:'Phase 2: Lot-Level',p3:'Phase 3: Community-Level',p4:'Phase 4: Compliance'};
+const PS={p1:'Phase 1',p2:'Phase 2',p3:'Phase 3',p4:'Phase 4'};
+
+const DC=[
+  {id:'pv',phase:'p1',name:'PV Fundamentals',duration:1,required:4,description:'Intro to PV systems end-to-end'},
+  {id:'nh',phase:'p1',name:'Introduction to New Homes',duration:1,required:4,description:'NH design types and CRM'},
+  {id:'sha',phase:'p1',name:'Shading Analysis Training',duration:1,required:4,description:'Aurora Solar shading reports'},
+  {id:'sha-p',phase:'p1',name:'Shading Analysis Practice',duration:1,required:4,description:'2–5 reports/day progression'},
+  {id:'iplot',phase:'p2',name:'IPlot Training + FM Path',duration:2,required:4,description:'SF/MF plot plan with BOM and PV Calc'},
+  {id:'iplot-p',phase:'p2',name:'IPlot/Shading Practice',duration:1,required:4,description:'2–6 designs/day practice'},
+  {id:'cert-w',phase:'p2',name:'Written Certification',duration:1,required:4,description:'Written knowledge exam'},
+  {id:'cert-d',phase:'p2',name:'Actual Design Certification',duration:1,required:4,description:'Practical design exam'},
+  {id:'nest-ip',phase:'p2',name:'Nesting — IPlot (Wks 1–4)',duration:4,required:4,description:'3–7 designs/day progression'},
+  {id:'ipermit',phase:'p2',name:'IPermit Training',duration:1,required:4,description:'1D classroom — Individual permit SF'},
+  {id:'ipermit-ex',phase:'p2',name:'IPermit Exercises 1–10',duration:2,required:4,description:'1–3 days each exercise'},
+  {id:'ipermit-ess',phase:'p2',name:'IPermit ESS',duration:1,required:4,description:'IPermit with energy storage'},
+  {id:'nest-ipm',phase:'p2',name:'Nesting — IPermit (Wks 1–4)',duration:4,required:4,description:'1–2 permits/week progression'},
+  {id:'mp-sf',phase:'p3',name:'Master Plan (SF)',duration:1,required:4,description:'Community master plan single-family'},
+  {id:'mp-ex',phase:'p3',name:'Master Plan Exercises 1–3',duration:1,required:4,description:'Guided master plan practice'},
+  {id:'mp-mf',phase:'p3',name:'Master Plan (MF)',duration:1,required:4,description:'Community master plan multi-family'},
+  {id:'mp-ess',phase:'p3',name:'Master Plan ESS',duration:1,required:4,description:'Master plan with energy storage'},
+  {id:'mppp-sf',phase:'p3',name:'MPPP (SF)',duration:2,required:4,description:'Master plan permit package SF'},
+  {id:'mppp-mf',phase:'p3',name:'MPPP (MF)',duration:2,required:4,description:'Master plan permit package MF'},
+  {id:'fse',phase:'p3',name:'Future Solar Exhibit',duration:1,required:3,description:'Preliminary sales document MF'},
+  {id:'ssp',phase:'p3',name:'Solar Site Plan',duration:1,required:1,description:'Optimal PV placement per community lot'},
+  {id:'memo',phase:'p4',name:'Intro to SPECs & Memos',duration:1,required:3,description:'Insperity self-paced'},
+  {id:'phish',phase:'p4',name:'Phishing & Anti-Spam',duration:1,required:3,description:'Insperity self-paced'},
+  {id:'idtheft',phase:'p4',name:'Identity Theft Awareness',duration:1,required:3,description:'Insperity self-paced'},
+  {id:'social',phase:'p4',name:'Social Engineering',duration:1,required:3,description:'Insperity self-paced'},
+];
+
+let S={courses:JSON.parse(JSON.stringify(DC)),trainees:[]};
+let GH={owner:'',repo:'',path:'data/training.json',token:'',sha:''};
+let editMode=false,tab='trainees',trainee=null,editCid=null,saving=false;
+
+const g=id=>document.getElementById(id);
+const ini=n=>n.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join('').slice(0,2)||'?';
+const ww=n=>'WW'+String(n||0).padStart(2,'0');
+const prog=t=>{const pl=t.plan||[],tot=pl.length,done=pl.filter(p=>p.result==='pass'||p.result==='fail').length;return{tot,done,pct:tot?Math.round(done/tot*100):0}};
+const bph=plan=>{const m={p1:[],p2:[],p3:[],p4:[]};plan.forEach(e=>{const c=S.courses.find(x=>x.id===e.courseId);if(c)(m[c.phase]=m[c.phase]||[]).push({c,e})});return m};
+const cm=id=>g(id).style.display='none';
+const sync=(msg,col)=>{g('sync').textContent=msg;g('sync').style.color=col||'rgba(255,255,255,.65)'};
+
+function saveLs(){localStorage.setItem('gh_owner',GH.owner);localStorage.setItem('gh_repo',GH.repo);localStorage.setItem('gh_path',GH.path)}
+function loadLs(){GH.owner=localStorage.getItem('gh_owner')||'';GH.repo=localStorage.getItem('gh_repo')||'';GH.path=localStorage.getItem('gh_path')||'data/training.json'}
+
+const ghH=()=>({'Authorization':'token '+GH.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'});
+const ghUrl=()=>`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+
+async function ghLoad(auth){
+  const h=auth?ghH():{'Accept':'application/vnd.github.v3+json'};
+  const r=await fetch(ghUrl(),{headers:h});
+  if(r.status===404) return null;
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json();GH.sha=j.sha;
+  return JSON.parse(atob(j.content.replace(/\n/g,'')));
+}
+
+async function ghSave(msg){
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(S,null,2))));
+  const body={message:msg||'Update training data',content};
+  if(GH.sha) body.sha=GH.sha;
+  const r=await fetch(ghUrl(),{method:'PUT',headers:ghH(),body:JSON.stringify(body)});
+  if(!r.ok){const e=await r.json();throw new Error(e.message||'Save failed')}
+  GH.sha=(await r.json()).content.sha;
+}
+
+async function push(msg){
+  if(!editMode||!GH.token||saving) return;
+  saving=true;sync('Saving...','#FAC775');
+  try{
+    const r=await fetch(ghUrl(),{headers:ghH()});
+    if(r.ok){const j=await r.json();if(j.sha!==GH.sha){
+      if(confirm('Another trainer saved while you were editing.\nOK = reload latest (recommended), Cancel = overwrite.')){
+        const d=await ghLoad(true);if(d){S=d;sync('Reloaded — redo your change','#FAC775');saving=false;render();return}
+      }
+    }}
+    await ghSave(msg);sync('Saved ✓  '+new Date().toLocaleTimeString(),'#9FE1CB');
+  } catch(e){sync('Save failed: '+e.message,'#F09595')}
+  saving=false;
+}
+
+function openAuth(){
+  if(!GH.owner||!GH.repo){alert('Configure the GitHub repository in Settings first.');go('settings');return}
+  g('aerr').style.display='none';g('ai').value='';
+  g('m-auth').style.display='flex';setTimeout(()=>g('ai').focus(),80);
+}
+
+async function doAuth(){
+  const token=g('ai').value.trim();if(!token)return;
+  const btn=g('aok'),txt=g('aokt');btn.disabled=true;txt.innerHTML='<span class="sp"></span> Verifying...';
+  g('aerr').style.display='none';
+  try{
+    GH.token=token;
+    const r=await fetch(ghUrl(),{headers:ghH()});
+    if(r.status===404){await ghSave('Initialize training data')}
+    else if(!r.ok) throw new Error('HTTP '+r.status);
+    else{const j=await r.json();GH.sha=j.sha;const d=JSON.parse(atob(j.content.replace(/\n/g,'')));if(d)S=d;}
+    editMode=true;cm('m-auth');updateUI();sync('Loaded from GitHub ✓','#9FE1CB');render();
+  } catch(e){GH.token='';g('aerrm').textContent=e.message||'Invalid token.';g('aerr').style.display='flex'}
+  btn.disabled=false;txt.textContent='Unlock';
+}
+
+function lockEdit(){editMode=false;GH.token='';updateUI();render()}
+
+function updateUI(){
+  const p=g('pill'),u=g('ubtn'),l=g('lbtn');
+  if(editMode){p.className='pill pill-e';p.textContent='✏ Edit mode';u.style.display='none';l.style.display='inline-flex'}
+  else{p.className='pill pill-v';p.textContent='🔒 View only';u.style.display='inline-flex';l.style.display='none'}
+}
+
+function go(t){tab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));g('tab-'+t).classList.add('on');render()}
+function render(){const el=g('ct');if(tab==='trainees')trainee?detail(el):trainees(el);else if(tab==='courses')courses(el);else settings(el)}
+
+function trainees(el){
+  const ts=S.trainees||[];
+  const td=ts.reduce((a,t)=>a+prog(t).done,0),tp=ts.reduce((a,t)=>a+prog(t).tot,0);
+  let h=`<div class="metrics">
+    <div class="metric"><div class="ml">Trainees</div><div class="mv">${ts.length}</div></div>
+    <div class="metric"><div class="ml">Sessions logged</div><div class="mv">${td}</div><div class="ms">of ${tp} planned</div></div>
+    <div class="metric"><div class="ml">Team completion</div><div class="mv">${tp?Math.round(td/tp*100):0}%</div></div>
+  </div>
+  <div class="sh"><span class="st">All trainees</span>
+    ${editMode?`<button class="btn bp sm" onclick="openTm()">+ Add trainee</button>`:`<span class="lh">&#128274; Unlock to add trainees</span>`}
+  </div>`;
+  if(!ts.length){
+    h+=`<div class="card"><div class="empty"><div class="ei">&#128100;</div>No trainees yet.<br>${editMode?'Click "+ Add trainee" to get started.':'Unlock editing to add trainees.'}</div></div>`;
+  } else {
+    h+=`<div class="card">`;
+    ts.forEach(t=>{
+      const p=prog(t),pa=(t.plan||[]).filter(x=>x.result==='pass').length,fa=(t.plan||[]).filter(x=>x.result==='fail').length;
+      h+=`<div class="lrow">
+        <div class="av av-m">${ini(t.name)}</div>
+        <div class="ri">
+          <div class="rn">${t.name}</div>
+          <div class="rs">${[t.role,t.trainer?'Trainer: '+t.trainer:'',ww(t.startWW)].filter(Boolean).join(' · ')}
+            ${pa?`<span class="tag tpass" style="margin-left:6px">&#10003; ${pa} passed</span>`:''}
+            ${fa?`<span class="tag tfail" style="margin-left:4px">&#10007; ${fa} failed</span>`:''}
+          </div>
+        </div>
+        <div class="pr"><div class="pp">${p.pct}%</div><div class="pt"><div class="pf" style="width:${p.pct}%"></div></div></div>
+        <button class="btn sm" onclick="openT('${t.id}')">Open &#8250;</button>
+        ${editMode?`<button class="btn ic sm bd" title="Remove" onclick="delT('${t.id}')">&#10005;</button>`:''}
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  el.innerHTML=h;
+}
+
+function detail(el){
+  const t=S.trainees.find(x=>x.id===trainee);
+  if(!t){trainee=null;return trainees(el)}
+  const p=prog(t),plan=t.plan||[],bph_=bph(plan);
+  const sWs=plan.map(x=>x.startWW).filter(Boolean),eWs=plan.map(x=>x.endWW||x.startWW).filter(Boolean);
+  const minW=sWs.length?Math.min(...sWs):t.startWW||1,maxW=eWs.length?Math.max(...eWs):minW+10;
+  const wwR=[];for(let w=minW;w<=Math.min(maxW,52);w++)wwR.push(w);
+
+  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <button class="btn sm bg_" onclick="back()">&#8592; All trainees</button>
+    <div class="av av-l">${ini(t.name)}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:18px;font-weight:700;color:var(--text)">${t.name}</div>
+      <div style="font-size:12px;color:var(--text3)">${[t.role,t.trainer?'Trainer: '+t.trainer:'',ww(t.startWW)].filter(Boolean).join(' · ')}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:4px">${p.done}/${p.tot} sessions · ${p.pct}% complete</div>
+      <div class="pt" style="width:140px;margin-left:auto"><div class="pf" style="width:${p.pct}%"></div></div>
+    </div>
+    ${editMode?`<button class="btn sm" onclick="openTmEdit('${t.id}')">Edit info</button>`:''}
+  </div>`;
+
+  h+=`<div class="card" style="padding:14px 16px;margin-bottom:12px">
+    <div class="chd"><span class="ct">Training schedule — Gantt</span></div>
+    <div class="go"><table class="gt">
+      <thead><tr><th class="nc">Course</th>${wwR.map(w=>`<th>${ww(w)}</th>`).join('')}</tr></thead>
+      <tbody>`;
+  ['p1','p2','p3','p4'].forEach(ph=>{
+    const rows=bph_[ph]||[];if(!rows.length)return;
+    h+=`<tr class="gph"><td class="nc" colspan="${wwR.length+1}" style="color:${PC[ph]};padding-left:10px">${PL[ph]}</td></tr>`;
+    rows.forEach(({c,e})=>{
+      const bc=e.result==='pass'?'#1D9E75':e.result==='fail'?'#E24B4A':e.result==='ip'?'#EF9F27':PC[ph];
+      const sW=e.startWW||0,eW=e.endWW||e.startWW||0;
+      h+=`<tr><td class="nc" title="${c.name}">${c.name}</td>`;
+      wwR.forEach(w=>{
+        if(w>=sW&&w<=eW){const solo=sW===eW,iS=w===sW,iE=w===eW;const r=solo?'3px':iS?'3px 0 0 3px':iE?'0 3px 3px 0':'0';
+          h+=`<td class="bc"><div class="bar" style="background:${bc};border-radius:${r};opacity:.88"></div></td>`;
+        } else h+=`<td></td>`;
+      });h+=`</tr>`;
+    });
+  });
+  h+=`</tbody></table></div>
+  <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+    ${[['#1D9E75','Passed'],['#EF9F27','In progress'],['#E24B4A','Failed'],['#185FA5','Scheduled']].map(([c,l])=>`<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:14px;height:8px;border-radius:2px;background:${c};display:inline-block"></span>${l}</span>`).join('')}
+  </div></div>`;
+
+  h+=`<div class="sh" style="margin-bottom:12px"><span class="st">Training results</span>${editMode?'':`<span class="lh">&#128274; Unlock to record</span>`}</div>`;
+  ['p1','p2','p3','p4'].forEach(ph=>{
+    const rows=bph_[ph]||[];if(!rows.length)return;
+    h+=`<div class="card" style="margin-bottom:10px"><div class="chd"><span class="ct" style="color:${PC[ph]}">${PL[ph]}</span></div>`;
+    rows.forEach(({c,e},i)=>{
+      const last=i===rows.length-1;
+      const rc={pass:'rp',ip:'ri_',fail:'rf',none:'rn_'}[e.result||'none'];
+      const rl={pass:'&#10003; Passed',ip:'&#9203; In progress',fail:'&#10007; Failed',none:'&#8212; Pending'}[e.result||'none'];
+      h+=`<div style="padding:10px 0;border-bottom:${last?'none':'1px solid var(--border)'}">
+        <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:150px">
+            <div style="font-size:13px;font-weight:500;color:var(--text)">${c.name}</div>
+            <div style="font-size:11px;color:var(--text3)">${ww(e.startWW)} – ${ww(e.endWW||e.startWW)} · Required: ${c.required}/5</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0">
+            <span class="rb ${rc}">${rl}</span>
+            ${e.score?`<span style="font-size:11px;color:var(--text2)">Score: ${e.score}</span>`:''}
+            ${e.date?`<span style="font-size:11px;color:var(--text3)">${e.date}</span>`:''}
+            ${editMode?`<button class="btn sm" onclick="openRm('${t.id}','${c.id}')">Record &#8250;</button>`:''}
+          </div>
+        </div>
+        ${e.notes?`<div style="font-size:11px;color:var(--text3);margin-top:6px;padding-left:10px;border-left:2px solid var(--border2)">${e.notes}</div>`:''}
+      </div>`;
+    });h+=`</div>`;
+  });
+  if(t.notes)h+=`<div class="card"><div class="ct" style="margin-bottom:6px">Onboarding notes</div><div style="font-size:13px;color:var(--text)">${t.notes}</div></div>`;
+  el.innerHTML=h;
+}
+
+function openT(id){trainee=id;render()}
+function back(){trainee=null;render()}
+
+function courses(el){
+  const cs=S.courses||[],bph_={p1:[],p2:[],p3:[],p4:[]};
+  cs.forEach(c=>(bph_[c.phase]=bph_[c.phase]||[]).push(c));
+  const avg=cs.length?(cs.reduce((a,c)=>a+c.required,0)/cs.length).toFixed(1):'-';
+  let h=`<div class="metrics">
+    <div class="metric"><div class="ml">Total courses</div><div class="mv">${cs.length}</div></div>
+    <div class="metric"><div class="ml">Total weeks</div><div class="mv">${cs.reduce((a,c)=>a+c.duration,0)}</div><div class="ms">per trainee</div></div>
+    <div class="metric"><div class="ml">Avg required level</div><div class="mv">${avg}<span style="font-size:14px">/5</span></div></div>
+  </div>
+  <div class="sh"><span class="st">Course library</span>
+    ${editMode?`<button class="btn bp sm" onclick="openCm()">+ Add course</button>`:`<span class="lh">&#128274; Unlock to edit</span>`}
+  </div>`;
+  ['p1','p2','p3','p4'].forEach(ph=>{
+    const pc=bph_[ph]||[];if(!pc.length)return;
+    h+=`<div class="card"><div class="chd"><span style="font-size:13px;font-weight:700;color:${PC[ph]}">${PL[ph]}</span><span style="font-size:11px;color:var(--text3)">${pc.length} courses</span></div>`;
+    pc.forEach(c=>{
+      h+=`<div class="lrow"><div class="pd" style="background:${PC[c.phase]}"></div>
+        <div class="ri"><div class="rn">${c.name}</div><div class="rs">${c.description||'—'} · ${c.duration>1?c.duration+' wks':'1 wk'} · Required: ${c.required}/5</div></div>
+        ${editMode?`<button class="btn ic sm" title="Edit" onclick="openCm('${c.id}')">&#9998;</button><button class="btn ic sm bd" title="Delete" onclick="delC('${c.id}')">&#10005;</button>`:''}
+      </div>`;
+    });h+=`</div>`;
+  });
+  h+=`<div class="div"></div><div class="sh" style="margin-bottom:12px"><span class="st">Skill matrix — required proficiency by phase</span></div>
+  <div class="card" style="padding:14px 16px"><div class="mw"><table class="mx">
+    <thead><tr><th style="text-align:left;min-width:180px">Course</th>${['p1','p2','p3','p4'].map(p=>`<th style="color:${PC[p]}">${PS[p]}</th>`).join('')}</tr></thead>
+    <tbody>`;
+  const mx={};cs.forEach(c=>{if(!mx[c.name])mx[c.name]={};mx[c.name][c.phase]=c.required});
+  Object.entries(mx).forEach(([name,phases])=>{
+    h+=`<tr><td style="text-align:left;color:var(--text);font-size:12px">${name}</td>`;
+    ['p1','p2','p3','p4'].forEach(ph=>{
+      const lv=phases[ph];
+      if(lv!==undefined)h+=`<td><div class="lv l${lv}" title="Level ${lv}/5">${lv}</div></td>`;
+      else h+=`<td style="color:var(--border)">—</td>`;
+    });h+=`</tr>`;
+  });
+  h+=`</tbody></table></div>
+  <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap">
+    ${[1,2,3,4,5].map(n=>`<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)"><div class="lv l${n}" style="width:26px;height:26px;font-size:11px">${n}</div>${['','Not acquired','Foundational','Guided','Independent','Expert'][n]}</span>`).join('')}
+  </div></div>`;
+  el.innerHTML=h;
+}
+
+function settings(el){
+  const ok=GH.owner&&GH.repo;
+  let h=`<div class="st" style="margin-bottom:16px">GitHub configuration</div>`;
+  if(ok)h+=`<div class="al ao">&#10003; Connected to <strong>${GH.owner}/${GH.repo}</strong> &nbsp;·&nbsp; Data file: <code>${GH.path}</code></div>`;
+  else h+=`<div class="al aw">&#9888; Not configured — fill in your repository details below.</div>`;
+  h+=`<div class="card">
+    <div class="ct" style="margin-bottom:12px">Repository details</div>
+    <div class="form-row">
+      <div class="fg"><label>GitHub username or org *</label><input id="so" value="${GH.owner}" placeholder="e.g. sunpower-nh"/></div>
+      <div class="fg"><label>Repository name *</label><input id="sr" value="${GH.repo}" placeholder="e.g. training-manager"/></div>
+    </div>
+    <div class="form-row"><div class="fg" style="max-width:280px"><label>Data file path</label><input id="sp" value="${GH.path}" placeholder="data/training.json"/></div></div>
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+      <button class="btn bp sm" onclick="saveGH()">Save configuration</button>
+      ${ok?`<button class="btn sm" onclick="reload()">&#8635; Reload from GitHub</button>`:''}
+    </div>
+  </div>
+  <div class="card" style="margin-top:4px">
+    <div class="ct" style="margin-bottom:12px">Setup guide</div>
+    <ol style="font-size:13px;color:var(--text2);line-height:2.2;padding-left:18px">
+      <li>Create a new <strong>public</strong> GitHub repository (e.g. <code>training-manager</code>)</li>
+      <li>Go to <strong>Settings &#8594; Pages</strong>, set Source to <em>Deploy from branch &#8594; main &#8594; / (root)</em></li>
+      <li>Upload this <code>index.html</code> file to the root of the repository</li>
+      <li>App goes live at <code>https://USERNAME.github.io/REPO-NAME</code></li>
+      <li>Go to <strong>github.com &#8594; Settings &#8594; Developer settings &#8594; Personal access tokens &#8594; Tokens (classic)</strong></li>
+      <li>Generate a token with <strong>repo</strong> scope — copy and share it with your team</li>
+      <li>On the app, click <strong>Unlock editing</strong> and paste the token — saves to GitHub automatically</li>
+    </ol>
+  </div>
+  <div class="card" style="margin-top:4px">
+    <div class="ct" style="margin-bottom:10px">Data backup &amp; restore</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sm" onclick="exportD()">&#8595; Export JSON backup</button>
+      <button class="btn sm" onclick="g('imp').click()">&#8593; Import JSON</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importD(this)"/>
+      ${editMode?`<button class="btn sm bd" onclick="resetD()">&#9888; Reset to defaults</button>`:''}
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">Export a JSON backup anytime. Import on another device to restore all data.</div>
+  </div>`;
+  el.innerHTML=h;
+}
+
+function saveGH(){GH.owner=g('so').value.trim();GH.repo=g('sr').value.trim();GH.path=g('sp').value.trim()||'data/training.json';saveLs();settings(g('ct'));if(GH.owner&&GH.repo)reload()}
+async function reload(){sync('Loading...','#FAC775');try{const d=await ghLoad(!!GH.token);if(d){S=d;sync('Loaded ✓','#9FE1CB');render()}else sync('No data file yet — unlock to create it','#FAC775')}catch(e){sync('Load failed: '+e.message,'#F09595')}}
+
+function openCm(id){
+  editCid=id||null;const c=id?S.courses.find(x=>x.id===id):null;
+  g('cm-t').textContent=c?'Edit course':'Add course';
+  g('cm-n').value=c?c.name:'';g('cm-p').value=c?c.phase:'p1';
+  g('cm-d').value=c?c.duration:1;g('cm-r').value=c?c.required:4;
+  g('cm-desc').value=c?c.description:'';
+  g('m-course').style.display='flex';setTimeout(()=>g('cm-n').focus(),80);
+}
+function saveCourse(){
+  const name=g('cm-n').value.trim();if(!name)return alert('Course name is required.');
+  const c={id:editCid||'c'+Date.now(),name,phase:g('cm-p').value,duration:parseInt(g('cm-d').value)||1,required:Math.min(5,Math.max(1,parseInt(g('cm-r').value)||4)),description:g('cm-desc').value.trim()};
+  if(editCid){const i=S.courses.findIndex(x=>x.id===editCid);if(i>=0)S.courses[i]=c;}else S.courses.push(c);
+  cm('m-course');push(editCid?`Update course: ${name}`:`Add course: ${name}`);render();
+}
+function delC(id){const c=S.courses.find(x=>x.id===id);if(!c||!confirm(`Delete "${c.name}"?\nRemoved from all training plans.`))return;S.courses=S.courses.filter(x=>x.id!==id);S.trainees.forEach(t=>{if(t.plan)t.plan=t.plan.filter(p=>p.courseId!==id)});push(`Delete course: ${c.name}`);render()}
+
+function openTm(){g('tm-t').textContent='Add new trainee';g('tm-eid').value='';g('tm-n').value='';g('tm-r').value='';g('tm-tr').value='';g('tm-ww').value=16;g('tm-no').value='';g('tm-ok').textContent='Add trainee';g('m-trainee').style.display='flex';setTimeout(()=>g('tm-n').focus(),80)}
+function openTmEdit(id){
+  const t=S.trainees.find(x=>x.id===id);if(!t)return;
+  g('tm-t').textContent='Edit trainee info';g('tm-eid').value=id;g('tm-n').value=t.name;g('tm-r').value=t.role||'';g('tm-tr').value=t.trainer||'';g('tm-ww').value=t.startWW||16;g('tm-no').value=t.notes||'';g('tm-ok').textContent='Save changes';
+  g('m-trainee').style.display='flex';setTimeout(()=>g('tm-n').focus(),80);
+}
+function saveTrainee(){
+  const name=g('tm-n').value.trim();if(!name)return alert('Name is required.');
+  const eid=g('tm-eid').value,startWW=parseInt(g('tm-ww').value)||16;
+  if(eid){const t=S.trainees.find(x=>x.id===eid);if(t){Object.assign(t,{name,role:g('tm-r').value.trim(),trainer:g('tm-tr').value.trim(),startWW,notes:g('tm-no').value.trim()});cm('m-trainee');push(`Update trainee: ${name}`);render();return}}
+  const t={id:'t'+Date.now(),name,role:g('tm-r').value.trim(),trainer:g('tm-tr').value.trim(),startWW,notes:g('tm-no').value.trim(),plan:buildPlan(startWW)};
+  if(!S.trainees)S.trainees=[];S.trainees.push(t);cm('m-trainee');push(`Add trainee: ${name}`);trainee=t.id;render();
+}
+function buildPlan(sw){let wk=sw;return(S.courses||[]).map(c=>{const e={courseId:c.id,startWW:wk,endWW:wk+c.duration-1,result:'none',score:'',date:'',notes:'',trainer:''};wk=Math.min(wk+c.duration,52);return e})}
+function delT(id){const t=S.trainees.find(x=>x.id===id);if(!t||!confirm(`Remove "${t.name}" and all their records?\nThis cannot be undone.`))return;S.trainees=S.trainees.filter(x=>x.id!==id);push(`Remove trainee: ${t.name}`);render()}
+
+function openRm(tid,cid){
+  const t=S.trainees.find(x=>x.id===tid),c=S.courses.find(x=>x.id===cid);if(!t||!c)return;
+  const e=(t.plan||[]).find(p=>p.courseId===cid)||{};
+  g('rm-t').textContent='Record result — '+c.name;g('rm-tid').value=tid;g('rm-cid').value=cid;
+  g('rm-res').value=e.result||'none';g('rm-sc').value=e.score||'';
+  g('rm-dt').value=e.date||new Date().toISOString().slice(0,10);
+  g('rm-as').value=e.trainer||t.trainer||'';g('rm-no').value=e.notes||'';
+  g('m-result').style.display='flex';setTimeout(()=>g('rm-res').focus(),80);
+}
+function saveResult(){
+  const tid=g('rm-tid').value,cid=g('rm-cid').value,t=S.trainees.find(x=>x.id===tid);if(!t)return;
+  let e=(t.plan=t.plan||[]).find(p=>p.courseId===cid);
+  if(!e){e={courseId:cid,startWW:t.startWW||1,endWW:t.startWW||1};t.plan.push(e)}
+  Object.assign(e,{result:g('rm-res').value,score:g('rm-sc').value.trim(),date:g('rm-dt').value,trainer:g('rm-as').value.trim(),notes:g('rm-no').value.trim()});
+  cm('m-result');const c=S.courses.find(x=>x.id===cid);push(`Record result: ${t.name} — ${c?c.name:cid}`);render();
+}
+
+function exportD(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='training-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()}
+function importD(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.courses||!d.trainees)return alert('Invalid file.');if(!confirm('Replace all current data?'))return;S=d;if(editMode)push('Import from JSON backup');render()}catch{alert('Invalid JSON file.')}};r.readAsText(f);input.value=''}
+function resetD(){if(!confirm('Reset ALL data to defaults?\nDeletes all trainees. Cannot be undone.'))return;S={courses:JSON.parse(JSON.stringify(DC)),trainees:[]};push('Reset to defaults');render()}
+
+g('ai').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth()});
+
+loadLs();render();
+if(GH.owner&&GH.repo){sync('Loading...','#FAC775');reload()}
+</script>
+</body>
+</html>

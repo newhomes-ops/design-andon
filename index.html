@@ -30,22 +30,22 @@
 }
 
 body.light-mode {
-  --bg:         #f5f5f5;
-  --surface:    #ffffff;
-  --surface2:   #ebebeb;
+  --bg:         #ffffff;
+  --surface:    #f4f4f4;
+  --surface2:   #e8e8e8;
   --border:     rgba(0,0,0,0.08);
-  --border2:    rgba(0,0,0,0.15);
-  --text:       #0a0a0a;
+  --border2:    rgba(0,0,0,0.18);
+  --text:       #000000;
   --muted:      #333333;
   --dim:        #666666;
-  --lot:        #0277BD;
-  --lot-bg:     rgba(2,119,189,0.07);
-  --community:  #2E7D32;
-  --comm-bg:    rgba(46,125,50,0.07);
-  --commercial: #F7941D;
-  --coml-bg:    rgba(247,148,29,0.08);
-  --quality:    #6A1B9A;
-  --accent:     #F7941D;
+  --lot:        #111111;
+  --lot-bg:     rgba(0,0,0,0.04);
+  --community:  #444444;
+  --comm-bg:    rgba(0,0,0,0.04);
+  --commercial: #888888;
+  --coml-bg:    rgba(0,0,0,0.04);
+  --quality:    #222222;
+  --accent:     #000000;
   --border-radius-md: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -273,34 +273,76 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 body.light-mode .ip-overlay,
 body.light-mode #nh-overlay,
 body.light-mode #sla-targets-overlay,
-body.light-mode #settings-overlay { background:rgba(0,0,0,0.45); }
-body.light-mode .slicer-btn { border-color:rgba(0,0,0,0.15); color:var(--muted); }
-body.light-mode .slicer-btn:hover { color:var(--text); border-color:var(--text); }
-body.light-mode .slicer-btn.active { background:#e53935; border-color:#e53935; color:#fff; }
+body.light-mode #settings-overlay { background:rgba(0,0,0,0.35); }
+body.light-mode .slicer-btn { border-color:rgba(0,0,0,0.18); color:#333; }
+body.light-mode .slicer-btn:hover { color:#000; border-color:#000; }
+body.light-mode .slicer-btn.active { background:#000; border-color:#000; color:#fff; }
 body.light-mode .rotate-bar { background:rgba(0,0,0,0.08); }
-body.light-mode .rotate-bar-fill { background:#F7941D; }
-body.light-mode .new-hire-tag { background:rgba(247,148,29,0.12); color:#F7941D; border-color:rgba(247,148,29,0.3); }
-body.light-mode .board-header { background:#0a0a0a; border-bottom-color:#F7941D; }
+body.light-mode .rotate-bar-fill { background:#000000; }
+body.light-mode .new-hire-tag { background:rgba(0,0,0,0.07); color:#000; border-color:rgba(0,0,0,0.2); }
+body.light-mode .board-header { background:#000000; border-bottom-color:#333333; }
 body.light-mode .board-title { color:#ffffff; }
-body.light-mode .board-title span { color:#F7941D; }
-body.light-mode .screen-label { color:var(--muted); }
-body.light-mode .btn-pause { color:#ffffff; border-color:rgba(255,255,255,0.3); }
-body.light-mode .btn-pause:hover { color:#F7941D; border-color:#F7941D; }
-body.light-mode .btn-xs { color:#ffffff; border-color:rgba(255,255,255,0.25); }
-body.light-mode .btn-xs:hover { color:#F7941D; border-color:#F7941D; }
-body.light-mode .live-pill { color:#F7941D; }
-body.light-mode .live-pill::before { background:#F7941D; box-shadow:0 0 10px #F7941D; }
-body.light-mode .ts { color:rgba(255,255,255,0.5); }
+body.light-mode .board-title span { color:#aaaaaa; }
+body.light-mode .screen-label { color:rgba(255,255,255,0.6); }
+body.light-mode .btn-pause { color:#ffffff; border-color:rgba(255,255,255,0.25); }
+body.light-mode .btn-pause:hover { color:#cccccc; border-color:#cccccc; }
+body.light-mode .btn-xs { color:#ffffff; border-color:rgba(255,255,255,0.2); }
+body.light-mode .btn-xs:hover { color:#cccccc; border-color:#cccccc; }
+body.light-mode .live-pill { color:#aaaaaa; }
+body.light-mode .live-pill::before { background:#aaaaaa; box-shadow:0 0 8px #aaaaaa; }
+body.light-mode .ts { color:rgba(255,255,255,0.45); }
 body.light-mode .leg-item { color:#111111; }
-body.light-mode .panel-title { color:#333333; opacity:1 !important; }
-body.light-mode .section-label { color:#111111 !important; }
-body.light-mode .d-name, body.light-mode .lg-name, body.light-mode .rk-name { color:#0a0a0a; }
+body.light-mode .panel-title { color:#222222; opacity:1 !important; }
+body.light-mode .section-label { color:#000000 !important; }
+body.light-mode .d-name, body.light-mode .lg-name, body.light-mode .rk-name { color:#000000; }
 body.light-mode .lg-rank, body.light-mode .rk-num { color:#555555; }
-body.light-mode .lg-qual, body.light-mode .rk-qual, body.light-mode .rk-bar-val { color:#333333; }
+body.light-mode .lg-qual, body.light-mode .rk-qual, body.light-mode .rk-bar-val { color:#222222; }
 
-body.light-mode #theme-btn { color:#ffffff; border-color:rgba(255,255,255,0.25); }
+body.light-mode #theme-btn { color:#ffffff; border-color:rgba(255,255,255,0.2); }
 body.light-mode .screen-dot { border-color:rgba(255,255,255,0.3); }
-body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
+body.light-mode .screen-dot.active { background:#ffffff; border-color:#ffffff; }
+
+/* Light mode — panel & overlay monochrome overrides */
+body.light-mode .ip-panel { background:#ffffff; border-color:rgba(0,0,0,0.12); }
+body.light-mode .ip-panel-title span { color:#000000; }
+body.light-mode .ip-input:focus { border-color:#000000; }
+body.light-mode .ip-save { background:#000000; color:#ffffff; }
+body.light-mode .ip-cancel { border-color:rgba(0,0,0,0.18); color:#444; }
+body.light-mode .ip-cancel:hover { border-color:#000; color:#000; }
+body.light-mode .ip-level-label.lot,
+body.light-mode .ip-level-label.community,
+body.light-mode .ip-level-label.commercial { color:#333333; }
+body.light-mode .panel { background:#f4f4f4; border-color:rgba(0,0,0,0.08); }
+body.light-mode .summary-tile { background:#f4f4f4; }
+body.light-mode .d-card { background:#f4f4f4; border-color:rgba(0,0,0,0.08); }
+body.light-mode .live-pill { border-color:rgba(0,0,0,0.15); color:#555; }
+body.light-mode .live-pill::before { background:#555; box-shadow:none; }
+
+/* Light mode — all colored CSS classes → monochrome */
+body.light-mode .tc-lot .tc-value,
+body.light-mode .tc-lot .tc-value.s3 { color:#000 !important; }
+body.light-mode .tc-community .tc-value,
+body.light-mode .tc-community .tc-value.s3 { color:#444 !important; }
+body.light-mode .tc-commercial .tc-value,
+body.light-mode .tc-commercial .tc-value.s3 { color:#888 !important; }
+body.light-mode .tc-quality .tc-value,
+body.light-mode .tc-quality .tc-value.s3 { color:#222 !important; }
+body.light-mode .level-cell.lot .lv-name,
+body.light-mode .level-cell.lot .lv-count { color:#000 !important; }
+body.light-mode .level-cell.community .lv-name,
+body.light-mode .level-cell.community .lv-count { color:#444 !important; }
+body.light-mode .level-cell.commercial .lv-name,
+body.light-mode .level-cell.commercial .lv-count { color:#888 !important; }
+body.light-mode .qual-bar-label { color:#444 !important; }
+body.light-mode .ip-cell-val { color:#000 !important; }
+body.light-mode .ip-panel-title span { color:#000 !important; }
+body.light-mode .ip-input:focus { border-color:#000 !important; }
+body.light-mode .ip-save { background:#000 !important; color:#fff !important; }
+body.light-mode .btn-pause.paused { color:#000 !important; border-color:#000 !important; }
+body.light-mode .new-hire-tag { background:rgba(0,0,0,0.07) !important; color:#000 !important; border-color:rgba(0,0,0,0.2) !important; }
+
+/* Legend dots — remap via filter to greyscale in light mode */
+body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 .screen-controls{display:flex;align-items:center;gap:.6rem;}
 .btn-pause{
   background:transparent;border:1px solid var(--border2);color:var(--muted);
@@ -346,7 +388,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
 }
 .ip-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;}
 .ip-panel-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;}
-.ip-panel-title span{color:#FFB74D;}
+.ip-panel-title span{color:var(--accent);}
 .ip-close{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;padding:0 4px;}
 .ip-close:hover{color:var(--text);}
 .ip-grid{display:grid;grid-template-columns:1fr;gap:1rem;}
@@ -363,10 +405,10 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
   font-family:'DM Mono',monospace;font-size:1rem;padding:.45rem .7rem;
   border-radius:6px;outline:none;width:100%;text-align:center;
 }
-.ip-input:focus{border-color:#FFB74D;}
+.ip-input:focus{border-color:var(--accent);}
 .ip-actions{display:flex;gap:.75rem;margin-top:1.4rem;justify-content:flex-end;}
 .ip-save{
-  background:#FFB74D;border:none;color:#0a0c0d;
+  background:var(--accent);border:none;color:#fff;
   font-family:'DM Sans',sans-serif;font-weight:500;font-size:.85rem;
   padding:.5rem 1.4rem;border-radius:8px;cursor:pointer;transition:opacity .15s;
 }
@@ -387,8 +429,8 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
   padding:.55rem .9rem;display:flex;flex-direction:column;gap:.1rem;
   background:rgba(255,183,77,0.05);
 }
-.ip-cell-label{font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,183,77,.55);}
-.ip-cell-val{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;color:#FFB74D;}
+.ip-cell-label{font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+.ip-cell-val{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;color:var(--accent);}
 .ip-cell-val.zero{color:var(--dim);font-size:1.2rem;}
 </style>
 </head>
@@ -427,8 +469,8 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
           <div class="screen-dot" onclick="goTo(8)" title="FPY report"></div>
         </div>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
-        <button class="btn-xs hi" onclick="openIP()" style="border-color:rgba(255,183,77,.4);color:#FFB74D;" id="ip-btn">✎ In Progress</button>
-        <button class="btn-xs hi" onclick="openNewHires()" style="border-color:rgba(206,147,216,.4);color:#CE93D8;">✎ New Hires</button>
+        <button class="btn-xs hi" onclick="openIP()" style="border-color:var(--border2);color:var(--text);" id="ip-btn">✎ In Progress</button>
+        <button class="btn-xs hi" onclick="openNewHires()" style="border-color:var(--border2);color:var(--text);">✎ New Hires</button>
         <button class="btn-xs hi" onclick="openSettings()" style="border-color:rgba(124,131,253,.4);color:#a5a9ff;">⚙ Settings</button>
         <button class="btn-xs" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
       </div>
@@ -492,33 +534,33 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
 
         <!-- IN PROGRESS -->
         <div class="summary-block" id="s3-ip-block">
-          <div class="summary-block-title" style="color:#FFB74D;">
+          <div class="summary-block-title" style="color:var(--text);">
             ⏳ In progress
-            <button onclick="openIP()" style="margin-left:.75rem;background:rgba(255,183,77,.12);border:1px solid rgba(255,183,77,.3);color:#FFB74D;font-family:'DM Sans',sans-serif;font-size:.65rem;padding:.2rem .7rem;border-radius:6px;cursor:pointer;vertical-align:middle;">✎ Edit</button>
+            <button onclick="openIP()" style="margin-left:.75rem;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.65rem;padding:.2rem .7rem;border-radius:6px;cursor:pointer;vertical-align:middle;">✎ Edit</button>
           </div>
           <div class="summary-tiles">
             <div class="summary-tile" style="background:rgba(255,183,77,.06)">
-              <div class="tc-label" style="color:rgba(255,183,77,.7)">Total</div>
-              <div class="tc-value s3" id="s3-ip-all" style="color:#FFB74D">—</div>
+              <div class="tc-label" style="color:var(--muted)">Total</div>
+              <div class="tc-value s3" id="s3-ip-all" style="color:var(--text)">—</div>
               <div class="tc-sub">all levels</div>
             </div>
             <div class="summary-tile" style="background:rgba(79,195,247,.06)">
-              <div class="tc-label" style="color:rgba(79,195,247,.7)">Lot-level</div>
+              <div class="tc-label" style="color:var(--muted)">Lot-level</div>
               <div class="tc-value s3" id="s3-ip-lot" style="color:var(--lot)">—</div>
               <div class="tc-sub">in progress</div>
             </div>
             <div class="summary-tile" style="background:rgba(105,240,174,.06)">
-              <div class="tc-label" style="color:rgba(105,240,174,.7)">Community-level</div>
+              <div class="tc-label" style="color:var(--muted)">Community-level</div>
               <div class="tc-value s3" id="s3-ip-comm" style="color:var(--community)">—</div>
               <div class="tc-sub">in progress</div>
             </div>
             <div class="summary-tile" style="background:rgba(255,183,77,.06)">
-              <div class="tc-label" style="color:rgba(255,183,77,.7)">Commercial</div>
+              <div class="tc-label" style="color:var(--muted)">Commercial</div>
               <div class="tc-value s3" id="s3-ip-coml" style="color:var(--commercial)">—</div>
               <div class="tc-sub">in progress</div>
             </div>
             <div class="summary-tile" style="background:rgba(255,183,77,.04)">
-              <div class="tc-label" style="color:rgba(255,183,77,.5)">Last updated</div>
+              <div class="tc-label" style="color:var(--muted)">Last updated</div>
               <div class="tc-value s3" id="s3-ip-ts" style="color:var(--muted);font-size:1.6rem;margin-top:.4rem">—</div>
             </div>
           </div>
@@ -591,7 +633,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     <!-- SCREEN 8: Productivity Equivalency -->
     <div class="screen" id="screen-4">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
-        <div class="section-label" style="color:#80DEEA;margin-bottom:0;">PRODUCTIVITY EQUIVALENCY</div>
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">PRODUCTIVITY EQUIVALENCY</div>
         <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
           <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
           <div id="peq-q-slicer-0" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
@@ -600,7 +642,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
           <span style="font-size:.68rem;color:var(--dim);">to</span>
           <input type="date" id="sf-to-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-8').value, this.value)">
           <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
-          <button class="btn-xs hi" onclick="openPEQSettings()" style="border-color:rgba(128,222,234,.4);color:#80DEEA;">✎ Edit weights</button>
+          <button class="btn-xs hi" onclick="openPEQSettings()" style="border-color:var(--border2);color:var(--text);">✎ Edit weights</button>
         </div>
       </div>
 
@@ -701,7 +743,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     <!-- SCREEN 6: SLA Report -->
     <div class="screen" id="screen-7">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
-        <div class="section-label" style="color:#CE93D8;margin-bottom:0;">SLA REPORT</div>
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">SLA REPORT</div>
         <!-- Slicers inline with title -->
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:.4rem;">
@@ -745,7 +787,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
         <div class="panel" style="display:flex;flex-direction:column;">
           <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:.6rem;">
             <div class="panel-title" style="font-size:.7rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Avg SLA by week — all levels</div>
-            <div id="sla-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.07em;color:#CE93D8;"></div>
+            <div id="sla-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.07em;color:var(--accent);"></div>
             <div style="display:flex;flex-direction:column;gap:3px;margin-top:.3rem;">
               <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Lot-level</span>
               <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Community-level</span>
@@ -763,7 +805,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
     <!-- SCREEN 7: FPY Report -->
     <div class="screen" id="screen-8">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
-        <div class="section-label" style="color:#69F0AE;margin-bottom:0;">FIRST PASS YIELD</div>
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">FIRST PASS YIELD</div>
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:.4rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Qtr</span>
@@ -773,6 +815,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
             <div id="fpy-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
           </div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button></div>
         </div>
       </div>
 
@@ -793,7 +836,7 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Permit pass / fail by ISO work week</div>
-              <div id="fpy-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:#69F0AE;"></div>
+              <div id="fpy-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:var(--text);"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Passed</span>
@@ -805,8 +848,49 @@ body.light-mode .screen-dot.active { background:#F7941D; border-color:#F7941D; }
             <canvas id="fpyChart" role="img" aria-label="FPY stacked bar chart by work week"></canvas>
           </div>
         </div>
-      </div>
-    </div>
+
+        <!-- Design FPY charts — C4 Community & L7 Lot, from design CSV col AD -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+
+          <!-- C4 Community Design FPY -->
+          <div class="panel" style="display:flex;flex-direction:column;min-height:300px;">
+            <div class="panel-header" style="margin-bottom:.6rem;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
+                <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              </div>
+              <div class="trend-legend">
+                <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
+                <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+                <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>FPY %</span>
+              </div>
+            </div>
+            <div style="position:relative;flex:1;min-height:0;">
+              <canvas id="c4FpyChart" role="img" aria-label="Community design FPY by week"></canvas>
+            </div>
+          </div>
+
+          <!-- L7 Lot Design FPY -->
+          <div class="panel" style="display:flex;flex-direction:column;min-height:300px;">
+            <div class="panel-header" style="margin-bottom:.6rem;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
+                <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              </div>
+              <div class="trend-legend">
+                <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
+                <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+                <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>FPY %</span>
+              </div>
+            </div>
+            <div style="position:relative;flex:1;min-height:0;">
+              <canvas id="l7FpyChart" role="img" aria-label="Lot design FPY by week"></canvas>
+            </div>
+          </div>
+
+        </div><!-- /design fpy grid -->
+      </div><!-- /fpy-content -->
+    </div><!-- /screen-8 -->
 
       </div><!-- /screens-wrapper -->
 
@@ -964,9 +1048,9 @@ let slaTargets = {
 let slaTypeCharts = {}; /* keyed by design type */
 let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
-let fpyRawRows=[], fpyChart=null, peqDonutChart=null, peqView='daily';
+let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null, peqDonutChart=null, peqView='daily';
 let hiddenScreens=new Set(); /* screen indices to hide from rotation */
-let s7SelYear=null, s7SelQ=null, s7SelMonth=null;
+let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
 let s4SelYear=null, s4SelQ=null, s4SelMonth=null;
@@ -989,10 +1073,11 @@ function colAF(r){return col(r,31);}
 function colX(r){return col(r,23);}  /* Column X = index 23, rework flag */
 function colZ(r){return col(r,25);}  /* Column Z  = index 25 = Process Step Created */
 function colAA(r){return col(r,26);} /* Column AA = index 26 = Process Step Completed */
+function colAD(r){return col(r,29);}  /* Column AD = index 29 = FPY Pass/Fail flag */
 function getLevel(t){return TYPE_TO_LEVEL[t]||'Other';}
 function parseQual(v){if(!v)return null;const n=parseFloat(v.toString().replace('%',''));return isNaN(n)?null:n;}
 function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
-function qColor(p){if(p===null)return'var(--dim)';if(p>=90)return'#69F0AE';if(p>=75)return'#FFB74D';return'#FF8A65';}
+function qColor(p){const lm=document.body.classList.contains('light-mode');if(p===null)return'var(--dim)';if(p>=90)return lm?'#000':'#69F0AE';if(p>=75)return lm?'#666':'#FFB74D';return lm?'#999':'#FF8A65';}
 
 /* Last N work days (Mon–Fri, skip weekends) */
 function lastNWorkDays(n, fromDate){
@@ -1081,6 +1166,7 @@ function parseDesignCSV(text, firstLoad){
     startRotation();
     startAutoReload();
     fetchIPFromGitHub();
+    updateScreenDots();
   } else {
     showStatus(`↻ Refreshed — ${rawRows.length} rows`,'success');
     setTimeout(()=>{const el=document.getElementById('status-bar');if(el)el.style.display='none';},3000);
@@ -1248,12 +1334,12 @@ function nextScreen(){
 }
 
 function goTo(i){
+  if(hiddenScreens.has(i)) return; /* blocked — screen is hidden */
   document.querySelectorAll('.screen').forEach((s,si)=>{
     s.classList.toggle('active',si===i);
   });
   document.querySelectorAll('.screen-dot').forEach((d,di)=>{
     d.classList.toggle('active',di===i);
-    d.style.opacity=hiddenScreens.has(di)?'0.25':'1';
   });
   currentScreen=i;
   if(i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
@@ -1379,12 +1465,25 @@ function renderScreen3(designers,rows){
 function cc(){
   const light=document.body.classList.contains('light-mode');
   return {
-    tick:       light?'#111111'           :'#ffffff',
+    tick:       light?'#000000'           :'#ffffff',
     tickFade:   light?'#333333'           :'rgba(255,255,255,.85)',
-    tickDim:    light?'#555555'           :'rgba(255,255,255,.65)',
-    grid:       light?'rgba(0,0,0,.08)'   :'rgba(255,255,255,.05)',
-    purple:     light?'rgba(106,27,154,.9)':'rgba(206,147,216,.85)',
+    tickDim:    light?'#666666'           :'rgba(255,255,255,.65)',
+    grid:       light?'rgba(0,0,0,.09)'   :'rgba(255,255,255,.05)',
+    purple:     light?'#333333'           :'rgba(206,147,216,.85)',
   };
+}
+
+/* Chart bar colors — monochrome in light mode */
+function ccBar(hexColor, alpha){
+  if(!document.body.classList.contains('light-mode')) return hexColor+(alpha||'');
+  /* Map each brand color to a greyscale equivalent */
+  const mono={
+    '#69F0AE':'#444444', '#4FC3F7':'#222222', '#FFB74D':'#888888',
+    '#FF8A65':'#bbbbbb', '#CE93D8':'#666666', '#7C83FD':'#333333',
+    '#80DEEA':'#aaaaaa', '#FFCC02':'#999999', '#F48FB1':'#cccccc',
+  };
+  const base=mono[hexColor]||hexColor;
+  return alpha?base+(alpha.replace('CC','99').replace('cc','99')):base;
 }
 
 function isoWeek(date){
@@ -1491,17 +1590,17 @@ function renderScreen4(){
       <div style="font-size:.65rem;color:var(--muted)">${weeks.length} week${weeks.length!==1?'s':''}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(79,195,247,.7)">New design</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#4FC3F7">${totalNew}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">New design</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${totalNew}</div>
       <div style="font-size:.65rem;color:var(--muted)">${totalLot>0?Math.round(totalNew/totalLot*100):0}% of total</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,183,77,.7)">Design rework</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#FFB74D">${totalRework}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Design rework</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--muted)">${totalRework}</div>
       <div style="font-size:.65rem;color:var(--muted)">${reworkPct}% of total</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,183,77,.7)">Rework rate</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Rework rate</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${reworkPct>20?'#FF8A65':reworkPct>10?'#FFB74D':'#69F0AE'}">${reworkPct}%</div>
       <div style="font-size:.65rem;color:var(--muted)">${reworkPct>20?'above target':'on track'}</div>
     </div>`;
@@ -1521,11 +1620,11 @@ function renderScreen4(){
     data:{
       labels:weeks,
       datasets:[
-        { label:'New design',    data:weeks.map(w=>wm[w].new),    backgroundColor:'#4FC3F7CC', borderColor:'#4FC3F7', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'Design rework', data:weeks.map(w=>wm[w].rework), backgroundColor:'#FFB74DCC', borderColor:'#FFB74D', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'New design',    data:weeks.map(w=>wm[w].new),    backgroundColor:ccBar('#4FC3F7','CC'), borderColor:ccBar('#4FC3F7'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Design rework', data:weeks.map(w=>wm[w].rework), backgroundColor:ccBar('#FFB74D','CC'), borderColor:ccBar('#FFB74D'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
         { label:'Rework rate %', data:rateData, type:'line', yAxisID:'y2',
-          borderColor:'#CE93D8', backgroundColor:'transparent',
-          pointBackgroundColor:'#CE93D8', pointRadius:4, pointHoverRadius:6,
+          borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
           borderWidth:2.5, tension:.35, datalabels:{display:false} }
       ]
     },
@@ -1659,21 +1758,21 @@ function renderScreen5(){
   document.getElementById('comm-weekly-summary').innerHTML=`
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
       <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Total community-level</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--community)">${totalComm}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${totalComm}</div>
       <div style="font-size:.65rem;color:var(--muted)">${weeks.length} week${weeks.length!==1?'s':''}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(79,195,247,.7)">New design</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#4FC3F7">${totalNew}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">New design</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${totalNew}</div>
       <div style="font-size:.65rem;color:var(--muted)">${totalComm>0?Math.round(totalNew/totalComm*100):0}% of total</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,183,77,.7)">Design rework</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#FFB74D">${totalRework}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Design rework</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--muted)">${totalRework}</div>
       <div style="font-size:.65rem;color:var(--muted)">${reworkPct}% of total</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,183,77,.7)">Rework rate</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Rework rate</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${reworkPct>20?'#FF8A65':reworkPct>10?'#FFB74D':'#69F0AE'}">${reworkPct}%</div>
       <div style="font-size:.65rem;color:var(--muted)">${reworkPct>20?'above target':'on track'}</div>
     </div>`;
@@ -1690,11 +1789,11 @@ function renderScreen5(){
     data:{
       labels:weeks,
       datasets:[
-        { label:'New design',    data:weeks.map(w=>wm[w].new),    backgroundColor:'#4FC3F7CC', borderColor:'#4FC3F7', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'Design rework', data:weeks.map(w=>wm[w].rework), backgroundColor:'#FFB74DCC', borderColor:'#FFB74D', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'New design',    data:weeks.map(w=>wm[w].new),    backgroundColor:ccBar('#4FC3F7','CC'), borderColor:ccBar('#4FC3F7'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Design rework', data:weeks.map(w=>wm[w].rework), backgroundColor:ccBar('#FFB74D','CC'), borderColor:ccBar('#FFB74D'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
         { label:'Rework rate %', data:rateData, type:'line', yAxisID:'y2',
-          borderColor:'#CE93D8', backgroundColor:'transparent',
-          pointBackgroundColor:'#CE93D8', pointRadius:4, pointHoverRadius:6,
+          borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
           borderWidth:2.5, tension:.35, datalabels:{display:false} }
       ]
     },
@@ -1820,7 +1919,7 @@ function renderScreen6(){
 
   /* Compute SLA stats per level */
   const LV_COLOR_HEX={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
-  const LV_BG={'Lot-Level Design':'rgba(79,195,247,.07)','Community-Level Design':'rgba(105,240,174,.07)','Commercial Design':'rgba(255,183,77,.07)'};
+  const lmB=document.body.classList.contains('light-mode');const LV_BG={'Lot-Level Design':lmB?'rgba(0,0,0,.03)':'rgba(79,195,247,.07)','Community-Level Design':lmB?'rgba(0,0,0,.03)':'rgba(105,240,174,.07)','Commercial Design':lmB?'rgba(0,0,0,.03)':'rgba(255,183,77,.07)'};
 
   document.getElementById('sla-stat-panels').innerHTML=LEVELS.map(level=>{
     const lRows=rows.filter(r=>getLevel(colG(r))===level);
@@ -2000,7 +2099,11 @@ function renderScreen7(){
 
   /* Date range */
   let rangeStart, rangeEnd, rangeLabel;
-  if(s7SelMonth!==null){
+  if(s7SelYTD){
+    rangeStart=new Date(s7SelYear,0,1);
+    rangeEnd  =new Date(s7SelYear,11,31,23,59,59);
+    rangeLabel=`YTD ${s7SelYear}`;
+  } else if(s7SelMonth!==null){
     rangeStart=new Date(s7SelYear,s7SelMonth,1);
     rangeEnd  =new Date(s7SelYear,s7SelMonth+1,0,23,59,59);
     rangeLabel=`${MONTH_NAMES[s7SelMonth]} ${s7SelYear}`;
@@ -2010,6 +2113,9 @@ function renderScreen7(){
     rangeLabel=`Q${s7SelQ} ${s7SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('fpy-quarter-label').textContent=rangeLabel;
+  /* Sync YTD button active state */
+  const ytdBtn=document.getElementById('fpy-ytd-btn');
+  if(ytdBtn) ytdBtn.classList.toggle('active', s7SelYTD);
 
   /* Build week→{pass,fail} map */
   const wm={};
@@ -2033,22 +2139,22 @@ function renderScreen7(){
   const totalFail=Object.values(wm).reduce((s,v)=>s+v.fail,0);
   const totalAll=totalPass+totalFail;
   const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
-  const fpyColor=fpy===null?'var(--muted)':fpy>=95?'#69F0AE':fpy>=85?'#FFB74D':'#FF8A65';
+  const lm=document.body.classList.contains('light-mode');const fpyColor=fpy===null?'var(--muted)':fpy>=95?(lm?'#000':'#69F0AE'):fpy>=85?(lm?'#555':'#FFB74D'):(lm?'#999':'#FF8A65');
 
   /* Summary tiles */
   document.getElementById('fpy-summary').innerHTML=`
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(105,240,174,.7)">Permits passed</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#69F0AE">${totalPass}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Permits passed</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${totalPass}</div>
       <div style="font-size:.65rem;color:var(--muted)">${weeks.length} week${weeks.length!==1?'s':''}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
       <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,138,101,.7)">Permits failed</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#FF8A65">${totalFail}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--muted)">${totalFail}</div>
       <div style="font-size:.65rem;color:var(--muted)">${totalAll} total submitted</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(206,147,216,.7)">First Pass Yield</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">First Pass Yield</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpyColor}">${fpy!==null?fpy+'%':'—'}</div>
       <div style="font-size:.65rem;color:var(--muted)">${fpy!==null?(fpy>=95?'on target':fpy>=85?'near target':'below target'):'—'}</div>
     </div>
@@ -2072,12 +2178,16 @@ function renderScreen7(){
     data:{
       labels:weeks,
       datasets:[
-        { label:'Passed', data:weeks.map(w=>wm[w].pass), backgroundColor:'#69F0AECC', borderColor:'#69F0AE', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'Failed', data:weeks.map(w=>wm[w].fail), backgroundColor:'#FF8A65CC', borderColor:'#FF8A65', borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Passed', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#69F0AE','CC'), borderColor:ccBar('#69F0AE'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Failed', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
         { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
-          borderColor:'#CE93D8', backgroundColor:'transparent',
-          pointBackgroundColor:'#CE93D8', pointRadius:4, pointHoverRadius:6,
-          borderWidth:2.5, tension:.35, spanGaps:true, datalabels:{display:false} }
+          borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
+          borderWidth:2.5, tension:.35, spanGaps:true,
+          datalabels:{ display:true, align:'end', anchor:'end',
+            color:(ctx)=>document.body.classList.contains('light-mode')?'#000':'#fff',
+            font:{family:"'DM Mono',monospace", size:13, weight:'500'},
+            formatter:(v)=>v!==null&&v!==''?v+'%':'' } }
       ]
     },
     options:{
@@ -2102,23 +2212,211 @@ function renderScreen7(){
             ticks:{color:cc().tickFade,font:{size:14},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
             grid:{color:cc().grid},
             title:{display:true,text:'Permits',color:cc().tickDim,font:{size:12}} },
-        y2:{ beginAtZero:false, min:0, max:100, position:'right',
-             ticks:{color:cc().purple,font:{size:14},callback:v=>v+'%'},
+        y2:{ beginAtZero:false, min:0, max:110, position:'right',
+             ticks:{color:cc().purple,font:{size:14},callback:v=>v<=100?v+'%':''},
              grid:{drawOnChartArea:false},
              title:{display:true,text:'FPY %',color:cc().purple,font:{size:12}} }
       }
     }
   });
+
+  /* Render the two design-CSV FPY sub-charts */
+  renderC4FpyChart(rangeStart, rangeEnd, rangeLabel);
+  renderL7FpyChart(rangeStart, rangeEnd, rangeLabel);
 }
 
 function s7SelectQ(year,q){
-  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null;
+  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null; s7SelYTD=false;
   renderScreen7();
 }
 function s7SelectMonth(m){
   s7SelMonth=(m===null)?null:parseInt(m);
+  s7SelYTD=false;
   renderScreen7();
 }
+function s7SelectYTD(){
+  s7SelYTD=true;
+  s7SelMonth=null;
+  renderScreen7();
+}
+
+/* ── C4 COMMUNITY DESIGN FPY (from design CSV col AD) ── */
+function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('c4FpyChart');
+  if(!el) return;
+  const label=document.getElementById('c4-fpy-label');
+  if(label) label.textContent=rangeLabel;
+
+  /* Filter to Community-Level Design rows within date range */
+  const rows=rawRows.filter(r=>{
+    if(getLevel(colG(r))!=='Community-Level Design') return false;
+    const d=parseDate(colJ(r));
+    return d&&!isNaN(d)&&d>=rangeStart&&d<=rangeEnd;
+  });
+
+  /* Build week→{pass,fail} using col AD */
+  const wm={};
+  rows.forEach(r=>{
+    const val=colAD(r).toLowerCase();
+    if(val!=='pass'&&val!=='fail') return;
+    const d=parseDate(colJ(r));
+    if(!d||isNaN(d)) return;
+    const wk=isoWeek(d);
+    if(!wm[wk]) wm[wk]={pass:0,fail:0};
+    if(val==='pass') wm[wk].pass++;
+    else             wm[wk].fail++;
+  });
+
+  const weeks=Object.keys(wm).sort();
+  const totalPass=weeks.reduce((s,w)=>s+wm[w].pass,0);
+  const totalFail=weeks.reduce((s,w)=>s+wm[w].fail,0);
+  const totalAll=totalPass+totalFail;
+  const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
+  if(label) label.textContent=rangeLabel+(fpy!==null?' — FPY: '+fpy+'%':'');
+
+  const fpyLine=weeks.map(wk=>{
+    const {pass,fail}=wm[wk]; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):null;
+  });
+
+  if(c4FpyChart) c4FpyChart.destroy();
+  if(window.ChartDataLabels) Chart.register(ChartDataLabels);
+  c4FpyChart=new Chart(el,{
+    type:'bar',
+    data:{
+      labels:weeks,
+      datasets:[
+        { label:'Pass', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#69F0AE','CC'), borderColor:ccBar('#69F0AE'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Fail', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
+          borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
+          borderWidth:2.5, tension:.35, spanGaps:true,
+          datalabels:{ display:true, align:'end', anchor:'end',
+            color:(ctx)=>document.body.classList.contains('light-mode')?'#000':'#fff',
+            font:{family:"'DM Mono',monospace", size:13, weight:'500'},
+            formatter:(v)=>v!==null&&v!==''?v+'%':'' } }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:window.ChartDataLabels?{
+          anchor:'center', align:'center', color:'#fff',
+          font:{family:"'DM Mono',monospace", size:18, weight:'500'},
+          formatter:(v,ctx)=>ctx.dataset.type==='line'?'':(v>0?v:''),
+        }:{display:false},
+        tooltip:{callbacks:{afterBody:(items)=>{
+          const wk=items[0]?.label;
+          if(!wk||!wm[wk]) return '';
+          const {pass,fail}=wm[wk]; const t=pass+fail;
+          return 'Total: '+t+'  |  FPY: '+(t>0?Math.round(pass/t*100):0)+'%';
+        }}}
+      },
+      scales:{
+        x:{ stacked:true, ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45}, grid:{color:cc().grid} },
+        y:{ stacked:true, beginAtZero:true, position:'left',
+            ticks:{color:cc().tickFade,font:{size:13},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
+            grid:{color:cc().grid},
+            title:{display:true,text:'Designs',color:cc().tickDim,font:{size:11}} },
+        y2:{ beginAtZero:false, min:0, max:110, position:'right',
+             ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
+             grid:{drawOnChartArea:false},
+             title:{display:true,text:'FPY %',color:cc().purple,font:{size:11}} }
+      }
+    }
+  });
+}
+
+/* ── L7 LOT DESIGN FPY (from design CSV col AD) ── */
+function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('l7FpyChart');
+  if(!el) return;
+  const label=document.getElementById('l7-fpy-label');
+
+  /* Filter to Lot-Level Design rows within date range */
+  const rows=rawRows.filter(r=>{
+    if(getLevel(colG(r))!=='Lot-Level Design') return false;
+    const d=parseDate(colJ(r));
+    return d&&!isNaN(d)&&d>=rangeStart&&d<=rangeEnd;
+  });
+
+  /* Build week→{pass,fail} using col AD */
+  const wm={};
+  rows.forEach(r=>{
+    const val=colAD(r).toLowerCase();
+    if(val!=='pass'&&val!=='fail') return;
+    const d=parseDate(colJ(r));
+    if(!d||isNaN(d)) return;
+    const wk=isoWeek(d);
+    if(!wm[wk]) wm[wk]={pass:0,fail:0};
+    if(val==='pass') wm[wk].pass++;
+    else             wm[wk].fail++;
+  });
+
+  const weeks=Object.keys(wm).sort();
+  const totalPass=weeks.reduce((s,w)=>s+wm[w].pass,0);
+  const totalFail=weeks.reduce((s,w)=>s+wm[w].fail,0);
+  const totalAll=totalPass+totalFail;
+  const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
+  if(label) label.textContent=rangeLabel+(fpy!==null?' — FPY: '+fpy+'%':'');
+
+  const fpyLine=weeks.map(wk=>{
+    const {pass,fail}=wm[wk]; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):null;
+  });
+
+  if(l7FpyChart) l7FpyChart.destroy();
+  if(window.ChartDataLabels) Chart.register(ChartDataLabels);
+  l7FpyChart=new Chart(el,{
+    type:'bar',
+    data:{
+      labels:weeks,
+      datasets:[
+        { label:'Pass', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#4FC3F7','CC'), borderColor:ccBar('#4FC3F7'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'Fail', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
+        { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
+          borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
+          borderWidth:2.5, tension:.35, spanGaps:true,
+          datalabels:{ display:true, align:'end', anchor:'end',
+            color:(ctx)=>document.body.classList.contains('light-mode')?'#000':'#fff',
+            font:{family:"'DM Mono',monospace", size:13, weight:'500'},
+            formatter:(v)=>v!==null&&v!==''?v+'%':'' } }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:window.ChartDataLabels?{
+          anchor:'center', align:'center', color:'#fff',
+          font:{family:"'DM Mono',monospace", size:18, weight:'500'},
+          formatter:(v,ctx)=>ctx.dataset.type==='line'?'':(v>0?v:''),
+        }:{display:false},
+        tooltip:{callbacks:{afterBody:(items)=>{
+          const wk=items[0]?.label;
+          if(!wk||!wm[wk]) return '';
+          const {pass,fail}=wm[wk]; const t=pass+fail;
+          return 'Total: '+t+'  |  FPY: '+(t>0?Math.round(pass/t*100):0)+'%';
+        }}}
+      },
+      scales:{
+        x:{ stacked:true, ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45}, grid:{color:cc().grid} },
+        y:{ stacked:true, beginAtZero:true, position:'left',
+            ticks:{color:cc().tickFade,font:{size:13},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
+            grid:{color:cc().grid},
+            title:{display:true,text:'Designs',color:cc().tickDim,font:{size:11}} },
+        y2:{ beginAtZero:false, min:0, max:110, position:'right',
+             ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
+             grid:{drawOnChartArea:false},
+             title:{display:true,text:'FPY %',color:cc().purple,font:{size:11}} }
+      }
+    }
+  });
+}
+
 
 /* ── SCREEN 8 — PRODUCTIVITY EQUIVALENCY ── */
 function getPEQWeight(type){ return peqWeights[type]??DEFAULT_PEQ_WEIGHTS[type]??1; }
@@ -2162,23 +2460,23 @@ function renderScreen8(designers,rows){
   const tileColor=teamAvgPct>=100?'#69F0AE':teamAvgPct>=75?'#a5d6a7':teamAvgPct>=50?'#FFB74D':'#FF8A65';
   document.getElementById('peq-tiles').innerHTML=`
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Team Avg / Day</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Team Avg / Day</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${tileColor}">${teamAvgPct}%</div>
       <div style="font-size:.65rem;color:var(--muted)">${workDays} working day${workDays!==1?'s':''}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Total Units</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#80DEEA">${rows.length}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Total Units</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${rows.length}</div>
       <div style="font-size:.65rem;color:var(--muted)">${designers.length} designers</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Top Performer</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1.2;color:#80DEEA">${topDesigner?topDesigner.name.split(' ').slice(-1)[0]:'—'}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Top Performer</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1.2;color:var(--text)">${topDesigner?topDesigner.name.split(' ').slice(-1)[0]:'—'}</div>
       <div style="font-size:.65rem;color:var(--muted)">${topDesigner?Math.round(topDesigner.avgDaily*100)+'% avg/day':'—'}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(128,222,234,.7)">Avg Units/Day</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#80DEEA">${(rows.length/workDays).toFixed(1)}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Avg Units/Day</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${(rows.length/workDays).toFixed(1)}</div>
       <div style="font-size:.65rem;color:var(--muted)">across team</div>
     </div>`;
 
@@ -2217,9 +2515,10 @@ function renderScreen8(designers,rows){
 
   function cellColor(pct){
     if(pct===null||pct===undefined) return 'transparent';
-    if(pct>=100) return 'rgba(105,240,174,.18)';
-    if(pct>=75)  return 'rgba(105,240,174,.09)';
-    if(pct>=50)  return 'rgba(255,183,77,.15)';
+    const lmP=document.body.classList.contains('light-mode');
+    if(pct>=100) return lmP?'rgba(0,0,0,.06)':'rgba(105,240,174,.18)';
+    if(pct>=75)  return lmP?'rgba(0,0,0,.03)':'rgba(105,240,174,.09)';
+    if(pct>=50)  return lmP?'rgba(0,0,0,.04)':'rgba(255,183,77,.15)';
     return 'rgba(255,138,101,.15)';
   }
   function cellTextColor(pct){
@@ -2395,7 +2694,7 @@ function openPEQSettings(){
         <div style="font-size:.78rem;color:var(--text);">${t}</div>
         <input type="number" min="0.5" step="0.5" value="${hrs}" id="peq-w-${tid}"
           style="font-size:.82rem;padding:.3rem .4rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);text-align:center;">
-        <div id="peq-eq-${tid}" style="font-size:.78rem;color:#80DEEA;text-align:center;font-family:'DM Mono',monospace;">${Math.round((hrs/DAILY_HOURS)*100)}%</div>
+        <div id="peq-eq-${tid}" style="font-size:.78rem;color:var(--text);text-align:center;font-family:'DM Mono',monospace;">${Math.round((hrs/DAILY_HOURS)*100)}%</div>
       </div>`;
     }).join('');
     types.forEach(t=>{
@@ -2620,6 +2919,12 @@ function closeSettings(){
   document.getElementById('settings-overlay').classList.remove('open');
 }
 
+function updateScreenDots(){
+  document.querySelectorAll('.screen-dot').forEach((d,di)=>{
+    d.style.display=hiddenScreens.has(di)?'none':'';
+  });
+}
+
 function saveSettings(){
   const token = document.getElementById('settings-gh-token').value.trim();
   const pw    = document.getElementById('settings-password').value.trim();
@@ -2634,6 +2939,7 @@ function saveSettings(){
   }
   try{ localStorage.setItem('andon_hidden_screens',JSON.stringify([...hiddenScreens])); }catch(e){}
 
+  updateScreenDots();
   closeSettings();
   alert('Settings saved.');
 }

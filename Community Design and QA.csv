@@ -1,0 +1,13 @@
+﻿Configuration ID,SLA,Created Date,Design Completed Date,Designer: Full Name,Community Sunpower ID,Design Type,Design Due Date,Tickets Name,Owner: Full Name,Design QA Result,Design QA Score,Design QA Date,Request Type
+a3VUS000000YWa9,5.00,5/28/2026,6/1/2026,Jonna Calabia,011911,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/2/2026,Initial Request
+a3VUS000000YWbl,6.00,5/28/2026,6/3/2026,Jecko Gevana,011911,Master Permit Package,6/5/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/3/2026,Initial Request
+a3VUS000000YXHh,1.00,5/28/2026,5/29/2026,Jecko Gevana,011912,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Fail,98,5/29/2026,Initial Request
+a3VUS000000YXJJ,4.00,5/28/2026,6/1/2026,Jecko Gevana,011912,Master Permit Package,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
+a3VUS000000YXMX,4.00,5/28/2026,6/1/2026,Jecko Gevana,011913,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
+a3VUS000000YXO9,7.00,5/28/2026,6/4/2026,Jecko Gevana,011913,Master Permit Package,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
+a3VUS000000YfAP,0.00,6/1/2026,6/1/2026,Mary Mendoza,012082,Master Permit Package,6/4/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Revision
+a3VUS000000YfyP,3.00,6/1/2026,6/4/2026,Jecko Gevana,012352,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
+a3VUS000000YyeT,1.00,6/4/2026,6/5/2026,Jecko Gevana,013516,Master Plan,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
+a3VUS000000Yyhh,1.00,6/4/2026,6/5/2026,Jecko Gevana,013516,Master Permit Package,6/16/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
+a3VUS000000Z5o1,4.00,6/6/2026,6/10/2026,Ronnel Gozon,013448,Master Plan,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/10/2026,Initial Request
+a3VUS000000Z5rF,3.00,6/6/2026,6/9/2026,Jonna Calabia,014112,Future Solar Exhibit,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/9/2026,Initial Request

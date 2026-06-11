@@ -496,9 +496,6 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-0" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-0').value, this.value)">
         <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
-        <button class="slicer-btn" id="ytd-btn-3" onclick="setYTDFilter()">YTD</button>
-        <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
-        <button class="slicer-btn" id="ytd-btn-1" onclick="setYTDFilter()">YTD</button>
         <button class="slicer-btn" id="ytd-btn-0" onclick="setYTDFilter()">YTD</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGN PIPELINE</div>
@@ -584,6 +581,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-1" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-1').value, this.value)">
         <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-1" onclick="setYTDFilter()">YTD</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGNER PERFORMANCE</div>
       <div class="designer-grid" id="designer-grid"></div>
@@ -599,6 +597,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
         <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">LEVEL BREAKDOWN</div>
       <div class="level-group-grid" id="level-group-grid"></div>
@@ -614,6 +613,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-3').value, this.value)">
         <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-3" onclick="setYTDFilter()">YTD</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DAILY OUTPUT &amp; RANKING</div>
       <div class="bottom-panels">
@@ -646,8 +646,8 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <input type="date" id="sf-from-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-8').value)">
           <span style="font-size:.68rem;color:var(--dim);">to</span>
           <input type="date" id="sf-to-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-8').value, this.value)">
-          <button class="slicer-btn" id="ytd-btn-4" onclick="setYTDFilter()">YTD</button>
           <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+          <button class="slicer-btn" id="ytd-btn-4" onclick="setYTDFilter()">YTD</button>
           <button class="btn-xs hi" onclick="openPEQSettings()" style="border-color:var(--border2);color:var(--text);">✎ Edit weights</button>
         </div>
       </div>
@@ -1377,7 +1377,7 @@ function buildCommDesignRow(s1Row){
   r[6] =col(s1Row,6);   // Design Type      → colG
   r[8] =col(s1Row,4);   // Designer         → colI
   r[9] =col(s1Row,3);   // Completed Date   → colJ
-  r[23]=col(s1Row,13)==='Revision'?'1':'0'; // Rework → colX
+  r[23]=col(s1Row,13)==='Revision'?'2':'0'; // Rework → colX (2=rework,0=new)
   r[25]=col(s1Row,2);   // Created Date     → colZ
   r[26]=col(s1Row,12);  // QA Date          → colAA (Process Step Completed)
   r[29]=col(s1Row,10);  // Pass/Fail        → colAD
@@ -1522,6 +1522,11 @@ function screenFilterChange(from, to){
 }
 
 function resetScreenFilter(){
+  globalYTD=false;
+  ['0','1','2','3','4'].forEach(n=>{
+    const btn=document.getElementById('ytd-btn-'+n);
+    if(btn) btn.classList.remove('active');
+  });
   applyLastTenWorkDays();
   syncScreenFilters();
   applyFilters();
@@ -1813,7 +1818,7 @@ function renderScreen4(){
     const wk=isoWeek(d);
     if(!wm[wk]) wm[wk]={new:0,rework:0};
     const xVal=parseFloat(colX(r));
-    if(!isNaN(xVal)&&xVal>=1) wm[wk].rework++;
+    if(!isNaN(xVal)&&xVal>1) wm[wk].rework++;
     else wm[wk].new++;
   });
   const weeks=Object.keys(wm).sort();
@@ -1990,7 +1995,7 @@ function renderScreen5(){
     const wk=isoWeek(d);
     if(!wm[wk]) wm[wk]={new:0,rework:0};
     const xVal=parseFloat(colX(r));
-    if(!isNaN(xVal)&&xVal>=1) wm[wk].rework++;
+    if(!isNaN(xVal)&&xVal>1) wm[wk].rework++;
     else wm[wk].new++;
   });
   const weeks=Object.keys(wm).sort();
@@ -2749,17 +2754,26 @@ function s7SelectMonth(m){
   renderScreen7();
 }
 
+let globalYTD=false;
 function setYTDFilter(){
-  const y=new Date().getFullYear();
-  const from=`${y}-01-01`, to=`${y}-12-31`;
-  // Update all date inputs
-  ['0','1','2','3','8'].forEach(n=>{
-    const f=document.getElementById('sf-from-'+n);
-    const t=document.getElementById('sf-to-'+n);
-    if(f) f.value=from;
-    if(t) t.value=to;
+  globalYTD=!globalYTD;
+  if(globalYTD){
+    const y=new Date().getFullYear();
+    const from=`${y}-01-01`, to=`${y}-12-31`;
+    ['0','1','2','3','8'].forEach(n=>{
+      const f=document.getElementById('sf-from-'+n);
+      const t=document.getElementById('sf-to-'+n);
+      if(f) f.value=from;
+      if(t) t.value=to;
+    });
+    screenFilterChange(from,to);
+  } else {
+    resetScreenFilter();
+  }
+  ['0','1','2','3','4'].forEach(n=>{
+    const btn=document.getElementById('ytd-btn-'+n);
+    if(btn) btn.classList.toggle('active',globalYTD);
   });
-  screenFilterChange(from,to);
 }
 function s4SelectYTD(){
   s4SelYTD=!s4SelYTD;

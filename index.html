@@ -833,22 +833,42 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;" id="fpy-summary"></div>
 
         <!-- Chart -->
-        <div class="panel" style="flex:2;display:flex;flex-direction:column;min-height:567px;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">L4: Design First Pass Yield (Lot-Level)</div>
-              <div id="fpy-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:var(--text);"></div>
+        <!-- Charts: L7 Lot + C4 Community side by side -->
+        <div style="display:grid;grid-template-columns:1fr;gap:.9rem;flex:2;min-height:0;">
+
+          <!-- C4: Community-Level Design FPY -->
+          <div class="panel" style="display:flex;flex-direction:column;min-height:480px;">
+            <div class="panel-header" style="margin-bottom:.6rem;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">C4: Community Award to Final Design Approved</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:var(--text);opacity:.5;">WW22+</div>
+              </div>
+              <div class="trend-legend">
+                <span class="leg-item"><span class="leg-dot" style="background:#4DD0E1"></span>C4 Design FPY %</span>
+              </div>
             </div>
-            <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Passed (≤WW21)</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Failed (≤WW21)</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Permit FPY %</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#7C83FD"></span>L4 Design FPY %</span>
+            <div style="position:relative;flex:1;min-height:0;">
+              <canvas id="c4DesignFpyChart" role="img" aria-label="C4 Community Design FPY line chart by work week"></canvas>
             </div>
           </div>
-          <div style="position:relative;flex:1;min-height:0;">
-            <canvas id="fpyChart" role="img" aria-label="FPY stacked bar chart by work week"></canvas>
+
+          <!-- L7: Lot-Level Design FPY -->
+          <div class="panel" style="display:flex;flex-direction:column;min-height:480px;">
+            <div class="panel-header" style="margin-bottom:.6rem;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">L7: Lot Design Requested to Lot Design Completed</div>
+                <div id="fpy-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:var(--text);"></div>
+              </div>
+              <div class="trend-legend">
+                <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Permit FPY %</span>
+                <span class="leg-item"><span class="leg-dot" style="background:#7C83FD"></span>L7 Design FPY %</span>
+              </div>
+            </div>
+            <div style="position:relative;flex:1;min-height:0;">
+              <canvas id="fpyChart" role="img" aria-label="L7 Design FPY line chart by work week"></canvas>
+            </div>
           </div>
+
         </div>
 
       </div><!-- /fpy-content -->
@@ -2346,45 +2366,51 @@ function renderScreen7(){
   });
 
   /* ── L4 DESIGN FPY (WW22+): (avg QA score/100) × Elec pass rate × Struc pass rate ── */
-  const l4QA={};    // week → [scores]
-  const l4Elec={};  // week → {pass,fail}
-  const l4Struc={}; // week → {pass,fail}
+  const l4QA={};       // week → [QA scores]
+  const l4LotCnt={};   // week → total lot design count (denominator)
+  const l4ElecFail={}; // week → electrical fail count
+  const l4StrucFail={}; // week → structural fail count
 
+  // Count lot design completions per week (denominator for PE pass rates)
   rawRows.forEach(r=>{
     if(getLevel(colG(r))!=='Lot-Level Design') return;
     const d=parseDate(colJ(r));
     if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
+    l4LotCnt[wk]=(l4LotCnt[wk]||0)+1;
     if(!l4QA[wk]) l4QA[wk]=[];
     const score=parseFloat(col(r,31)); // colAF = QA score %
     if(!isNaN(score)) l4QA[wk].push(score);
   });
+  // Electrical fails per week
   lotElecRaws.forEach(r=>{
     const d=parseDate(col(r,6)); // col G = electrical review date
     if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
-    if(!l4Elec[wk]) l4Elec[wk]={pass:0,fail:0};
-    if(col(r,7).toLowerCase()==='pass') l4Elec[wk].pass++; else l4Elec[wk].fail++;
+    if(col(r,7).toLowerCase()!=='pass') l4ElecFail[wk]=(l4ElecFail[wk]||0)+1;
   });
+  // Structural fails per week
   lotStrucRaws.forEach(r=>{
     const d=parseDate(col(r,6)); // col G = structural review date
     if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
-    if(!l4Struc[wk]) l4Struc[wk]={pass:0,fail:0};
-    if(col(r,7).toLowerCase()==='pass') l4Struc[wk].pass++; else l4Struc[wk].fail++;
+    if(col(r,7).toLowerCase()!=='pass') l4StrucFail[wk]=(l4StrucFail[wk]||0)+1;
   });
 
+  // L4 FPY = (avg QA score/100)
+  //        × (lot_count - elec_fails) / lot_count
+  //        × (lot_count - struc_fails) / lot_count
   const wmL4={};
-  const l4WeekSet=new Set([...Object.keys(l4QA),...Object.keys(l4Elec),...Object.keys(l4Struc)]);
-  l4WeekSet.forEach(wk=>{
+  Object.keys(l4LotCnt).forEach(wk=>{
     const scores=l4QA[wk]||[];
     if(!scores.length) return; // need QA data to compute
     const qaAvg=scores.reduce((a,b)=>a+b,0)/scores.length;
-    const elec=l4Elec[wk]; const elecT=elec?(elec.pass+elec.fail):0;
-    const elecRate=elecT>0?elec.pass/elecT:1; // no PE review → assume pass
-    const struc=l4Struc[wk]; const strucT=struc?(struc.pass+struc.fail):0;
-    const strucRate=strucT>0?struc.pass/strucT:1; // no PE review → assume pass
-    wmL4[wk]=Math.round(qaAvg/100*elecRate*strucRate*1000)/10; // 1 decimal place
+    const cnt=l4LotCnt[wk];
+    const elecFails=l4ElecFail[wk]||0;
+    const strucFails=l4StrucFail[wk]||0;
+    const elecRate=Math.max(0,(cnt-elecFails)/cnt);
+    const strucRate=Math.max(0,(cnt-strucFails)/cnt);
+    wmL4[wk]=Math.round(qaAvg/100*elecRate*strucRate*100);
   });
 
   /* ── Combined week list ── */
@@ -2417,7 +2443,7 @@ function renderScreen7(){
       <div style="font-size:.65rem;color:var(--muted)">${permitFpy!==null?(permitFpy>=95?'on target':permitFpy>=85?'near target':'below target'):'—'}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#7C83FD">L4 Design FPY (WW22+)</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#7C83FD">L7 Design FPY (WW22+)</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpyColor(l4Avg)}">${l4Avg!==null?l4Avg+'%':'—'}</div>
       <div style="font-size:.65rem;color:var(--muted)">${l4Vals.length} week${l4Vals.length!==1?'s':''} · QA × Elec × Struc</div>
     </div>`;
@@ -2445,7 +2471,7 @@ function renderScreen7(){
             color:(ctx)=>document.body.classList.contains('light-mode')?'#555':'#CE93D8',
             font:{family:"'DM Mono',monospace", size:13, weight:'600'},
             formatter:(v)=>v!==null?v+'%':'' } },
-        { label:'L4 Design FPY %', data:l4LineData,
+        { label:'L7 Design FPY %', data:l4LineData,
           borderColor:ccBar('#7C83FD'), backgroundColor:'transparent',
           pointBackgroundColor:ccBar('#7C83FD'), pointBorderColor:ccBar('#7C83FD'),
           pointRadius:5, pointHoverRadius:7,
@@ -2466,7 +2492,7 @@ function renderScreen7(){
             const wk=items[0]?.label;
             if(!wk) return '';
             if(wmPermit[wk]){const {pass,fail}=wmPermit[wk];const t=pass+fail;return `Permits — Pass: ${pass}, Fail: ${fail}`;}
-            if(wmL4[wk]!==undefined) return `QA × Elec × Struc`;
+            if(wmL4[wk]!==undefined){const cnt=l4LotCnt[wk]||0;return `L4 FPY: ${wmL4[wk]}%  |  lots: ${cnt}, elec fails: ${l4ElecFail[wk]||0}, struc fails: ${l4StrucFail[wk]||0}`;}
             return '';
           }}}
       },
@@ -2477,12 +2503,186 @@ function renderScreen7(){
             grid:{color:cc().grid},
             title:{display:true,text:'FPY %',color:cc().purple,font:{size:12}} }
       }
-    }
+    },
+    plugins:[{
+      id:'ww22Divider',
+      afterDraw(chart){
+        const labels=chart.data.labels||[];
+        // Find first WW22+ label index
+        let splitIdx=-1;
+        for(let i=0;i<labels.length;i++){
+          const m=labels[i].match(/^(\d{4})-W(\d+)$/);
+          if(m&&(parseInt(m[1])>2026||(parseInt(m[1])===2026&&parseInt(m[2])>=22))){splitIdx=i;break;}
+        }
+        if(splitIdx<1) return;
+        const ctx=chart.ctx;
+        const xs=chart.scales.x;
+        // Position line between the last WW21 tick and first WW22 tick
+        const x=Math.round((xs.getPixelForValue(splitIdx-1)+xs.getPixelForValue(splitIdx))/2)+0.5;
+        const top=chart.chartArea.top;
+        const bot=chart.chartArea.bottom;
+        const lm=document.body.classList.contains('light-mode');
+
+        // Dashed red vertical line
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle='rgba(220,50,50,0.9)';
+        ctx.lineWidth=1.5;
+        ctx.setLineDash([6,4]);
+        ctx.moveTo(x,top);ctx.lineTo(x,bot);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Flag box at top
+        const flagLines=[
+          'FPY measure changed',
+          'Previous: Permit Approval FPY',
+          'L8: Lot Design Completed',
+          'to Lot Permit Approved'
+        ];
+        const fSize=9;
+        ctx.font=`${fSize}px 'DM Mono',monospace`;
+        const lineH=fSize+3;
+        const maxW=flagLines.reduce((m,l)=>Math.max(m,ctx.measureText(l).width),0);
+        const pad=5;
+        const bw=maxW+pad*2;
+        const bh=flagLines.length*lineH+pad*2;
+        // Place box to the right of the line (or left if near right edge)
+        const chartRight=chart.chartArea.right;
+        const bx=x+bw+8<=chartRight ? x+6 : x-bw-6;
+        const by=top+6;
+
+        ctx.fillStyle=lm?'rgba(255,240,240,0.95)':'rgba(40,20,20,0.92)';
+        ctx.strokeStyle='rgba(220,50,50,0.7)';
+        ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.rect(bx,by,bw,bh);
+        ctx.fill();ctx.stroke();
+
+        // Connector line from vertical divider to box
+        ctx.beginPath();
+        ctx.strokeStyle='rgba(220,50,50,0.5)';
+        ctx.lineWidth=1;
+        ctx.moveTo(x,by+bh/2);
+        ctx.lineTo(bx,by+bh/2);
+        ctx.stroke();
+
+        // Text lines
+        flagLines.forEach((line,i)=>{
+          ctx.fillStyle=i===0?(lm?'#b00':'#ff7070'):(lm?'#333':'#ccc');
+          ctx.font=i===0?`bold ${fSize}px 'DM Mono',monospace`:`${fSize}px 'DM Mono',monospace`;
+          ctx.textAlign='left';
+          ctx.fillText(line,bx+pad,by+pad+(i+1)*lineH-2);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 
   /* Render the two design-CSV FPY sub-charts */
+  renderC4DesignFpyChart(rangeStart, rangeEnd);
   renderC4FpyChart(rangeStart, rangeEnd, rangeLabel);
   renderL7FpyChart(rangeStart, rangeEnd, rangeLabel);
+}
+
+function renderC4DesignFpyChart(rangeStart, rangeEnd){
+  const canvas=document.getElementById('c4DesignFpyChart');
+  if(!canvas) return;
+
+  // Community design completions per week (denominator)
+  const c4CommCnt={};
+  const c4QA={};       // week → [QA scores]
+  const c4ElecFail={}; // week → electrical fail count
+  const c4StrucFail={}; // week → structural fail count
+
+  rawRows.forEach(r=>{
+    if(getLevel(colG(r))!=='Community-Level Design') return;
+    const d=parseDate(colJ(r));
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    c4CommCnt[wk]=(c4CommCnt[wk]||0)+1;
+    if(!c4QA[wk]) c4QA[wk]=[];
+    const score=parseFloat(col(r,31)); // colAF = QA score %
+    if(!isNaN(score)) c4QA[wk].push(score);
+  });
+
+  // Community electrical fails (col H=7 = date, col I=8 = pass/fail)
+  commElecRaws.forEach(r=>{
+    const d=parseDate(col(r,7));
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(col(r,8).toLowerCase()!=='pass') c4ElecFail[wk]=(c4ElecFail[wk]||0)+1;
+  });
+
+  // Community structural fails (same structure)
+  commStrucRaws.forEach(r=>{
+    const d=parseDate(col(r,7));
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(col(r,8).toLowerCase()!=='pass') c4StrucFail[wk]=(c4StrucFail[wk]||0)+1;
+  });
+
+  // C4 FPY = (avg QA/100) × (cnt-elecFails)/cnt × (cnt-strucFails)/cnt
+  const wmC4={};
+  Object.keys(c4CommCnt).forEach(wk=>{
+    const scores=c4QA[wk]||[];
+    if(!scores.length) return;
+    const qaAvg=scores.reduce((a,b)=>a+b,0)/scores.length;
+    const cnt=c4CommCnt[wk];
+    const elecRate=Math.max(0,(cnt-(c4ElecFail[wk]||0))/cnt);
+    const strucRate=Math.max(0,(cnt-(c4StrucFail[wk]||0))/cnt);
+    wmC4[wk]=Math.round(qaAvg/100*elecRate*strucRate*100);
+  });
+
+  const weeks=Object.keys(wmC4).sort();
+  const c4Vals=Object.values(wmC4);
+
+  if(window._c4DesignChart) window._c4DesignChart.destroy();
+  if(window.ChartDataLabels) Chart.register(ChartDataLabels);
+  window._c4DesignChart=new Chart(canvas,{
+    type:'line',
+    data:{
+      labels:weeks,
+      datasets:[{
+        label:'C4 Design FPY %',
+        data:weeks.map(wk=>wmC4[wk]),
+        borderColor:ccBar('#4DD0E1'), backgroundColor:'transparent',
+        pointBackgroundColor:ccBar('#4DD0E1'), pointBorderColor:ccBar('#4DD0E1'),
+        pointRadius:5, pointHoverRadius:7,
+        borderWidth:2.5, tension:.3, spanGaps:false,
+        datalabels:{
+          display:true, align:'top', anchor:'end', offset:4,
+          color:(ctx)=>document.body.classList.contains('light-mode')?'#0097a7':'#4DD0E1',
+          font:{family:"'DM Mono',monospace", size:13, weight:'700'},
+          formatter:(v)=>v!==null?v+'%':''
+        }
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels: window.ChartDataLabels ? {} : {display:false},
+        tooltip:{callbacks:{
+          label:(item)=>`C4 FPY: ${item.raw}%`,
+          afterBody:(items)=>{
+            const wk=items[0]?.label;
+            if(!wk) return '';
+            const cnt=c4CommCnt[wk]||0;
+            return `communities: ${cnt}, elec fails: ${c4ElecFail[wk]||0}, struc fails: ${c4StrucFail[wk]||0}`;
+          }
+        }}
+      },
+      scales:{
+        x:{ ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45}, grid:{color:cc().grid} },
+        y:{ beginAtZero:true, min:0, max:110, position:'left',
+            ticks:{color:cc().tick,font:{size:14},stepSize:10,callback:v=>v<=100?v+'%':''},
+            grid:{color:cc().grid},
+            title:{display:true,text:'FPY %',color:cc().tick,font:{size:12}} }
+      }
+    }
+  });
 }
 
 function s7SelectQ(year,q){

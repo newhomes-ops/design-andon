@@ -1120,6 +1120,17 @@ function showStatus(msg,type){const el=document.getElementById('status-bar');el.
 
 let designURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/design.csv';
 let fpyURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/fpy.csv';
+
+/* ── WW22+ NEW DATA SOURCE URLS (Lot-Level only) ── */
+let lotDesignURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Design.csv';
+let lotQAURL     = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20QA.csv';
+let lotElecURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Electrical%20Review.csv';
+let lotStrucURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Structural%20Review.csv';
+/* WW21/22 boundary: ISO WW21 2026 ends May 24 23:59:59; WW22 starts May 25 */
+const WW22_CUTOFF = new Date(2026, 4, 24, 23, 59, 59);
+let legacyDesignRaws = []; // original design.csv rows, stored for merge
+let lotDesignRaws = [], lotQARaws = [], lotElecRaws = [], lotStrucRaws = [];
+
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
 const AUTO_RELOAD_MS = 5 * 60 * 1000;
@@ -1128,6 +1139,7 @@ const AUTO_RELOAD_MS = 5 * 60 * 1000;
 function startFromURLs(){
   fetchDesignCSV(true);
   fetchFPYCSV();
+  fetchAllNewSources(); // WW22+ sources
 }
 
 /* Auto-load on page load */
@@ -1147,6 +1159,7 @@ function fetchDesignCSV(firstLoad){
 function parseDesignCSV(text, firstLoad){
   const result=Papa.parse(text,{header:true,skipEmptyLines:true});
   rawRows=result.data;
+  legacyDesignRaws=[...rawRows]; // store for WW22 merge
   if(!rawRows.length){showStatus('No data rows found.','error');return;}
   if(firstLoad){
     const sampleRow=rawRows[0];
@@ -1180,6 +1193,7 @@ function startAutoReload(){
   autoReloadTimer=setInterval(()=>{
     if(designURL) fetchDesignCSV(false);
     fetchIPFromGitHub();
+    fetchAllNewSources(); // also refresh WW22+ sources
   }, AUTO_RELOAD_MS);
 }
 
@@ -1190,7 +1204,116 @@ function stopAutoReload(){
 function reloadFile(){
   fetchDesignCSV(false);
   fetchFPYCSV();
+  fetchAllNewSources(); // also refresh WW22+ sources
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   WW22+ MULTI-SOURCE DATA LOADING
+   Sources 1-4 are all Lot-Level only.
+   Community and Commercial sources will be added later.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/** Generic CSV fetch — returns [] on any error */
+function fetchCSVPromise(url, name){
+  return fetch(url,{cache:'no-cache'})
+    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.text();})
+    .then(text=>Papa.parse(text,{header:true,skipEmptyLines:true}).data)
+    .catch(err=>{console.warn(name+' fetch failed:',err.message); return [];});
+}
+
+/** Fetch all 4 new sources; merge + re-render when done */
+function fetchAllNewSources(){
+  Promise.allSettled([
+    fetchCSVPromise(lotDesignURL,'Lot Design').then(d=>{lotDesignRaws=d;}),
+    fetchCSVPromise(lotQAURL,'Lot QA').then(d=>{lotQARaws=d;}),
+    fetchCSVPromise(lotElecURL,'Lot Electrical').then(d=>{lotElecRaws=d;}),
+    fetchCSVPromise(lotStrucURL,'Lot Structural').then(d=>{lotStrucRaws=d;})
+  ]).then(()=>{
+    if(legacyDesignRaws.length) mergeAndApply();
+  });
+}
+
+/**
+ * Build { communityLotId → {score, passFail} } from Lot QA.csv rows.
+ * Uses the most-recent QA record per lot (by QA Date col F).
+ * score   = col E  (Quality Score %, numeric e.g. "96")
+ * passFail= col G  (Design QA Result, "Pass" or "Fail")
+ */
+function buildQAMap(qaRows){
+  const map={};
+  qaRows.forEach(r=>{
+    const lotId=col(r,0);
+    if(!lotId) return;
+    const score   =col(r,4);
+    const qaDate  =parseDate(col(r,5));
+    const passFail=col(r,6);
+    const ex=map[lotId];
+    if(!ex||(qaDate&&(!ex.qaDate||qaDate>ex.qaDate))){
+      map[lotId]={score,passFail,qaDate};
+    }
+  });
+  return map;
+}
+
+/**
+ * Build a 32-element array row from a Lot Design.csv source row,
+ * filling the same column positions the existing app code reads via col(r,i).
+ *
+ *  Existing accessor → index → Source 1 origin
+ *  colG  (6)  → Type of Design        ← S1 col G (index 6)
+ *  colI  (8)  → Designer              ← S1 col E (index 4, Owner: Full Name)
+ *  colJ  (9)  → Completed Date        ← S1 col I (index 8, Design Completed Date)
+ *  colZ  (25) → Process Step Created  ← S1 col C (index 2, Open Date)
+ *  colAA (26) → Process Step Completed← S1 col D (index 3, Complete Date)
+ *  colAD (29) → Pass/Fail             ← joined from Lot QA col G
+ *  colAF (31) → Quality Score %       ← joined from Lot QA col E
+ *  colX  (23) → Rework flag           ← '' (all new designs, no rework)
+ */
+function buildLotDesignRow(s1Row, qaMap){
+  const lotId=col(s1Row,0);
+  const qa=qaMap[lotId]||{score:'',passFail:''};
+  const r=new Array(32).fill('');
+  r[0] =lotId;           // Community Lot ID
+  r[1] =col(s1Row,1);    // Days Open (SLA, direct)
+  r[6] =col(s1Row,6);    // Type of Design   → colG
+  r[8] =col(s1Row,4);    // Owner/Designer   → colI
+  r[9] =col(s1Row,8);    // Design Completed → colJ
+  r[25]=col(s1Row,2);    // Open Date        → colZ
+  r[26]=col(s1Row,3);    // Complete Date    → colAA
+  r[29]=qa.passFail;     // Pass/Fail        → colAD
+  r[31]=qa.score;        // Quality Score %  → colAF
+  return r;
+}
+
+/**
+ * Merge legacy design rows (≤ WW21) with WW22+ Lot Design rows,
+ * then re-render the board.
+ * Legacy = original design.csv rows with colJ date ≤ May 24 2026.
+ * New    = Lot Design.csv rows with Design Completed Date > May 24 2026.
+ */
+function mergeAndApply(){
+  const qaMap=buildQAMap(lotQARaws);
+
+  // Keep legacy rows that completed on or before the cutoff
+  const legacyRows=legacyDesignRaws.filter(r=>{
+    const d=parseDate(colJ(r));
+    if(!d||isNaN(d)) return true; // keep undated rows
+    return d<=WW22_CUTOFF;
+  });
+
+  // New lot design rows: only WW22+ completed dates
+  const newLotRows=lotDesignRaws
+    .filter(r=>{
+      const d=parseDate(col(r,8)); // Design Completed Date = col I (index 8)
+      return d&&!isNaN(d)&&d>WW22_CUTOFF;
+    })
+    .map(r=>buildLotDesignRow(r,qaMap));
+
+  rawRows=[...legacyRows,...newLotRows];
+  buildScreenQuarterSlicers();
+  applyFilters();
+}
+
 
 /* Try to auto-load from saved URLs on page load */
 

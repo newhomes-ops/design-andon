@@ -836,13 +836,14 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <div class="panel" style="flex:2;display:flex;flex-direction:column;min-height:567px;">
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Permit pass / fail by ISO work week</div>
+              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">L4: Design First Pass Yield (Lot-Level)</div>
               <div id="fpy-quarter-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.07em;color:var(--text);"></div>
             </div>
             <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Passed</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Failed</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>FPY %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Passed (≤WW21)</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Failed (≤WW21)</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Permit FPY %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#7C83FD"></span>L4 Design FPY %</span>
             </div>
           </div>
           <div style="position:relative;flex:1;min-height:0;">
@@ -2246,7 +2247,9 @@ function startFPYAutoReload(){
 function renderScreen7(){
   const noData=document.getElementById('fpy-no-data');
   const content=document.getElementById('fpy-content');
-  if(!fpyRawRows.length){
+  const hasPermit=fpyRawRows.length>0;
+  const hasLot=lotDesignRaws.length>0||lotElecRaws.length>0||lotStrucRaws.length>0;
+  if(!hasPermit&&!hasLot){
     if(noData) noData.style.display='flex';
     if(content) content.style.display='none';
     return;
@@ -2254,7 +2257,7 @@ function renderScreen7(){
   if(noData) noData.style.display='none';
   if(content) content.style.display='flex';
 
-  /* Collect all dates from col J and col L */
+  /* Collect all dates for slicer range */
   const allDates=[];
   fpyRawRows.forEach(r=>{
     const dj=parseDate(fpyColJ(r));
@@ -2262,7 +2265,14 @@ function renderScreen7(){
     if(dj&&!isNaN(dj)) allDates.push(dj);
     if(dl&&!isNaN(dl)) allDates.push(dl);
   });
-  if(!allDates.length){ noData.style.display='flex'; content.style.display='none'; return; }
+  rawRows.forEach(r=>{
+    if(getLevel(colG(r))!=='Lot-Level Design') return;
+    const d=parseDate(colJ(r));
+    if(d&&!isNaN(d)&&d>WW22_CUTOFF) allDates.push(d);
+  });
+  lotElecRaws.forEach(r=>{const d=parseDate(col(r,6));if(d&&!isNaN(d)&&d>WW22_CUTOFF) allDates.push(d);});
+  lotStrucRaws.forEach(r=>{const d=parseDate(col(r,6));if(d&&!isNaN(d)&&d>WW22_CUTOFF) allDates.push(d);});
+  if(!allDates.length){ if(noData) noData.style.display='flex'; if(content) content.style.display='none'; return; }
 
   const latestDate=new Date(Math.max(...allDates));
   const latestYear=latestDate.getFullYear();
@@ -2271,7 +2281,7 @@ function renderScreen7(){
   if(!s7SelYear) s7SelYear=latestYear;
   if(!s7SelQ)   s7SelQ=latestQ;
 
-  /* Quarter slicer — based on all dates from both cols */
+  /* Quarter slicer */
   const availQSet=new Set();
   allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
   const availQs=[...availQSet].sort();
@@ -2309,10 +2319,8 @@ function renderScreen7(){
     rangeLabel=`Q${s7SelQ} ${s7SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('fpy-quarter-label').textContent=rangeLabel;
-  /* Sync YTD button active state */
   const ytdBtn=document.getElementById('fpy-ytd-btn');
   if(ytdBtn) ytdBtn.classList.toggle('active', s7SelYTD);
-  /* Sync screen-9 slicers to match screen-8 */
   const s9qEl=document.getElementById('s9-q-slicer');
   if(s9qEl) s9qEl.innerHTML=document.getElementById('fpy-q-slicer').innerHTML;
   const s9mEl=document.getElementById('s9-m-slicer');
@@ -2320,105 +2328,154 @@ function renderScreen7(){
   const s9ytdBtn=document.getElementById('s9-ytd-btn');
   if(s9ytdBtn) s9ytdBtn.classList.toggle('active', s7SelYTD);
 
-  /* Build week→{pass,fail} map */
-  const wm={};
+  /* ── PERMIT FPY (≤WW21) ── */
+  const wmPermit={};
   fpyRawRows.forEach(r=>{
     const pass=parseDate(fpyColJ(r));
     const fail=parseDate(fpyColL(r));
-    if(pass&&!isNaN(pass)&&pass>=rangeStart&&pass<=rangeEnd){
+    if(pass&&!isNaN(pass)&&pass>=rangeStart&&pass<=rangeEnd&&pass<=WW22_CUTOFF){
       const wk=isoWeek(pass);
-      if(!wm[wk]) wm[wk]={pass:0,fail:0};
-      wm[wk].pass++;
+      if(!wmPermit[wk]) wmPermit[wk]={pass:0,fail:0};
+      wmPermit[wk].pass++;
     }
-    if(fail&&!isNaN(fail)&&fail>=rangeStart&&fail<=rangeEnd){
+    if(fail&&!isNaN(fail)&&fail>=rangeStart&&fail<=rangeEnd&&fail<=WW22_CUTOFF){
       const wk=isoWeek(fail);
-      if(!wm[wk]) wm[wk]={pass:0,fail:0};
-      wm[wk].fail++;
+      if(!wmPermit[wk]) wmPermit[wk]={pass:0,fail:0};
+      wmPermit[wk].fail++;
     }
   });
 
-  const weeks=Object.keys(wm).sort();
-  const totalPass=Object.values(wm).reduce((s,v)=>s+v.pass,0);
-  const totalFail=Object.values(wm).reduce((s,v)=>s+v.fail,0);
-  const totalAll=totalPass+totalFail;
-  const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
-  const lm=document.body.classList.contains('light-mode');const fpyColor=fpy===null?'var(--muted)':fpy>=95?(lm?'#000':'#69F0AE'):fpy>=85?(lm?'#555':'#FFB74D'):(lm?'#999':'#FF8A65');
+  /* ── L4 DESIGN FPY (WW22+): (avg QA score/100) × Elec pass rate × Struc pass rate ── */
+  const l4QA={};    // week → [scores]
+  const l4Elec={};  // week → {pass,fail}
+  const l4Struc={}; // week → {pass,fail}
 
-  /* Summary tiles */
+  rawRows.forEach(r=>{
+    if(getLevel(colG(r))!=='Lot-Level Design') return;
+    const d=parseDate(colJ(r));
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(!l4QA[wk]) l4QA[wk]=[];
+    const score=parseFloat(col(r,31)); // colAF = QA score %
+    if(!isNaN(score)) l4QA[wk].push(score);
+  });
+  lotElecRaws.forEach(r=>{
+    const d=parseDate(col(r,6)); // col G = electrical review date
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(!l4Elec[wk]) l4Elec[wk]={pass:0,fail:0};
+    if(col(r,7).toLowerCase()==='pass') l4Elec[wk].pass++; else l4Elec[wk].fail++;
+  });
+  lotStrucRaws.forEach(r=>{
+    const d=parseDate(col(r,6)); // col G = structural review date
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(!l4Struc[wk]) l4Struc[wk]={pass:0,fail:0};
+    if(col(r,7).toLowerCase()==='pass') l4Struc[wk].pass++; else l4Struc[wk].fail++;
+  });
+
+  const wmL4={};
+  const l4WeekSet=new Set([...Object.keys(l4QA),...Object.keys(l4Elec),...Object.keys(l4Struc)]);
+  l4WeekSet.forEach(wk=>{
+    const scores=l4QA[wk]||[];
+    if(!scores.length) return; // need QA data to compute
+    const qaAvg=scores.reduce((a,b)=>a+b,0)/scores.length;
+    const elec=l4Elec[wk]; const elecT=elec?(elec.pass+elec.fail):0;
+    const elecRate=elecT>0?elec.pass/elecT:1; // no PE review → assume pass
+    const struc=l4Struc[wk]; const strucT=struc?(struc.pass+struc.fail):0;
+    const strucRate=strucT>0?struc.pass/strucT:1; // no PE review → assume pass
+    wmL4[wk]=Math.round(qaAvg/100*elecRate*strucRate*1000)/10; // 1 decimal place
+  });
+
+  /* ── Combined week list ── */
+  const weeks=[...new Set([...Object.keys(wmPermit),...Object.keys(wmL4)])].sort();
+
+  /* ── Summary tiles ── */
+  const permitPass=Object.values(wmPermit).reduce((s,v)=>s+v.pass,0);
+  const permitFail=Object.values(wmPermit).reduce((s,v)=>s+v.fail,0);
+  const permitTotal=permitPass+permitFail;
+  const permitFpy=permitTotal>0?Math.round(permitPass/permitTotal*100):null;
+  const l4Vals=Object.values(wmL4);
+  const l4Avg=l4Vals.length>0?Math.round(l4Vals.reduce((a,b)=>a+b,0)/l4Vals.length*10)/10:null;
+  const lm=document.body.classList.contains('light-mode');
+  const fpyColor=(v)=>v===null?'var(--muted)':v>=95?(lm?'#000':'#69F0AE'):v>=85?(lm?'#555':'#FFB74D'):(lm?'#999':'#FF8A65');
+
   document.getElementById('fpy-summary').innerHTML=`
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Permits passed</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${totalPass}</div>
-      <div style="font-size:.65rem;color:var(--muted)">${weeks.length} week${weeks.length!==1?'s':''}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Permits passed (≤WW21)</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--text)">${permitPass}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${Object.keys(wmPermit).length} week${Object.keys(wmPermit).length!==1?'s':''}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,138,101,.7)">Permits failed</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--muted)">${totalFail}</div>
-      <div style="font-size:.65rem;color:var(--muted)">${totalAll} total submitted</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,138,101,.7)">Permits failed (≤WW21)</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--muted)">${permitFail}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${permitTotal} total</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">First Pass Yield</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpyColor}">${fpy!==null?fpy+'%':'—'}</div>
-      <div style="font-size:.65rem;color:var(--muted)">${fpy!==null?(fpy>=95?'on target':fpy>=85?'near target':'below target'):'—'}</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Permit FPY (≤WW21)</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpyColor(permitFpy)}">${permitFpy!==null?permitFpy+'%':'—'}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${permitFpy!==null?(permitFpy>=95?'on target':permitFpy>=85?'near target':'below target'):'—'}</div>
     </div>
     <div style="background:var(--surface2);padding:.9rem 1.2rem;">
-      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Failure rate</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpy!==null&&(100-fpy)>15?'#FF8A65':'var(--text)'}">${fpy!==null?(100-fpy)+'%':'—'}</div>
-      <div style="font-size:.65rem;color:var(--muted)">of submitted</div>
+      <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#7C83FD">L4 Design FPY (WW22+)</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:${fpyColor(l4Avg)}">${l4Avg!==null?l4Avg+'%':'—'}</div>
+      <div style="font-size:.65rem;color:var(--muted)">${l4Vals.length} week${l4Vals.length!==1?'s':''} · QA × Elec × Struc</div>
     </div>`;
 
-  /* FPY % line per week */
-  const fpyLine=weeks.map(wk=>{
-    const {pass,fail}=wm[wk];
-    const t=pass+fail;
-    return t>0?Math.round(pass/t*100):null;
+  /* ── Chart datasets ── */
+  const fpyLineData=weeks.map(wk=>{
+    if(wmPermit[wk]){const {pass,fail}=wmPermit[wk];const t=pass+fail;return t>0?Math.round(pass/t*100):null;}
+    return null;
   });
+  const l4LineData=weeks.map(wk=>wmL4[wk]!==undefined?wmL4[wk]:null);
 
   if(fpyChart) fpyChart.destroy();
   if(window.ChartDataLabels) Chart.register(ChartDataLabels);
   fpyChart=new Chart(document.getElementById('fpyChart'),{
-    type:'bar',
+    type:'line',
     data:{
       labels:weeks,
       datasets:[
-        { label:'Passed', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#69F0AE','CC'), borderColor:ccBar('#69F0AE'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'Failed', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
+        { label:'Permit FPY %', data:fpyLineData,
           borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
-          pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
-          borderWidth:2.5, tension:.35, spanGaps:true,
-          datalabels:{ display:true, align:'end', anchor:'end',
-            color:(ctx)=>document.body.classList.contains('light-mode')?'#000':'#fff',
-            font:{family:"'DM Mono',monospace", size:13, weight:'500'},
-            formatter:(v)=>v!==null&&v!==''?v+'%':'' } }
+          pointBackgroundColor:ccBar('#CE93D8'), pointBorderColor:ccBar('#CE93D8'),
+          pointRadius:5, pointHoverRadius:7,
+          borderWidth:2.5, tension:.3, spanGaps:false,
+          datalabels:{ display:true, align:'top', anchor:'end', offset:4,
+            color:(ctx)=>document.body.classList.contains('light-mode')?'#555':'#CE93D8',
+            font:{family:"'DM Mono',monospace", size:13, weight:'600'},
+            formatter:(v)=>v!==null?v+'%':'' } },
+        { label:'L4 Design FPY %', data:l4LineData,
+          borderColor:ccBar('#7C83FD'), backgroundColor:'transparent',
+          pointBackgroundColor:ccBar('#7C83FD'), pointBorderColor:ccBar('#7C83FD'),
+          pointRadius:5, pointHoverRadius:7,
+          borderWidth:2.5, tension:.3, spanGaps:false,
+          datalabels:{ display:true, align:'top', anchor:'end', offset:4,
+            color:(ctx)=>document.body.classList.contains('light-mode')?'#3d42d6':'#7C83FD',
+            font:{family:"'DM Mono',monospace", size:13, weight:'700'},
+            formatter:(v)=>v!==null?v+'%':'' } }
       ]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
-        datalabels: window.ChartDataLabels ? {
-          anchor:'center', align:'center', color:'#fff',
-          font:{family:"'DM Mono',monospace", size:22, weight:'500'},
-          formatter:(v,ctx)=>ctx.dataset.type==='line'?'':(v>0?v:''),
-        } : {display:false},
-        tooltip:{callbacks:{afterBody:(items)=>{
-          const wk=items[0]?.label;
-          if(!wk||!wm[wk]) return '';
-          const {pass,fail}=wm[wk]; const t=pass+fail;
-          return `Total: ${t}  |  FPY: ${t>0?Math.round(pass/t*100):0}%`;
-        }}}
+        datalabels: window.ChartDataLabels ? {} : {display:false},
+        tooltip:{callbacks:{label:(item)=>`${item.dataset.label}: ${item.raw}%`,
+          afterBody:(items)=>{
+            const wk=items[0]?.label;
+            if(!wk) return '';
+            if(wmPermit[wk]){const {pass,fail}=wmPermit[wk];const t=pass+fail;return `Permits — Pass: ${pass}, Fail: ${fail}`;}
+            if(wmL4[wk]!==undefined) return `QA × Elec × Struc`;
+            return '';
+          }}}
       },
       scales:{
-        x:{ stacked:true, ticks:{color:cc().tick,font:{size:14},autoSkip:false,maxRotation:45}, grid:{color:cc().grid} },
-        y:{ stacked:true, beginAtZero:true, position:'left',
-            ticks:{color:cc().tickFade,font:{size:14},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
+        x:{ ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45}, grid:{color:cc().grid} },
+        y:{ beginAtZero:true, min:0, max:110, position:'left',
+            ticks:{color:cc().purple,font:{size:14},stepSize:10,callback:v=>v<=100?v+'%':''},
             grid:{color:cc().grid},
-            title:{display:true,text:'Permits',color:cc().tickDim,font:{size:12}} },
-        y2:{ beginAtZero:false, min:0, max:110, position:'right',
-             ticks:{color:cc().purple,font:{size:14},callback:v=>v<=100?v+'%':''},
-             grid:{drawOnChartArea:false},
-             title:{display:true,text:'FPY %',color:cc().purple,font:{size:12}} }
+            title:{display:true,text:'FPY %',color:cc().purple,font:{size:12}} }
       }
     }
   });

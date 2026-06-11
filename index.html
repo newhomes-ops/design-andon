@@ -467,6 +467,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div class="screen-dot" onclick="goTo(6)" title="Community-level weekly report"></div>
           <div class="screen-dot" onclick="goTo(7)" title="SLA report"></div>
           <div class="screen-dot" onclick="goTo(8)" title="FPY report"></div>
+          <div class="screen-dot" onclick="goTo(9)" title="Design Pass Rate"></div>
         </div>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <button class="btn-xs hi" onclick="openIP()" style="border-color:var(--border2);color:var(--text);" id="ip-btn">✎ In Progress</button>
@@ -849,48 +850,68 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
 
-        <!-- Design FPY charts — C4 Community & L7 Lot, from design CSV col AD -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
-
-          <!-- C4 Community Design FPY -->
-          <div class="panel" style="display:flex;flex-direction:column;min-height:300px;">
-            <div class="panel-header" style="margin-bottom:.6rem;">
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
-                <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
-              </div>
-              <div class="trend-legend">
-                <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
-                <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-                <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>FPY %</span>
-              </div>
-            </div>
-            <div style="position:relative;flex:1;min-height:0;">
-              <canvas id="c4FpyChart" role="img" aria-label="Community design FPY by week"></canvas>
-            </div>
-          </div>
-
-          <!-- L7 Lot Design FPY -->
-          <div class="panel" style="display:flex;flex-direction:column;min-height:300px;">
-            <div class="panel-header" style="margin-bottom:.6rem;">
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
-                <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
-              </div>
-              <div class="trend-legend">
-                <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
-                <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-                <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>FPY %</span>
-              </div>
-            </div>
-            <div style="position:relative;flex:1;min-height:0;">
-              <canvas id="l7FpyChart" role="img" aria-label="Lot design FPY by week"></canvas>
-            </div>
-          </div>
-
-        </div><!-- /design fpy grid -->
       </div><!-- /fpy-content -->
     </div><!-- /screen-8 -->
+
+    <!-- SCREEN 9: Design Pass Rate -->
+    <div class="screen" id="screen-9">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN PASS RATE</div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Qtr</span>
+            <div id="s9-q-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
+            <div id="s9-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
+            <button id="s9-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;flex:1;min-height:0;">
+
+        <!-- C4 Community Design Pass Rate -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
+              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;">
+            <canvas id="c4FpyChart" role="img" aria-label="Community design pass rate by week"></canvas>
+          </div>
+        </div>
+
+        <!-- L7 Lot Design Pass Rate -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
+              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;">
+            <canvas id="l7FpyChart" role="img" aria-label="Lot design pass rate by week"></canvas>
+          </div>
+        </div>
+
+      </div><!-- /pass rate grid -->
+    </div><!-- /screen-9 -->
 
       </div><!-- /screens-wrapper -->
 
@@ -1122,14 +1143,20 @@ let designURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/
 let fpyURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/fpy.csv';
 
 /* ── WW22+ NEW DATA SOURCE URLS (Lot-Level only) ── */
-let lotDesignURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Design.csv';
-let lotQAURL     = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20QA.csv';
-let lotElecURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Electrical%20Review.csv';
-let lotStrucURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Structural%20Review.csv';
+let lotDesignURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Design.csv';
+let lotQAURL      = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20QA.csv';
+let lotElecURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Electrical%20Review.csv';
+let lotStrucURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Structural%20Review.csv';
+
+/* ── WW22+ COMMUNITY-LEVEL SOURCES ── */
+let commDesignURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Design%20and%20QA.csv';
+let commElecURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Electrical%20Review.csv';
+let commStrucURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Structural%20Review.csv';
 /* WW21/22 boundary: ISO WW21 2026 ends May 24 23:59:59; WW22 starts May 25 */
 const WW22_CUTOFF = new Date(2026, 4, 24, 23, 59, 59);
 let legacyDesignRaws = []; // original design.csv rows, stored for merge
 let lotDesignRaws = [], lotQARaws = [], lotElecRaws = [], lotStrucRaws = [];
+let commDesignRaws = [], commElecRaws = [], commStrucRaws = [];
 
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
@@ -1227,7 +1254,10 @@ function fetchAllNewSources(){
     fetchCSVPromise(lotDesignURL,'Lot Design').then(d=>{lotDesignRaws=d;}),
     fetchCSVPromise(lotQAURL,'Lot QA').then(d=>{lotQARaws=d;}),
     fetchCSVPromise(lotElecURL,'Lot Electrical').then(d=>{lotElecRaws=d;}),
-    fetchCSVPromise(lotStrucURL,'Lot Structural').then(d=>{lotStrucRaws=d;})
+    fetchCSVPromise(lotStrucURL,'Lot Structural').then(d=>{lotStrucRaws=d;}),
+    fetchCSVPromise(commDesignURL,'Community Design').then(d=>{commDesignRaws=d;}),
+    fetchCSVPromise(commElecURL,'Community Electrical').then(d=>{commElecRaws=d;}),
+    fetchCSVPromise(commStrucURL,'Community Structural').then(d=>{commStrucRaws=d;})
   ]).then(()=>{
     if(legacyDesignRaws.length) mergeAndApply();
   });
@@ -1247,9 +1277,10 @@ function buildQAMap(qaRows){
     const score   =col(r,4);
     const qaDate  =parseDate(col(r,5));
     const passFail=col(r,6);
+    const auditor =col(r,3); // Quality Auditor = col D
     const ex=map[lotId];
     if(!ex||(qaDate&&(!ex.qaDate||qaDate>ex.qaDate))){
-      map[lotId]={score,passFail,qaDate};
+      map[lotId]={score,passFail,qaDate,auditor};
     }
   });
   return map;
@@ -1282,8 +1313,41 @@ function buildLotDesignRow(s1Row, qaMap){
   r[26]=col(s1Row,3);    // Complete Date    → colAA
   r[29]=qa.passFail;     // Pass/Fail        → colAD
   r[31]=qa.score;        // Quality Score %  → colAF
+  r[32]=qa.auditor||'';  // Quality Auditor  → r[32]
   return r;
 }
+
+/**
+ * Build a 33-element array row from a Community Design and QA.csv source row.
+ * QA data is integrated directly (no join needed).
+ *
+ *  Existing accessor → index → Source origin
+ *  colG  (6)  → Design Type            ← col G (index 6)
+ *  colI  (8)  → Designer               ← col E (index 4)
+ *  colJ  (9)  → Design Completed Date  ← col D (index 3)
+ *  colX  (23) → Rework flag            ← col N (index 13): "Revision"→"1", else "0"
+ *  colZ  (25) → Process Step Created   ← col C (index 2, Created Date)
+ *  colAA (26) → Process Step Completed ← col M (index 12, Design QA Date)
+ *  colAD (29) → Pass/Fail              ← col K (index 10)
+ *  colAF (31) → Quality Score %        ← col L (index 11)
+ *  r[32]      → Quality Auditor        ← col J (index 9)
+ */
+function buildCommDesignRow(s1Row){
+  const r=new Array(33).fill('');
+  r[0] =col(s1Row,0);   // Configuration ID (join key)
+  r[1] =col(s1Row,1);   // SLA direct
+  r[6] =col(s1Row,6);   // Design Type      → colG
+  r[8] =col(s1Row,4);   // Designer         → colI
+  r[9] =col(s1Row,3);   // Completed Date   → colJ
+  r[23]=col(s1Row,13)==='Revision'?'1':'0'; // Rework → colX
+  r[25]=col(s1Row,2);   // Created Date     → colZ
+  r[26]=col(s1Row,12);  // QA Date          → colAA (Process Step Completed)
+  r[29]=col(s1Row,10);  // Pass/Fail        → colAD
+  r[31]=col(s1Row,11);  // Quality Score %  → colAF
+  r[32]=col(s1Row,9);   // Quality Auditor  → r[32]
+  return r;
+}
+
 
 /**
  * Merge legacy design rows (≤ WW21) with WW22+ Lot Design rows,
@@ -1309,7 +1373,15 @@ function mergeAndApply(){
     })
     .map(r=>buildLotDesignRow(r,qaMap));
 
-  rawRows=[...legacyRows,...newLotRows];
+  // New community design rows: WW22+ only (col D = index 3 = Design Completed Date)
+  const newCommRows=commDesignRaws
+    .filter(r=>{
+      const d=parseDate(col(r,3));
+      return d&&!isNaN(d)&&d>WW22_CUTOFF;
+    })
+    .map(r=>buildCommDesignRow(r));
+
+  rawRows=[...legacyRows,...newLotRows,...newCommRows];
   buildScreenQuarterSlicers();
   applyFilters();
 }
@@ -1450,9 +1522,9 @@ function resetBar(){
 }
 
 function nextScreen(){
-  let next=(currentScreen+1)%9;
+  let next=(currentScreen+1)%10;
   let tries=0;
-  while(hiddenScreens.has(next)&&tries<9){ next=(next+1)%9; tries++; }
+  while(hiddenScreens.has(next)&&tries<10){ next=(next+1)%10; tries++; }
   goTo(next);
 }
 
@@ -1471,6 +1543,7 @@ function goTo(i){
   if(i===6) renderScreen5();
   if(i===7) renderScreen6();
   if(i===8) renderScreen7();
+  if(i===9) renderScreen7();
 }
 
 function togglePause(){
@@ -2239,6 +2312,13 @@ function renderScreen7(){
   /* Sync YTD button active state */
   const ytdBtn=document.getElementById('fpy-ytd-btn');
   if(ytdBtn) ytdBtn.classList.toggle('active', s7SelYTD);
+  /* Sync screen-9 slicers to match screen-8 */
+  const s9qEl=document.getElementById('s9-q-slicer');
+  if(s9qEl) s9qEl.innerHTML=document.getElementById('fpy-q-slicer').innerHTML;
+  const s9mEl=document.getElementById('s9-m-slicer');
+  if(s9mEl) s9mEl.innerHTML=document.getElementById('fpy-m-slicer').innerHTML;
+  const s9ytdBtn=document.getElementById('s9-ytd-btn');
+  if(s9ytdBtn) s9ytdBtn.classList.toggle('active', s7SelYTD);
 
   /* Build week→{pass,fail} map */
   const wm={};
@@ -2395,7 +2475,7 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
   const totalFail=weeks.reduce((s,w)=>s+wm[w].fail,0);
   const totalAll=totalPass+totalFail;
   const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
-  if(label) label.textContent=rangeLabel+(fpy!==null?' — FPY: '+fpy+'%':'');
+  if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
     const {pass,fail}=wm[wk]; const t=pass+fail;
@@ -2411,7 +2491,7 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
       datasets:[
         { label:'Pass', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#69F0AE','CC'), borderColor:ccBar('#69F0AE'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
         { label:'Fail', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
+        { label:'Pass Rate %', data:fpyLine, type:'line', yAxisID:'y2',
           borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
           pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
           borderWidth:2.5, tension:.35, spanGaps:true,
@@ -2434,7 +2514,7 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
           const wk=items[0]?.label;
           if(!wk||!wm[wk]) return '';
           const {pass,fail}=wm[wk]; const t=pass+fail;
-          return 'Total: '+t+'  |  FPY: '+(t>0?Math.round(pass/t*100):0)+'%';
+          return 'Total: '+t+'  |  Pass Rate: '+(t>0?Math.round(pass/t*100):0)+'%';
         }}}
       },
       scales:{
@@ -2446,7 +2526,7 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
         y2:{ beginAtZero:false, min:0, max:110, position:'right',
              ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
              grid:{drawOnChartArea:false},
-             title:{display:true,text:'FPY %',color:cc().purple,font:{size:11}} }
+             title:{display:true,text:'Pass Rate %',color:cc().purple,font:{size:11}} }
       }
     }
   });
@@ -2483,7 +2563,7 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
   const totalFail=weeks.reduce((s,w)=>s+wm[w].fail,0);
   const totalAll=totalPass+totalFail;
   const fpy=totalAll>0?Math.round(totalPass/totalAll*100):null;
-  if(label) label.textContent=rangeLabel+(fpy!==null?' — FPY: '+fpy+'%':'');
+  if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
     const {pass,fail}=wm[wk]; const t=pass+fail;
@@ -2499,7 +2579,7 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
       datasets:[
         { label:'Pass', data:weeks.map(w=>wm[w].pass), backgroundColor:ccBar('#4FC3F7','CC'), borderColor:ccBar('#4FC3F7'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
         { label:'Fail', data:weeks.map(w=>wm[w].fail), backgroundColor:ccBar('#FF8A65','CC'), borderColor:ccBar('#FF8A65'), borderWidth:1, borderRadius:3, stack:'counts', yAxisID:'y' },
-        { label:'FPY %', data:fpyLine, type:'line', yAxisID:'y2',
+        { label:'Pass Rate %', data:fpyLine, type:'line', yAxisID:'y2',
           borderColor:ccBar('#CE93D8'), backgroundColor:'transparent',
           pointBackgroundColor:ccBar('#CE93D8'), pointRadius:4, pointHoverRadius:6,
           borderWidth:2.5, tension:.35, spanGaps:true,
@@ -2522,7 +2602,7 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
           const wk=items[0]?.label;
           if(!wk||!wm[wk]) return '';
           const {pass,fail}=wm[wk]; const t=pass+fail;
-          return 'Total: '+t+'  |  FPY: '+(t>0?Math.round(pass/t*100):0)+'%';
+          return 'Total: '+t+'  |  Pass Rate: '+(t>0?Math.round(pass/t*100):0)+'%';
         }}}
       },
       scales:{
@@ -2534,7 +2614,7 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
         y2:{ beginAtZero:false, min:0, max:110, position:'right',
              ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
              grid:{drawOnChartArea:false},
-             title:{display:true,text:'FPY %',color:cc().purple,font:{size:11}} }
+             title:{display:true,text:'Pass Rate %',color:cc().purple,font:{size:11}} }
       }
     }
   });
@@ -3026,7 +3106,7 @@ function openSettings(){
   if(status)     status.textContent = saved ? '✓ Token saved in this browser' : 'No token saved yet';
 
   /* Screen visibility */
-  const SCREEN_NAMES=['Design Pipeline','Designer Performance','Level Breakdown','Daily Output & Ranking','Productivity Equivalency','Lot-Level Team Report','Community-Level Team Report','SLA Report','FPY Report'];
+  const SCREEN_NAMES=['Design Pipeline','Designer Performance','Level Breakdown','Daily Output & Ranking','Productivity Equivalency','Lot-Level Team Report','Community-Level Team Report','SLA Report','FPY Report','Design Pass Rate'];
   const vis=document.getElementById('settings-screen-visibility');
   if(vis) vis.innerHTML=SCREEN_NAMES.map((name,i)=>`
     <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;">
@@ -3056,7 +3136,7 @@ function saveSettings(){
 
   /* Save screen visibility */
   hiddenScreens=new Set();
-  for(let i=0;i<9;i++){
+  for(let i=0;i<10;i++){
     const el=document.getElementById('screen-vis-'+i);
     if(el&&!el.checked) hiddenScreens.add(i);
   }

@@ -3586,8 +3586,26 @@ function renderScreen8(designers,rows){
   });
   const maxPEQ=Math.max(1,...designerData.map(d=>d.pct));
 
+
+  /* ── Summary tiles ── */
+  const totalEquiv=rows.reduce((s,r)=>s+getEquiv(colG(r)),0);
+  const avgDailyPEQ=dates.length>0?Math.round(totalEquiv/dates.length*100):0;
+  const tilesEl=document.getElementById('peq-tiles');
+  const tileData=[
+    {label:'Total Units',value:totalEquiv.toFixed(1),sub:'PEQ units'},
+    {label:'Avg Daily',value:avgDailyPEQ+'%',sub:'of daily target'},
+    {label:'Days Tracked',value:dates.length,sub:'work days'},
+    {label:'Designers',value:designers.length,sub:'active'}
+  ];
+  if(tilesEl) tilesEl.innerHTML=tileData.map(t=>`
+    <div style="background:var(--surface);padding:.8rem 1.2rem;text-align:center;">
+      <div style="font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:.2rem;">${t.label}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;color:var(--text);">${t.value}</div>
+      <div style="font-size:.6rem;color:var(--muted);">${t.sub}</div>
+    </div>`).join('');
+
   /* FTE bars */
-  const fteEl=document.getElementById('peq-fte-bars');
+  const fteEl=document.getElementById('peq-designer-grid');
   if(fteEl) fteEl.innerHTML=designerData.map(d=>{
     const barPct=Math.round(d.pct/maxPEQ*100);
     const fteColor=d.pct>=100?'var(--pass)':d.pct>=75?'#FFB74D':'var(--fail)';
@@ -3678,7 +3696,7 @@ function renderScreen8(designers,rows){
     });
     const weeks=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?isoWeek(dt):null;}).filter(Boolean))].sort();
     const sortedDes=designerData.map(d=>d.name);
-    const el=document.getElementById('peq-weekly-table');
+    const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`<table class="peq-table">
       <thead><tr><th class="name-col">Designer</th>${weeks.map(w=>`<th>${w}</th>`).join('')}<th class="avg-col">Avg</th></tr></thead>
       <tbody>
@@ -3700,7 +3718,7 @@ function renderScreen8(designers,rows){
     });
     const quarters=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?dt.getFullYear()+'-Q'+getQuarter(dt):null;}).filter(Boolean))].sort();
     const sortedDes=designerData.map(d=>d.name);
-    const el=document.getElementById('peq-quarterly-table');
+    const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`<table class="peq-table">
       <thead><tr><th class="name-col">Designer</th>${quarters.map(q=>`<th>${q}</th>`).join('')}<th class="avg-col">Total</th></tr></thead>
       <tbody>
@@ -4087,66 +4105,92 @@ async function buildAndDownloadMemo(d){
    RENDER SCREEN 1 — Totals, In Progress, OTD  (screen-0 div)
    ═══════════════════════════════════════════════════════════ */
 function renderScreen1(designers, rows){
-  function set(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
-  function setColor(id, color){ const el=document.getElementById(id); if(el) el.style.color=color; }
+  /* Trend & Ranking  (screen-3) */
+  if(!rows.length) return;
 
-  /* Completed counts */
-  const total=rows.length;
-  const byLevel={};
-  LEVELS.forEach(l=>{ byLevel[l]=rows.filter(r=>getLevel(colG(r))===l).length; });
-
-  set('s3-t-all', total);
-  set('s3-t-all-sub', total===1?'1 design total':total+' designs total');
-  set('s3-t-lot', byLevel['Lot-Level Design']||0);
-  set('s3-t-lot-sub', 'lot-level');
-  set('s3-t-comm', byLevel['Community-Level Design']||0);
-  set('s3-t-comm-sub', 'community-level');
-  set('s3-t-coml', byLevel['Commercial Design']||0);
-  set('s3-t-coml-sub', 'commercial');
-
-  /* Avg quality */
-  const q=avgQual(rows);
-  if(q!==null){
-    set('s3-t-qual', Math.round(q)+'%');
-    setColor('s3-t-qual', qColor(q));
-  } else { set('s3-t-qual','—'); }
-
-  /* In Progress */
-  const ipTotal=LEVELS.reduce((s,l)=>s+(inProgress[l]||0),0);
-  set('s3-ip-all', ipTotal);
-  set('s3-ip-lot', inProgress['Lot-Level Design']||0);
-  set('s3-ip-comm', inProgress['Community-Level Design']||0);
-  set('s3-ip-coml', inProgress['Commercial Design']||0);
-  /* Timestamp from localStorage */
-  try{
-    const saved=localStorage.getItem('andon_ip_ts');
-    set('s3-ip-ts', saved||'—');
-  }catch(e){ set('s3-ip-ts','—'); }
-
-  /* OTD — overall */
-  const otdAll=calcOTD(rows);
-  if(otdAll.total>0){
-    set('s3-otd-pct', otdAll.pct+'%');
-    set('s3-otd-sub', otdAll.pass+' pass / '+otdAll.fail+' fail');
-    setColor('s3-otd-pct', otdAll.pct>=90?'var(--pass)':otdAll.pct>=70?'#FFB74D':'var(--fail)');
-  } else { set('s3-otd-pct','—'); set('s3-otd-sub','no due dates'); }
-
-  /* OTD — by level */
-  LEVELS.forEach(lv=>{
-    const key = lv==='Lot-Level Design'?'lot':lv==='Community-Level Design'?'comm':'coml';
-    const lvRows=rows.filter(r=>getLevel(colG(r))===lv);
-    const otd=calcOTD(lvRows);
-    if(otd.total>0){
-      set('s3-otd-'+key, otd.pct+'%');
-      set('s3-otd-'+key+'-sub', otd.pass+'P / '+otd.fail+'F');
-      setColor('s3-otd-'+key, otd.pct>=90?'var(--pass)':otd.pct>=70?'#FFB74D':'var(--fail)');
-    } else { set('s3-otd-'+key,'—'); }
+  /* ── Daily output by designer ── */
+  const dates=[...new Set(rows.map(r=>{ const d=parseDate(colJ(r)); return d&&!isNaN(d)?toYMD(d):null; }).filter(Boolean))].sort();
+  const dataByDesigner={};
+  designers.forEach(d=>{ dataByDesigner[d]={}; });
+  rows.forEach(r=>{
+    const dt=parseDate(colJ(r)); if(!dt||isNaN(dt)) return;
+    const dk=toYMD(dt); const des=colI(r);
+    if(!dataByDesigner[des]) dataByDesigner[des]={};
+    dataByDesigner[des][dk]=(dataByDesigner[des][dk]||0)+1;
   });
-}
 
-/* ═══════════════════════════════════════════════════════════
-   RENDER SCREEN 2 — Level group cards  (screen-2 div)
-   ═══════════════════════════════════════════════════════════ */
+  /* Legend */
+  const legendEl=document.getElementById('trend-legend');
+  if(legendEl) legendEl.innerHTML=designers.map((d,i)=>{
+    const color=D_COLORS[i%D_COLORS.length];
+    return `<span style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:var(--text);">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color};"></span>
+      ${engr(d)}
+    </span>`;
+  }).join('');
+
+  /* Chart */
+  const ctx=document.getElementById('trendChart');
+  if(!ctx) return;
+  if(trendChart){ trendChart.destroy(); trendChart=null; }
+  const lm=document.body.classList.contains('light-mode');
+  trendChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:dates.map(dk=>{ const p=dk.split('-'); return (parseInt(p[1]))+'/'+parseInt(p[2]); }),
+      datasets:designers.map((d,i)=>({
+        label:engr(d),
+        data:dates.map(dk=>dataByDesigner[d][dk]||0),
+        backgroundColor:D_COLORS[i%D_COLORS.length]+'CC',
+        borderColor:D_COLORS[i%D_COLORS.length],
+        borderWidth:1
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{title:i=>'Date: '+dates[i[0]?.dataIndex]}}
+      },
+      scales:{
+        x:{ stacked:false, ticks:{color:lm?'#333':'#ccc',font:{size:11},maxRotation:45,autoSkip:true,maxTicksLimit:20}, grid:{color:lm?'rgba(0,0,0,.06)':'rgba(255,255,255,.06)'} },
+        y:{ beginAtZero:true, ticks:{color:lm?'#333':'#ccc',font:{size:11},stepSize:1,callback:v=>Number.isInteger(v)?v:''}, grid:{color:lm?'rgba(0,0,0,.06)':'rgba(255,255,255,.06)'} }
+      }
+    }
+  });
+
+  /* Ranking list */
+  const rankEl=document.getElementById('rank-list');
+  if(!rankEl) return;
+  const ranked=designers.map(d=>{
+    const dR=rows.filter(r=>colI(r)===d);
+    const q=avgQual(dR);
+    return {d, count:dR.length, q};
+  }).sort((a,b)=>b.count-a.count);
+  const maxCount=Math.max(1,...ranked.map(r=>r.count));
+  rankEl.innerHTML=ranked.map(({d,count,q},i)=>{
+    const color=D_COLORS[designers.indexOf(d)%D_COLORS.length];
+    const barPct=Math.round(count/maxCount*100);
+    const qTxt=q!==null?Math.round(q)+'%':'—';
+    const qC=q!==null?qColor(q):'var(--dim)';
+    return `<div style="padding:.5rem .8rem;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.25rem;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.04em;color:var(--text);">
+          <span style="color:var(--dim);font-size:.7rem;margin-right:.3rem;">#${i+1}</span>${engr(d)}
+        </span>
+        <span style="display:flex;gap:.8rem;font-size:.65rem;">
+          <span style="color:var(--text);">${count} designs</span>
+          <span style="color:${qC};">${qTxt} QA</span>
+        </span>
+      </div>
+      <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${barPct}%;background:${color};border-radius:2px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderTrend(designers, rows){ renderScreen1(designers, rows); }
+
 function renderScreen2(designers, rows){
   const grid=document.getElementById('level-group-grid');
   if(!grid) return;

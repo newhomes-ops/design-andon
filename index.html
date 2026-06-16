@@ -1929,7 +1929,11 @@ function renderBoard(){
   const designers=[...new Set(rows.map(r=>colI(r)).filter(Boolean))].sort();
 
   renderScreen3(designers,rows);
-  renderScreen0(designers,rows);
+  try{ renderScreen0(designers,rows); }catch(e){
+    const g=document.getElementById('designer-grid');
+    if(g) g.innerHTML=`<div style="color:#ff6b6b;padding:2rem;font-size:.8rem;white-space:pre-wrap;">renderScreen0 threw:\n${e.stack||e}</div>`;
+    console.error('renderScreen0 error:',e);
+  }
   renderScreen1(designers,rows);
   renderScreen2(designers,rows);
   if(currentScreen===4) renderScreen8(designers, rows);

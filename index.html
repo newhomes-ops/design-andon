@@ -998,6 +998,66 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
   </div>
 </div>
 
+<!-- EXTRACT MEMO OVERLAY -->
+<div class="ip-overlay" id="extract-memo-overlay" onclick="if(event.target===this)closeExtractMemo()">
+  <div class="ip-panel" style="max-width:500px;">
+    <div class="ip-panel-header">
+      <div class="ip-panel-title">📄 Extract <span>Performance Memo</span></div>
+      <button class="ip-close" onclick="closeExtractMemo()">✕</button>
+    </div>
+    <div style="font-size:.7rem;color:var(--dim);margin-bottom:1rem;">Generates a SunPower memo with a comprehensive performance report for the selected designer.</div>
+
+    <!-- Designer + Date Range -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.8rem;">
+      <div style="grid-column:1/-1;">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">Designer</div>
+        <select id="em-designer" style="width:100%;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.78rem;">
+          <option value="">— select —</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">Date From</div>
+        <input type="date" id="em-from" style="width:100%;padding:.35rem .4rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.75rem;">
+      </div>
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">Date To</div>
+        <input type="date" id="em-to" style="width:100%;padding:.35rem .4rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.75rem;">
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button onclick="emUseCurrentFilter()" style="width:100%;padding:.35rem .4rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:.65rem;cursor:pointer;">Use current filter</button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border2);margin:.6rem 0 .8rem;"></div>
+    <div style="font-size:.65rem;color:var(--muted);margin-bottom:.6rem;letter-spacing:.05em;">MEMO FIELDS</div>
+
+    <!-- Memo metadata -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;">
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">To (initials)</div>
+        <input type="text" id="em-to-field" placeholder="e.g. VNS, ESTAFF" style="width:100%;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.78rem;">
+      </div>
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">Author (initials – full name)</div>
+        <input type="text" id="em-author" placeholder="e.g. MKO – Mark Kevin Olivar" style="width:100%;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.78rem;">
+      </div>
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">Author File # <span style="font-size:.6rem;opacity:.6;">(auto if blank)</span></div>
+        <input type="text" id="em-filenum" placeholder="e.g. MKO-MEMO-001A-061626" style="width:100%;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.78rem;">
+      </div>
+      <div>
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.25rem;">CC (optional)</div>
+        <input type="text" id="em-cc" placeholder="e.g. ESTAFF" style="width:100%;padding:.35rem .5rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.78rem;">
+      </div>
+    </div>
+
+    <div class="ip-actions">
+      <button class="ip-cancel" onclick="closeExtractMemo()">Cancel</button>
+      <button class="ip-save" onclick="generatePerformanceMemo()">Generate Memo</button>
+    </div>
+  </div>
+</div>
+
 <!-- ABSENCE LOG OVERLAY -->
 <div class="ip-overlay" id="absence-overlay" onclick="if(event.target===this)closeAbsences()">
   <div class="ip-panel" style="max-width:480px;">
@@ -1948,6 +2008,12 @@ function renderScreen0(designers,rows){
             <div class="lv-bar-bg"><div class="lv-bar-fill" style="width:${p}%"></div></div>
           </div>`;
         }).join('')}
+      </div>
+      <div style="margin-top:.6rem;text-align:right;">
+        <button onclick="openExtractMemo('${d.replace(/'/g,"\\'")}')"
+          style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.6rem;padding:.22rem .65rem;border-radius:5px;cursor:pointer;letter-spacing:.04em;">
+          📄 Extract Memo
+        </button>
       </div>
     </div>`;
   }).join('');
@@ -3779,6 +3845,200 @@ function savePEQSettings(){
   try{localStorage.setItem('andon_peq_weights',JSON.stringify(peqWeights));}catch(e){}
   closePEQSettings();
   if(currentScreen===4) renderScreen8();
+}
+
+/* ── EXTRACT PERFORMANCE MEMO ── */
+function openExtractMemo(preselect){
+  /* Populate designer dropdown */
+  const sel=document.getElementById('em-designer');
+  const designers=[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">— select —</option>'+designers.map(d=>`<option value="${d}"${d===preselect?' selected':''}>${engr(d)}</option>`).join('');
+
+  /* Default date range = current filter or last 90 days */
+  emUseCurrentFilter();
+
+  document.getElementById('extract-memo-overlay').classList.add('open');
+}
+
+function closeExtractMemo(){ document.getElementById('extract-memo-overlay').classList.remove('open'); }
+
+function emUseCurrentFilter(){
+  const today=new Date();
+  function fmt(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  if(sfFrom) document.getElementById('em-from').value=sfFrom;
+  else { const d=new Date(today); d.setDate(d.getDate()-90); document.getElementById('em-from').value=fmt(d); }
+  if(sfTo) document.getElementById('em-to').value=sfTo;
+  else document.getElementById('em-to').value=fmt(today);
+}
+
+function generatePerformanceMemo(){
+  const designer=document.getElementById('em-designer').value;
+  const fromStr =document.getElementById('em-from').value;
+  const toStr   =document.getElementById('em-to').value;
+  const toField =document.getElementById('em-to-field').value.trim()||'VNS';
+  const author  =document.getElementById('em-author').value.trim()||'MKO – Mark Kevin Olivar';
+  const cc      =document.getElementById('em-cc').value.trim()||'';
+
+  if(!designer){ alert('Please select a designer.'); return; }
+  if(!fromStr||!toStr){ alert('Please set a date range.'); return; }
+
+  /* Auto-generate file number if blank */
+  let fileNum=document.getElementById('em-filenum').value.trim();
+  if(!fileNum){
+    const initials=(author.split('–')[0]||author).trim().replace(/\s+/g,'').toUpperCase().slice(0,3);
+    const td=new Date(); const mm=String(td.getMonth()+1).padStart(2,'0'),dd=String(td.getDate()).padStart(2,'0'),yy=String(td.getFullYear()).slice(2);
+    fileNum=`${initials}-MEMO-001A-${mm}${dd}${yy}`;
+  }
+
+  /* Filter rawRows to designer + date range */
+  const fromD=new Date(fromStr+'T00:00:00');
+  const toD  =new Date(toStr  +'T23:59:59');
+  const dRows=rawRows.filter(r=>{
+    if(colI(r)!==designer) return false;
+    const dt=parseDate(colJ(r));
+    if(!dt||isNaN(dt)) return false;
+    return dt>=fromD && dt<=toD;
+  });
+
+  if(!dRows.length){ alert('No completed designs found for this designer in the selected date range.'); return; }
+
+  /* Compute metrics */
+  const maxVol=Math.max(1,...[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].map(d2=>{
+    return rawRows.filter(r=>colI(r)===d2&&(()=>{const dt=parseDate(colJ(r));return dt&&dt>=fromD&&dt<=toD;})()).length;
+  }));
+  const vol        =dRows.length;
+  const volNorm    =Math.round(vol/maxVol*100);
+  const q          =avgQual(dRows);
+  const otdObj     =calcOTD(dRows);
+  const fpy        =calcDesignerFPY(dRows);
+  const sla        =calcDesignerSLAPct(dRows);
+  const attendance =calcAttendance(designer, dRows);
+  const score      =calcDesignerScore(q, otdObj.pct, fpy, sla, volNorm, attendance);
+
+  const lvCounts={};
+  LEVELS.forEach(l=>{ lvCounts[l]=dRows.filter(r=>getLevel(colG(r))===l).length; });
+
+  /* Design type breakdown */
+  const typeMap={};
+  dRows.forEach(r=>{ const t=colG(r)||'Unknown'; typeMap[t]=(typeMap[t]||0)+1; });
+  const typeLines=Object.entries(typeMap).sort((a,b)=>b[1]-a[1]).map(([t,c])=>`  • ${t}: ${c}`).join('\n');
+
+  /* OTD detail */
+  const otdLine=otdObj.total>0?`${otdObj.pass} on-time / ${otdObj.fail} late out of ${otdObj.total} designs with due dates`:'No due date data available';
+
+  /* Absences in period */
+  const absCount=absencesData.filter(a=>{
+    if(a.designer!==designer) return false;
+    const ad=parseDate(a.date);
+    return ad&&ad>=fromD&&ad<=toD;
+  }).length;
+
+  /* Format dates for display */
+  function fmtDisp(dateStr){ const d=new Date(dateStr+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }
+  const periodStr=`${fmtDisp(fromStr)} – ${fmtDisp(toStr)}`;
+  const designerFull=engr(designer);
+  const today=new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'numeric'});
+
+  /* ── Raw data tables for each metric ── */
+  function fmtDate(str){ if(!str) return '—'; const d=parseDate(str); if(!d||isNaN(d)) return str; return d.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}); }
+  function truncType(t){ return (t||'—').replace('NH Commercial ','NH Comm ').replace('Individual ','Indiv. '); }
+  const configCol = r => col(r,0)||'—';
+
+  /* QUALITY table */
+  const qualRows=dRows.filter(r=>parseQual(colAF(r))!==null);
+  const qualTable=qualRows.length
+    ? 'Config ID | Design Type | Completed | Quality Score\n'+qualRows.map(r=>`${configCol(r)} | ${truncType(colG(r))} | ${fmtDate(colJ(r))} | ${colAF(r)}`).join('\n')
+    : '(no QA data)';
+
+  /* OTD table */
+  const otdRows=dRows.filter(r=>parseDate(colJ(r))&&parseDate(colDue(r)));
+  const otdTable=otdRows.length
+    ? 'Config ID | Design Type | Completed | Due Date | Status\n'+otdRows.map(r=>{
+        const comp=parseDate(colJ(r)), due=parseDate(colDue(r));
+        return `${configCol(r)} | ${truncType(colG(r))} | ${fmtDate(colJ(r))} | ${fmtDate(colDue(r))} | ${comp<=due?'PASS':'FAIL'}`;
+      }).join('\n')
+    : '(no due date data)';
+
+  /* FPY table */
+  const fpyRows=dRows.filter(r=>colAD(r));
+  const fpyTable=fpyRows.length
+    ? 'Config ID | Design Type | Completed | First Pass Result\n'+fpyRows.map(r=>`${configCol(r)} | ${truncType(colG(r))} | ${fmtDate(colJ(r))} | ${(colAD(r)||'').toUpperCase()}`).join('\n')
+    : '(no FPY review data)';
+
+  /* SLA table */
+  const slaRowsRaw=dRows.filter(r=>{ const s=getSLA(r); return s!==null && slaTargets.avg[colG(r)]!==undefined; });
+  const slaTable=slaRowsRaw.length
+    ? 'Config ID | Design Type | Days Taken | Target (avg) | Status\n'+slaRowsRaw.map(r=>{
+        const s=getSLA(r); const tgt=slaTargets.avg[colG(r)];
+        return `${configCol(r)} | ${truncType(colG(r))} | ${s!==null?s.toFixed(1):'—'} | ${tgt} | ${s!==null&&s<=tgt?'PASS':'FAIL'}`;
+      }).join('\n')
+    : '(no SLA data)';
+
+  /* Volume table (all jobs) */
+  const volumeTable='Config ID | Design Type | Level | Completed\n'+dRows.map(r=>`${configCol(r)} | ${truncType(colG(r))} | ${getLevel(colG(r))} | ${fmtDate(colJ(r))}`).join('\n');
+
+  /* Build sendPrompt message */
+  const prompt=`Generate a SunPower performance memo using the sunpower-memo skill format. Here is all the data:
+
+MEMO FIELDS:
+- Date: ${today}
+- To: ${toField}
+- Author: ${author}
+- Author File #: ${fileNum}
+- CC: ${cc||'(none)'}
+- Subject: DESIGNER PERFORMANCE REPORT – ${designerFull.toUpperCase()} – ${fromStr.replace(/-/g,'/')} TO ${toStr.replace(/-/g,'/')}
+- Attachments: ${fileNum}.docx
+
+PERFORMANCE DATA:
+Designer: ${designerFull}
+Review Period: ${periodStr}
+
+OVERALL GRADE: ${score!==null?score+'%':'N/A'}
+
+METRIC SCORES (0–100%):
+- Quality (QA Score):       ${q!==null?Math.round(q)+'%':'N/A'}
+- OTD (On-Time Delivery):   ${otdObj.pct!==null?otdObj.pct+'%':'N/A'} — ${otdLine}
+- FPY (First Pass Yield):   ${fpy!==null?fpy+'%':'N/A'}
+- SLA Compliance:           ${sla!==null?sla+'%':'N/A'}
+- Attendance:               ${attendance!==null?attendance+'%':(absCount===0?'Not logged':'N/A')}${absCount>0?` (${absCount} absence(s) in period)`:''}
+- Volume:                   ${vol} completed designs (${volNorm}% of team)
+
+LEVEL BREAKDOWN:
+${LEVELS.map(l=>`- ${l}: ${lvCounts[l]||0} designs`).join('\n')}
+
+DESIGN TYPE BREAKDOWN:
+${typeLines}
+
+SCORING WEIGHTS USED:
+${Object.entries(scoringWeights).map(([k,v])=>`- ${SCORING_METRIC_LABELS[k]||k}: ${v}%`).join('\n')}
+
+RAW JOB DATA (include as tables in the memo under each metric section):
+
+[QUALITY — ${qualRows.length} jobs with QA data]
+${qualTable}
+
+[OTD — ${otdRows.length} jobs with due dates]
+${otdTable}
+
+[FPY — ${fpyRows.length} jobs reviewed]
+${fpyTable}
+
+[SLA — ${slaRowsRaw.length} jobs with SLA data]
+${slaTable}
+
+[VOLUME — ${vol} total completed jobs]
+${volumeTable}
+
+Please write a comprehensive, professional performance memo body. Include:
+1. Introduction — purpose of the memo and review period
+2. Performance Summary — overall grade with context
+3. Metric Detail — a section for each metric (Quality, OTD, FPY, SLA, Attendance, Volume) with the score, brief analysis, and the corresponding raw job data formatted as a table
+4. Design Output — level and type breakdown
+5. Conclusion — overall assessment and any recommended actions`;
+
+  closeExtractMemo();
+  if(typeof sendPrompt==='function') sendPrompt(prompt);
+  else alert('sendPrompt not available in this environment. Copy the data above and paste into Claude.');
 }
 
 /* ── ABSENCE LOG EDITOR ── */

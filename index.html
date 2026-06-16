@@ -1299,6 +1299,11 @@ function parseDesignCSV(text, firstLoad){
     startAutoReload();
     fetchIPFromGitHub();
     updateScreenDots();
+    // If new sources already finished loading (they raced ahead), merge now
+    if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length){
+      mergeAndApply();
+      return;
+    }
   } else {
     showStatus(`↻ Refreshed — ${rawRows.length} rows`,'success');
     setTimeout(()=>{const el=document.getElementById('status-bar');if(el)el.style.display='none';},3000);
@@ -1360,7 +1365,9 @@ function fetchAllNewSources(){
     fetchCSVPromise(commStrucURL,'Community Structural').then(d=>{commStrucRaws=d;}),
     fetchCSVPromise(commCommercialURL,'Commercial').then(d=>{commCommercialRaws=d;})
   ]).then(()=>{
-    if(legacyDesignRaws.length) mergeAndApply();
+    // Always merge — if legacy CSV hasn't loaded yet, mergeAndApply uses empty legacyRows
+    // which is fine; parseDesignCSV firstLoad will also call mergeAndApply once it finishes.
+    mergeAndApply();
   });
 }
 

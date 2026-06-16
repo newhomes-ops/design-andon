@@ -609,7 +609,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
         <button class="slicer-btn" id="ytd-btn-1" onclick="setYTDFilter()">YTD</button>
       </div>
-      <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGNER PERFORMANCE</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;">
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGNER PERFORMANCE</div>
+        <button onclick="openScoringWeights()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.65rem;padding:.25rem .75rem;border-radius:6px;cursor:pointer;letter-spacing:.04em;">⚖ Scoring Weights</button>
+      </div>
       <div class="designer-grid" id="designer-grid"></div>
     </div>
 
@@ -703,7 +706,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
     </div>
 
 <!-- SCREEN 5: Combined Team Reports (Lot · Community · Commercial) -->
-    <div class="screen" id="screen-5" style="display:flex;flex-direction:column;">
+    <div class="screen" id="screen-5">
       <!-- Title + shared slicers -->
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem;">
         <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">
@@ -992,6 +995,25 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
   </div>
 </div>
 
+<!-- SCORING WEIGHTS OVERLAY -->
+<div class="ip-overlay" id="scoring-overlay" onclick="if(event.target===this)closeScoringWeights()">
+  <div class="ip-panel" style="max-width:420px;">
+    <div class="ip-panel-header">
+      <div class="ip-panel-title">Designer <span>Scoring</span> Weights</div>
+      <button class="ip-close" onclick="closeScoringWeights()">✕</button>
+    </div>
+    <div style="font-size:.7rem;color:var(--dim);margin-bottom:1rem;">Weights determine each metric's contribution to the overall grade. They must sum to 100.</div>
+    <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.2rem;" id="scoring-weights-grid">
+      <!-- populated by openScoringWeights() -->
+    </div>
+    <div id="scoring-sum-warn" style="font-size:.7rem;color:var(--fail);display:none;margin-bottom:.6rem;">⚠ Weights must sum to 100</div>
+    <div class="ip-actions">
+      <button class="ip-cancel" onclick="closeScoringWeights()">Cancel</button>
+      <button class="ip-save" onclick="saveScoringWeights()">Save weights</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETTINGS OVERLAY -->
 <div class="ip-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
   <div class="ip-panel" style="max-width:460px;">
@@ -1091,6 +1113,9 @@ const DEFAULT_PEQ_WEIGHTS = {
   'Solar Site Plan':               2,
 };
 let peqWeights = {...DEFAULT_PEQ_WEIGHTS};
+/* ── DESIGNER SCORING WEIGHTS ── Quality/OTD/Volume/SLA — must sum to 100 */
+const DEFAULT_SCORING_WEIGHTS = {quality:40, otd:30, volume:20, sla:10};
+let scoringWeights = {...DEFAULT_SCORING_WEIGHTS};
 /* Token loaded from localStorage — never stored in code */
 const GH_IP_USER  = 'MarkKevinOlivar';
 const GH_IP_REPO  = 'design-andon';
@@ -1153,6 +1178,67 @@ function getLevel(t){
 }
 function parseQual(v){if(!v)return null;const n=parseFloat(v.toString().replace('%',''));return isNaN(n)?null:n;}
 function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
+
+/* ── DESIGNER SCORING HELPERS ── */
+
+/** SLA pass rate for a designer: % of rows where actual days ≤ SLA avg target */
+function calcDesignerSLAPct(dRows){
+  let pass=0, total=0;
+  dRows.forEach(r=>{
+    const sla=getSLA(r);
+    if(sla===null) return;
+    const target=slaTargets.avg[colG(r)];
+    if(target===undefined) return;
+    total++;
+    if(sla<=target) pass++;
+  });
+  return total>0 ? Math.round(pass/total*100) : null;
+}
+
+/** FPY (First Pass Yield / Pass Rate) for a designer */
+function calcDesignerFPY(dRows){
+  const qualified=dRows.filter(r=>colAD(r));
+  const passed   =qualified.filter(r=>(colAD(r)||'').toLowerCase()==='pass');
+  return qualified.length>0 ? Math.round(passed.length/qualified.length*100) : null;
+}
+
+/** Letter grade from a 0–100 score */
+function letterGrade(score){
+  if(score===null||score===undefined) return '—';
+  if(score>=95) return 'A+';
+  if(score>=90) return 'A';
+  if(score>=85) return 'B+';
+  if(score>=80) return 'B';
+  if(score>=75) return 'C+';
+  if(score>=70) return 'C';
+  if(score>=60) return 'D';
+  return 'F';
+}
+
+/** Color for a grade score */
+function gradeColor(score){
+  if(score===null||score===undefined) return 'var(--muted)';
+  if(score>=85) return 'var(--pass)';
+  if(score>=70) return '#FFB74D';
+  return 'var(--fail)';
+}
+
+/**
+ * Compute weighted overall score 0–100 for a designer.
+ * volume is normalized: designer count / maxVolume * 100.
+ * Metrics that have no data (null) are excluded from the weighted average.
+ */
+function calcDesignerScore(qual, otd, fpyPct, slaPct, volumeNorm){
+  const wt=scoringWeights;
+  let weightedSum=0, totalW=0;
+  function add(v, w){ if(v!==null&&v!==undefined){ weightedSum+=v*w; totalW+=w; } }
+  add(qual,       wt.quality||0);
+  add(otd,        wt.otd    ||0);
+  add(fpyPct,     wt.fpy    ||0);  // FPY weight (optional, added if set)
+  add(slaPct,     wt.sla    ||0);
+  add(volumeNorm, wt.volume ||0);
+  return totalW>0 ? Math.round(weightedSum/totalW) : null;
+}
 
 /**
  * Design OTD — On Time Delivery
@@ -1277,6 +1363,7 @@ function parseDesignCSV(text, firstLoad){
     try{ const t=localStorage.getItem('andon_sla_targets'); if(t){ const p=JSON.parse(t); if(p&&typeof p==='object'&&p.avg) slaTargets={avg:{...DEFAULT_SLA_TARGETS.avg,...p.avg},p50:{...DEFAULT_SLA_TARGETS.p50,...p.p50},p90:{...DEFAULT_SLA_TARGETS.p90,...p.p90}}; } }catch(e){}
     try{ const n=localStorage.getItem('andon_new_hires'); if(n){ const p=JSON.parse(n); if(Array.isArray(p)) newHires=p; } }catch(e){}
     try{ const w=localStorage.getItem('andon_peq_weights'); if(w){ const p=JSON.parse(w); if(p&&typeof p==='object') peqWeights={...DEFAULT_PEQ_WEIGHTS,...p}; } }catch(e){}
+    try{ const sw=localStorage.getItem('andon_scoring_weights'); if(sw){ const p=JSON.parse(sw); if(p&&typeof p==='object') scoringWeights={...DEFAULT_SCORING_WEIGHTS,...p}; } }catch(e){}
       try{ const h=localStorage.getItem('andon_hidden_screens'); if(h){ const p=JSON.parse(h); if(Array.isArray(p)) hiddenScreens=new Set(p); } else { hiddenScreens=new Set([4]); } }catch(e){ hiddenScreens=new Set([4]); }
     document.getElementById('loading-overlay').style.display='none';
     document.getElementById('board').style.display='flex';
@@ -1708,38 +1795,83 @@ function renderBoard(){
   updateTs();
 }
 
-/* SCREEN 0 — Designer cards */
+/* SCREEN 0 — Designer cards with scoring */
 function renderScreen0(designers,rows){
-  document.getElementById('designer-grid').innerHTML=designers.map(d=>{
+  /* Pre-compute all metrics so we can normalize volume across the team */
+  const metrics=designers.map(d=>{
     const dR=rows.filter(r=>colI(r)===d);
+    const q   =avgQual(dR);
+    const otd =calcOTD(dR).pct;
+    const fpy =calcDesignerFPY(dR);
+    const sla =calcDesignerSLAPct(dR);
+    return {d, dR, q, otd, fpy, sla, vol:dR.length};
+  });
+  const maxVol=Math.max(1,...metrics.map(m=>m.vol));
+
+  /* Compute grade + sort descending */
+  const scored=metrics.map(m=>{
+    const volNorm=Math.round(m.vol/maxVol*100);
+    const score=calcDesignerScore(m.q, m.otd, m.fpy, m.sla, volNorm);
+    return {...m, volNorm, score};
+  }).sort((a,b)=>(b.score??-1)-(a.score??-1));
+
+  document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,volNorm,score},rank)=>{
     const dTotal=dR.length;
     const lv={};
     LEVELS.forEach(l=>lv[l]=dR.filter(r=>getLevel(colG(r))===l).length);
     const maxLv=Math.max(1,...Object.values(lv));
-    const q=avgQual(dR);
     const qD=q!==null?Math.round(q):null;
     const qC=qColor(q);
     const isNew=newHires.includes(d);
+    const letter=letterGrade(score);
+    const gC=gradeColor(score);
+
+    /* Metric row: SLA / FPY / OTD */
+    function metricBox(label, val, color){
+      const txt=val!==null?val+'%':'—';
+      return `<div style="flex:1;background:var(--surface2);border-radius:6px;padding:.45rem .6rem;text-align:center;">
+        <div style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem;">${label}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;color:${color||'var(--text)'}">${txt}</div>
+      </div>`;
+    }
+
     return `<div class="designer-card">
       <div class="card-top">
-        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:var(--muted);min-width:1.6rem;">#${rank+1}</div>
           <div class="d-name">${engr(d)}</div>
           ${isNew?`<span class="new-hire-tag">NEW HIRE</span>`:''}
         </div>
         <div class="card-top-right">
-          <div class="qual-badge">
-            <span class="qual-pct" style="color:${qC}">${qD!==null?qD:'—'}</span>
-            <span class="qual-unit" style="color:${qC}">% quality</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.1rem;">
+            <div style="display:flex;align-items:baseline;gap:.3rem;">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;color:${gC}">${letter}</span>
+              <span style="font-size:.6rem;color:${gC};opacity:.8;">${score!==null?score+'%':''}</span>
+            </div>
+            <div style="font-size:.55rem;color:var(--muted);letter-spacing:.06em;">overall grade</div>
           </div>
-          <div class="d-total">${dTotal} completed</div>
+          <div style="margin-left:.8rem;">
+            <div class="qual-badge">
+              <span class="qual-pct" style="color:${qC}">${qD!==null?qD:'—'}</span>
+              <span class="qual-unit" style="color:${qC}">% quality</span>
+            </div>
+            <div class="d-total">${dTotal} completed</div>
+          </div>
         </div>
       </div>
-      ${qD!==null?`<div class="qual-bar-wrap">
+      <!-- Metric row -->
+      <div style="display:flex;gap:.4rem;margin-top:.6rem;">
+        ${metricBox('SLA', sla, sla!==null?(sla>=90?'var(--pass)':sla>=70?'#FFB74D':'var(--fail)'):null)}
+        ${metricBox('FPY', fpy, fpy!==null?(fpy>=90?'var(--pass)':fpy>=70?'#FFB74D':'var(--fail)'):null)}
+        ${metricBox('OTD', otd, otd!==null?(otd>=90?'var(--pass)':otd>=70?'#FFB74D':'var(--fail)'):null)}
+        ${metricBox('Volume', volNorm, 'var(--text)')}
+      </div>
+      ${qD!==null?`<div class="qual-bar-wrap" style="margin-top:.6rem;">
         <div class="qual-bar-label">Quality</div>
         <div class="qual-bar-bg"><div class="qual-bar-fill" style="width:${qD}%;background:${qC}"></div></div>
         <div class="qual-bar-val" style="color:${qC}">${qD}%</div>
       </div>`:''}
-      <div class="card-levels">
+      <div class="card-levels" style="margin-top:.5rem;">
         ${LEVELS.map(l=>{
           const k=LV_KEY[l],c=lv[l],p=Math.round(c/maxLv*100);
           return `<div class="level-cell ${k}">
@@ -3579,6 +3711,56 @@ function savePEQSettings(){
   try{localStorage.setItem('andon_peq_weights',JSON.stringify(peqWeights));}catch(e){}
   closePEQSettings();
   if(currentScreen===4) renderScreen8();
+}
+
+/* ── SCORING WEIGHTS EDITOR ── */
+const SCORING_METRIC_LABELS = {quality:'Quality (QA Score)', otd:'OTD (On-Time Delivery)', volume:'Volume (Completed Designs)', sla:'SLA (Met SLA Target)'};
+
+function openScoringWeights(){
+  const grid=document.getElementById('scoring-weights-grid');
+  grid.innerHTML=Object.keys(DEFAULT_SCORING_WEIGHTS).map(k=>`
+    <div style="display:grid;grid-template-columns:1fr 70px;align-items:center;gap:.6rem;">
+      <label style="font-size:.75rem;color:var(--text);">${SCORING_METRIC_LABELS[k]||k}</label>
+      <div style="display:flex;align-items:center;gap:.3rem;">
+        <input type="number" id="sw-${k}" min="0" max="100" value="${scoringWeights[k]??DEFAULT_SCORING_WEIGHTS[k]}"
+          style="width:54px;text-align:center;padding:.3rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.8rem;"
+          oninput="updateScoringSum()">
+        <span style="font-size:.7rem;color:var(--muted);">%</span>
+      </div>
+    </div>`).join('');
+  updateScoringSum();
+  document.getElementById('scoring-overlay').classList.add('open');
+}
+
+function updateScoringSum(){
+  const sum=Object.keys(DEFAULT_SCORING_WEIGHTS).reduce((s,k)=>{
+    return s+(parseInt(document.getElementById('sw-'+k)?.value)||0);
+  },0);
+  const warn=document.getElementById('scoring-sum-warn');
+  const saveBtn=document.querySelector('#scoring-overlay .ip-save');
+  const ok=sum===100;
+  if(warn) warn.style.display=ok?'none':'block';
+  if(saveBtn){ saveBtn.disabled=!ok; saveBtn.style.opacity=ok?'1':'.4'; }
+  /* live sum display */
+  const label=document.querySelector('#scoring-overlay .ip-panel > div:nth-child(2)');
+  if(label) label.textContent=`Weights must sum to 100. Current sum: ${sum}`;
+}
+
+function closeScoringWeights(){ document.getElementById('scoring-overlay').classList.remove('open'); }
+
+function saveScoringWeights(){
+  const sum=Object.keys(DEFAULT_SCORING_WEIGHTS).reduce((s,k)=>{
+    return s+(parseInt(document.getElementById('sw-'+k)?.value)||0);
+  },0);
+  if(sum!==100){ alert('Weights must sum to 100. Current sum: '+sum); return; }
+  Object.keys(DEFAULT_SCORING_WEIGHTS).forEach(k=>{
+    scoringWeights[k]=parseInt(document.getElementById('sw-'+k).value)||0;
+  });
+  try{ localStorage.setItem('andon_scoring_weights',JSON.stringify(scoringWeights)); }catch(e){}
+  closeScoringWeights();
+  /* re-render designer cards */
+  const designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
+  renderScreen0(designers, filteredRows);
 }
 
 function renderSLATypeCharts(rows, weeks){

@@ -622,34 +622,21 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 2: Level Groups -->
     <div class="screen" id="screen-2">
-      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
-        <div id="screen-q-slicer-2" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
-        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-left:.4rem;">Range</span>
-        <input type="date" id="sf-from-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-2').value)">
-        <span style="font-size:.68rem;color:var(--dim);">to</span>
-        <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
-        <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
+        <div class="section-label" style="color:var(--text);margin-bottom:0;">OUTPUT &amp; LEVEL SUMMARY</div>
+        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
+          <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
+          <div id="screen-q-slicer-2" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+          <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Range</span>
+          <input type="date" id="sf-from-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-2').value)">
+          <span style="font-size:.68rem;color:var(--dim);">to</span>
+          <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
+          <button class="btn-xs btn-last7" onclick="resetScreenFilter()">Last 7 work days</button>
+          <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
+        </div>
       </div>
-      <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">LEVEL BREAKDOWN</div>
-      <div class="level-group-grid" id="level-group-grid"></div>
-    </div>
-
-    <!-- SCREEN 3: Trend + Rank -->
-    <div class="screen" id="screen-3">
-      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
-        <div id="screen-q-slicer-3" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
-        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-left:.4rem;">Range</span>
-        <input type="date" id="sf-from-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-3').value)">
-        <span style="font-size:.68rem;color:var(--dim);">to</span>
-        <input type="date" id="sf-to-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-3').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
-        <button class="slicer-btn" id="ytd-btn-3" onclick="setYTDFilter()">YTD</button>
-      </div>
-      <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DAILY OUTPUT &amp; RANKING</div>
-      <div class="bottom-panels">
+      <div id="level-summary-tiles" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem;"></div>
+      <div class="bottom-panels" style="flex:1;min-height:0;">
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">Daily output — designs per day</div>
@@ -660,13 +647,14 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
         <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">Ranking — volume &amp; quality</div>
-          </div>
+          <div class="panel-header"><div class="panel-title">Ranking — volume &amp; quality</div></div>
           <div id="rank-list" style="flex:1;overflow-y:auto;min-height:0;"></div>
         </div>
       </div>
     </div>
+
+    <!-- SCREEN 3: Trend + Rank -->
+    <div class="screen" id="screen-3"><!-- merged into screen-2; hidden by default --></div>
 
     <!-- SCREEN 8: Productivity Equivalency -->
     <div class="screen" id="screen-4">
@@ -1238,7 +1226,7 @@ let slaTypeCharts = {}; /* keyed by design type */
 let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
 let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null, peqDonutChart=null, peqView='daily';
-let hiddenScreens=new Set(); /* screen indices to hide from rotation */
+let hiddenScreens=new Set([2]); /* screen indices to hide from rotation */
 let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
@@ -1900,7 +1888,7 @@ function goTo(i){
     d.classList.toggle('active',di===i);
   });
   currentScreen=i;
-  if(i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
+  if(i===1||i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
   if(i===4) renderScreen8([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
   if(i===5) renderTeamReports();
   if(i===6) renderScreen6();
@@ -1930,11 +1918,7 @@ function renderBoard(){
   const designers=[...new Set(rows.map(r=>colI(r)).filter(Boolean))].sort();
 
   renderScreen3(designers,rows);
-  try{ renderScreen0(designers,rows); }catch(e){
-    const g=document.getElementById('designer-grid');
-    if(g) g.innerHTML=`<div style="color:#ff6b6b;padding:2rem;font-size:.8rem;white-space:pre-wrap;">renderScreen0 threw:\n${e.stack||e}</div>`;
-    console.error('renderScreen0 error:',e);
-  }
+  renderScreen0(designers,rows);
   renderScreen1(designers,rows);
   renderScreen2(designers,rows);
   if(currentScreen===4) renderScreen8(designers, rows);
@@ -1963,20 +1947,7 @@ function renderScreen0(designers,rows){
     return {...m, volNorm, score};
   }).sort((a,b)=>(b.score??-1)-(a.score??-1));
 
-  if(!scored.length){
-    const sampleI=filteredRows.slice(0,3).map(r=>JSON.stringify(col(r,8))).join(', ');
-    const sampleJ=filteredRows.slice(0,3).map(r=>JSON.stringify(col(r,9))).join(', ');
-    document.getElementById('designer-grid').innerHTML=`<div style="color:var(--muted);padding:2rem;font-size:.8rem;">
-      No designer cards.<br>
-      filteredRows: ${filteredRows.length} | rawRows: ${rawRows.length}<br>
-      sfFrom: ${sfFrom} | sfTo: ${sfTo}<br>
-      designers passed in: ${designers.length}<br>
-      sample colI(rows[0..2]): ${sampleI}<br>
-      sample colJ(rows[0..2]): ${sampleJ}
-    </div>`;
-    return;
-  }
-  document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,score},rank)=>{
+    document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,score},rank)=>{
     const dTotal=dR.length;
     const lv={};
     LEVELS.forEach(l=>lv[l]=dR.filter(r=>getLevel(colG(r))===l).length);
@@ -2908,6 +2879,111 @@ function startFPYAutoReload(){
   if(fpyAutoReloadTimer) clearInterval(fpyAutoReloadTimer);
   fpyAutoReloadTimer=setInterval(()=>{ if(fpyURL) fetchFPYCSV(); }, 5*60*1000);
 }
+
+function renderSLATypeCharts(rows, weeks){
+  const container = document.getElementById('sla-type-charts');
+  if(!container) return;
+
+  /* Level → design types mapping */
+  const LEVEL_TYPES = {
+    'Lot-Level Design':        ['Individual Plot Plan','Individual Permit Package'],
+    'Community-Level Design':  ['Master Permit Package','Master Plan','Future Solar Exhibit','Solar Site Plan'],
+    'Commercial Design':       ['NH Commercial Design - Maxfit','NH Commercial Project - Estimate','Tier 0 Helioscope','PVbid Project Estimate']
+  };
+  const LV_HEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
+
+  /* Metric helper */
+  function metricVal(slaVals){
+    if(!slaVals||!slaVals.length) return null;
+    const s=[...slaVals].sort((a,b)=>a-b);
+    if(slaTypeMetric==='avg') return parseFloat((s.reduce((a,b)=>a+b,0)/s.length).toFixed(2));
+    if(slaTypeMetric==='p50') return parseFloat(percentile(s,50).toFixed(2));
+    if(slaTypeMetric==='p90') return parseFloat(percentile(s,90).toFixed(2));
+    return null;
+  }
+
+  /* Destroy old charts */
+  Object.values(slaTypeCharts).forEach(c=>{ try{c.destroy();}catch(e){} });
+  slaTypeCharts = {};
+
+  /* Build grid: 3 panels */
+  container.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;height:100%;';
+  container.innerHTML = LEVELS.map(lv=>`
+    <div style="position:relative;min-height:0;display:flex;flex-direction:column;">
+      <div style="font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:${LV_HEX[lv]};margin-bottom:.25rem;">${LV_SHORT[lv]}</div>
+      <div style="position:relative;flex:1;min-height:0;">
+        <canvas id="slaTypeChart_${lv.replace(/[^a-z]/gi,'_')}" style="display:block;"></canvas>
+      </div>
+    </div>`).join('');
+
+  LEVELS.forEach(lv=>{
+    const hex = LV_HEX[lv];
+    const types = LEVEL_TYPES[lv] || [];
+
+    /* Build week → SLA values for this level */
+    const wm = {};
+    rows.filter(r=>getLevel(colG(r))===lv).forEach(r=>{
+      const sla=getSLA(r); if(sla===null) return;
+      const d=parseDate(colJ(r)); if(!d||isNaN(d)) return;
+      const wk=isoWeek(d);
+      if(!wm[wk]) wm[wk]=[];
+      wm[wk].push(sla);
+    });
+
+    const wks = weeks.length ? weeks : Object.keys(wm).sort();
+    const vals = wks.map(wk=>metricVal(wm[wk]));
+
+    /* Target = average of all design types in this level */
+    const targets = types.map(t=>(slaTargets[slaTypeMetric]||{})[t]).filter(v=>v!=null);
+    const target = targets.length ? parseFloat((targets.reduce((a,b)=>a+b,0)/targets.length).toFixed(1)) : null;
+
+    const canvasId = 'slaTypeChart_'+lv.replace(/[^a-z]/gi,'_');
+    const el = document.getElementById(canvasId);
+    if(!el) return;
+
+    slaTypeCharts[lv] = new Chart(el, {
+      type: 'line',
+      data: {
+        labels: wks,
+        datasets: [
+          { label: LV_SHORT[lv],
+            data: vals,
+            borderColor: hex,
+            backgroundColor: hex+'33',
+            pointBackgroundColor: hex,
+            pointRadius: 3, borderWidth: 2, tension: .35, spanGaps: true,
+            datalabels: {display:false}
+          },
+          ...(target!==null ? [{
+            label: 'Target',
+            data: wks.map(()=>target),
+            borderColor: hex+'88',
+            borderDash: [4,3],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+            datalabels: {display:false}
+          }] : [])
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: {display:false},
+          datalabels: {display:false},
+          tooltip: {callbacks:{label:c=>c.dataset.label+(c.parsed.y!==null?' '+c.parsed.y.toFixed(1)+'d':'')}}
+        },
+        scales: {
+          x: { ticks:{color:cc().tick,font:{size:11},autoSkip:true,maxTicksLimit:6,maxRotation:45}, grid:{color:cc().grid} },
+          y: { beginAtZero:true,
+               ticks:{color:cc().tickFade,font:{size:11},callback:v=>v+'d'},
+               grid:{color:cc().grid} }
+        }
+      }
+    });
+  });
+}
+
 
 function renderScreen7(){
   const noData=document.getElementById('fpy-no-data');
@@ -4210,42 +4286,25 @@ function renderScreen1(designers, rows){
 function renderTrend(designers, rows){ renderScreen1(designers, rows); }
 
 function renderScreen2(designers, rows){
-  const grid=document.getElementById('level-group-grid');
-  if(!grid) return;
+  const tiles=document.getElementById('level-summary-tiles');
+  if(!tiles) return;
 
-  grid.innerHTML=LEVELS.map(lv=>{
+  tiles.innerHTML=LEVELS.map(lv=>{
     const lvRows=rows.filter(r=>getLevel(colG(r))===lv);
-    const lvDesigners=designers.filter(d=>rows.some(r=>colI(r)===d&&getLevel(colG(r))===lv));
     const color=LV_COLOR[lv]||'var(--text)';
     const total=lvRows.length;
     const q=avgQual(lvRows);
     const otd=calcOTD(lvRows);
-
-    const designerRows=lvDesigners.map(d=>{
-      const dR=lvRows.filter(r=>colI(r)===d);
-      const dq=avgQual(dR);
-      const dotd=calcOTD(dR);
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:.75rem;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;">${engr(d)}</div>
-        <div style="display:flex;gap:1rem;align-items:baseline;">
-          <span style="font-size:.65rem;color:var(--muted);">${dR.length} designs</span>
-          ${dq!==null?`<span style="font-size:.65rem;color:${qColor(dq)};">${Math.round(dq)}% QA</span>`:''}
-          ${dotd.total>0?`<span style="font-size:.65rem;color:${dotd.pct>=90?'var(--pass)':dotd.pct>=70?'#FFB74D':'var(--fail)'};">${dotd.pct}% OTD</span>`:''}
-        </div>
-      </div>`;
-    }).join('');
-
-    return `<div class="level-group-card">
-      <div style="padding:1rem 1.2rem;border-bottom:1px solid var(--border);">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:${color};">${lv}</div>
-        <div style="display:flex;gap:1.5rem;margin-top:.4rem;">
-          <span style="font-size:.65rem;color:var(--muted);">${total} completed</span>
-          ${q!==null?`<span style="font-size:.65rem;color:${qColor(q)};">${Math.round(q)}% avg QA</span>`:''}
-          ${otd.total>0?`<span style="font-size:.65rem;color:${otd.pct>=90?'var(--pass)':otd.pct>=70?'#FFB74D':'var(--fail)'};">${otd.pct}% OTD</span>`:''}
-        </div>
-      </div>
-      <div style="padding:.8rem 1.2rem;max-height:320px;overflow-y:auto;">
-        ${lvDesigners.length?designerRows:`<div style="font-size:.72rem;color:var(--dim);padding:.5rem 0;">No designers in this period.</div>`}
+    const qVal=q!==null?Math.round(q):null;
+    const qC=qVal!==null?qColor(qVal):'var(--dim)';
+    const otdC=otd.total>0?(otd.pct>=90?'var(--pass)':otd.pct>=70?'#FFB74D':'var(--fail)'):'var(--dim)';
+    return `<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--border-radius-lg);padding:.9rem 1.1rem;display:flex;flex-direction:column;gap:.35rem;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.06em;color:${color};">${lv}</div>
+      <div style="display:flex;gap:1.4rem;align-items:baseline;flex-wrap:wrap;">
+        <span style="font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Bebas Neue',sans-serif;">${total}</span>
+        <span style="font-size:.62rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;">completed</span>
+        ${qVal!==null?`<span style="font-size:.8rem;font-weight:600;color:${qC};">${qVal}% QA</span>`:''}
+        ${otd.total>0?`<span style="font-size:.8rem;font-weight:600;color:${otdC};">${otd.pct}% OTD</span>`:''}
       </div>
     </div>`;
   }).join('');

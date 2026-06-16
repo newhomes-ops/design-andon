@@ -1165,7 +1165,11 @@ function colX(r){return col(r,23);}  /* Column X = index 23, rework flag */
 function colZ(r){return col(r,25);}  /* Column Z  = index 25 = Process Step Created */
 function colAA(r){return col(r,26);} /* Column AA = index 26 = Process Step Completed */
 function colAD(r){return col(r,29);}  /* Column AD = index 29 = FPY Pass/Fail flag */
-function getLevel(t){return TYPE_TO_LEVEL[t]||'Other';}
+function getLevel(t){
+  const lv=TYPE_TO_LEVEL[t];
+  if(!lv&&t) console.warn('[getLevel] Unmapped type:',JSON.stringify(t));
+  return lv||'Other';
+}
 function parseQual(v){if(!v)return null;const n=parseFloat(v.toString().replace('%',''));return isNaN(n)?null:n;}
 function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
 

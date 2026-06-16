@@ -1253,6 +1253,7 @@ let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false;
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
 let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0 };
 /* { 'Lot-Level Design': n, 'Community-Level Design': n, 'Commercial Design': n } */
+function ipTotal(type){ return (inProgress[type]||0); }
 
 
 

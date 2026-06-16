@@ -777,7 +777,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
       <div style="display:grid;grid-template-columns:1fr 600px;gap:1rem;height:calc(100% - 48px);">
 
         <!-- LEFT: stat panels + mini charts -->
-        <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;overflow:hidden;">
+        <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;overflow-y:auto;">
 
           <!-- Stat panels -->
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;" id="sla-stat-panels"></div>
@@ -796,7 +796,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
 
           <!-- Mini charts grid -->
-          <div id="sla-type-charts" style="flex:1;min-height:0;"></div>
+          <div id="sla-type-charts" style="flex:1;min-height:0;overflow-y:auto;"></div>
         </div>
 
         <!-- RIGHT: trend chart -->
@@ -891,6 +891,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 9: Design Pass Rate -->
     <div class="screen" id="screen-9">
+      <!-- SLA-style compact header -->
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
         <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN PASS RATE</div>
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
@@ -908,45 +909,99 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;flex:1;min-height:0;">
-
-        <!-- C4 Community Design Pass Rate -->
+      <!-- 3×2 chart grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.9rem;height:calc(100% - 48px);">
+        <!-- R1C1 Community QA -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
-              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — Design Quality Audit</div>
+              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
               <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
             </div>
           </div>
-          <div style="position:relative;flex:1;min-height:0;">
-            <canvas id="c4FpyChart" role="img" aria-label="Community design pass rate by week"></canvas>
-          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="c4FpyChart"></canvas></div>
         </div>
-
-        <!-- L7 Lot Design Pass Rate -->
+        <!-- R1C2 Community PE Electrical -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
-              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — PE Electrical</div>
+              <div id="pe-elec-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="peElecCommChart"></canvas></div>
+        </div>
+        <!-- R1C3 Community PE Structural -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — PE Structural</div>
+              <div id="pe-struc-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="peStrucCommChart"></canvas></div>
+        </div>
+        <!-- R2C1 Lot QA -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — Design Quality Audit</div>
+              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
               <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
             </div>
           </div>
-          <div style="position:relative;flex:1;min-height:0;">
-            <canvas id="l7FpyChart" role="img" aria-label="Lot design pass rate by week"></canvas>
-          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="l7FpyChart"></canvas></div>
         </div>
-
-      </div><!-- /pass rate grid -->
+        <!-- R2C2 Lot PE Electrical -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — PE Electrical</div>
+              <div id="pe-elec-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="peElecLotChart"></canvas></div>
+        </div>
+        <!-- R2C3 Lot PE Structural -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-header" style="margin-bottom:.6rem;">
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — PE Structural</div>
+              <div id="pe-struc-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+            </div>
+            <div class="trend-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;min-height:0;"><canvas id="peStrucLotChart"></canvas></div>
+        </div>
+      </div><!-- /3x2 pass rate grid -->
     </div><!-- /screen-9 -->
 
       </div><!-- /screens-wrapper -->
@@ -1225,7 +1280,8 @@ let slaTargets = {
 let slaTypeCharts = {}; /* keyed by design type */
 let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
-let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null, peqDonutChart=null, peqView='daily';
+let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null,
+    peElecLotChart=null, peElecCommChart=null, peStrucLotChart=null, peStrucCommChart=null, peqDonutChart=null, peqView='daily';
 let hiddenScreens=new Set([2]); /* screen indices to hide from rotation */
 let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false;
 
@@ -2881,107 +2937,234 @@ function startFPYAutoReload(){
 }
 
 function renderSLATypeCharts(rows, weeks){
-  const container = document.getElementById('sla-type-charts');
+  const types=SLA_TYPES;
+  const container=document.getElementById('sla-type-charts');
   if(!container) return;
 
-  /* Level → design types mapping */
-  const LEVEL_TYPES = {
-    'Lot-Level Design':        ['Individual Plot Plan','Individual Permit Package'],
-    'Community-Level Design':  ['Master Permit Package','Master Plan','Future Solar Exhibit','Solar Site Plan'],
-    'Commercial Design':       ['NH Commercial Design - Maxfit','NH Commercial Project - Estimate','Tier 0 Helioscope','PVbid Project Estimate']
-  };
-  const LV_HEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
+  Object.values(slaTypeCharts).forEach(c=>{try{c.destroy();}catch(e){}});
+  slaTypeCharts={};
 
-  /* Metric helper */
-  function metricVal(slaVals){
-    if(!slaVals||!slaVals.length) return null;
-    const s=[...slaVals].sort((a,b)=>a-b);
-    if(slaTypeMetric==='avg') return parseFloat((s.reduce((a,b)=>a+b,0)/s.length).toFixed(2));
-    if(slaTypeMetric==='p50') return parseFloat(percentile(s,50).toFixed(2));
-    if(slaTypeMetric==='p90') return parseFloat(percentile(s,90).toFixed(2));
+  const typeWeekMap={};
+  types.forEach(t=>typeWeekMap[t]={});
+  rows.forEach(r=>{
+    const d=parseDate(colJ(r));if(!d)return;
+    const wk=isoWeek(d);
+    const type=colG(r);
+    const sla=getSLA(r);
+    if(sla===null||!typeWeekMap[type])return;
+    if(!typeWeekMap[type][wk])typeWeekMap[type][wk]=[];
+    typeWeekMap[type][wk].push(sla);
+  });
+
+  const metricLabel={'avg':'Average','p50':'P.50','p90':'P.90'}[slaTypeMetric]||'Average';
+
+  function metricVal(vals){
+    if(!vals||!vals.length) return null;
+    const sorted=[...vals].sort((a,b)=>a-b);
+    if(slaTypeMetric==='avg') return parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2));
+    if(slaTypeMetric==='p50') return parseFloat(percentile(sorted,50).toFixed(2));
+    if(slaTypeMetric==='p90') return parseFloat(percentile(sorted,90).toFixed(2));
     return null;
   }
 
-  /* Destroy old charts */
-  Object.values(slaTypeCharts).forEach(c=>{ try{c.destroy();}catch(e){} });
-  slaTypeCharts = {};
+  const LV_COLOR_HEX2={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
 
-  /* Build grid: 3 panels */
-  container.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;height:100%;';
-  container.innerHTML = LEVELS.map(lv=>`
-    <div style="position:relative;min-height:0;display:flex;flex-direction:column;">
-      <div style="font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:${LV_HEX[lv]};margin-bottom:.25rem;">${LV_SHORT[lv]}</div>
-      <div style="position:relative;flex:1;min-height:0;">
-        <canvas id="slaTypeChart_${lv.replace(/[^a-z]/gi,'_')}" style="display:block;"></canvas>
+  const typesWithData=types.filter(t=>weeks.some(wk=>typeWeekMap[t][wk]?.length>0));
+
+  let inner='';
+  LEVELS.forEach(level=>{
+    const lvTypes=typesWithData.filter(t=>getLevel(t)===level);
+    if(!lvTypes.length) return;
+    const lvColor=LV_COLOR_HEX2[level];
+    inner+=`<div style="margin-bottom:.7rem;">
+      <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:${lvColor};margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px solid ${lvColor}33;">${LV_SHORT[level]}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;">
+        ${lvTypes.map(t=>{
+          const target=slaTargets[slaTypeMetric]?.[t];
+          return `<div class="panel" style="padding:.6rem .8rem;border-color:${lvColor}22;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.3rem;">
+              <div style="font-size:.62rem;font-weight:500;color:var(--text);letter-spacing:.02em;">${t}</div>
+              <div style="font-size:.55rem;color:var(--dim);">tgt: <span style="color:${lvColor};font-weight:500;">${target!==undefined?target+'d':'—'}</span></div>
+            </div>
+            <div style="position:relative;width:100%;height:75px;">
+              <canvas id="sla-type-${t.replace(/\W/g,'_')}" role="img" aria-label="SLA trend for ${t}"></canvas>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  });
+  container.innerHTML=inner||'<div style="font-size:.82rem;color:var(--dim);padding:1rem 0;">No data for selected period.</div>';
 
-  LEVELS.forEach(lv=>{
-    const hex = LV_HEX[lv];
-    const types = LEVEL_TYPES[lv] || [];
-
-    /* Build week → SLA values for this level */
-    const wm = {};
-    rows.filter(r=>getLevel(colG(r))===lv).forEach(r=>{
-      const sla=getSLA(r); if(sla===null) return;
-      const d=parseDate(colJ(r)); if(!d||isNaN(d)) return;
-      const wk=isoWeek(d);
-      if(!wm[wk]) wm[wk]=[];
-      wm[wk].push(sla);
-    });
-
-    const wks = weeks.length ? weeks : Object.keys(wm).sort();
-    const vals = wks.map(wk=>metricVal(wm[wk]));
-
-    /* Target = average of all design types in this level */
-    const targets = types.map(t=>(slaTargets[slaTypeMetric]||{})[t]).filter(v=>v!=null);
-    const target = targets.length ? parseFloat((targets.reduce((a,b)=>a+b,0)/targets.length).toFixed(1)) : null;
-
-    const canvasId = 'slaTypeChart_'+lv.replace(/[^a-z]/gi,'_');
-    const el = document.getElementById(canvasId);
-    if(!el) return;
-
-    slaTypeCharts[lv] = new Chart(el, {
-      type: 'line',
-      data: {
-        labels: wks,
-        datasets: [
-          { label: LV_SHORT[lv],
-            data: vals,
-            borderColor: hex,
-            backgroundColor: hex+'33',
-            pointBackgroundColor: hex,
-            pointRadius: 3, borderWidth: 2, tension: .35, spanGaps: true,
-            datalabels: {display:false}
-          },
-          ...(target!==null ? [{
-            label: 'Target',
-            data: wks.map(()=>target),
-            borderColor: hex+'88',
-            borderDash: [4,3],
-            borderWidth: 1.5,
-            pointRadius: 0,
-            fill: false,
-            datalabels: {display:false}
-          }] : [])
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: {display:false},
-          datalabels: {display:false},
-          tooltip: {callbacks:{label:c=>c.dataset.label+(c.parsed.y!==null?' '+c.parsed.y.toFixed(1)+'d':'')}}
+  types.forEach(t=>{
+    if(!typesWithData.includes(t))return;
+    const canvasId='sla-type-'+t.replace(/\W/g,'_');
+    const ctx=document.getElementById(canvasId);
+    if(!ctx)return;
+    const lvColor=LV_COLOR_HEX2[getLevel(t)]||'#CE93D8';
+    const data=weeks.map(wk=>metricVal(typeWeekMap[t][wk]));
+    const target=slaTargets[slaTypeMetric]?.[t]??null;
+    const datasets=[{
+      label:metricLabel+' SLA',
+      data,
+      borderColor:lvColor,
+      backgroundColor:lvColor+'22',
+      pointRadius:2,pointHoverRadius:4,
+      borderWidth:2,tension:.35,spanGaps:true,
+      fill:true
+    }];
+    if(target!==null){
+      datasets.push({
+        label:'Target',
+        data:weeks.map(()=>target),
+        borderColor:'rgba(255,183,77,.7)',
+        borderWidth:1.5,
+        borderDash:[5,4],
+        pointRadius:0,
+        fill:false,
+        tension:0
+      });
+    }
+    slaTypeCharts[t]=new Chart(ctx,{
+      type:'line',
+      data:{labels:weeks,datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y!==null?c.parsed.y.toFixed(1)+'d':'—')}}
         },
-        scales: {
-          x: { ticks:{color:cc().tick,font:{size:11},autoSkip:true,maxTicksLimit:6,maxRotation:45}, grid:{color:cc().grid} },
-          y: { beginAtZero:true,
-               ticks:{color:cc().tickFade,font:{size:11},callback:v=>v+'d'},
-               grid:{color:cc().grid} }
+        scales:{
+          x:{display:false},
+          y:{beginAtZero:false,
+             ticks:{color:cc().tickFade,font:{size:12},callback:v=>v+'d'},
+             grid:{color:cc().grid}}
         }
       }
     });
   });
+}
+
+
+/* ── PE pass rate chart helper ── */
+function _renderPEChart(el, labelEl, wm, weeks, passColor, rangeLabel){
+  if(!el) return;
+  if(labelEl){
+    const totalPass=weeks.reduce((s,w)=>s+(wm[w]?.pass||0),0);
+    const totalFail=weeks.reduce((s,w)=>s+(wm[w]?.fail||0),0);
+    const tot=totalPass+totalFail;
+    const rate=tot>0?Math.round(totalPass/tot*100):null;
+    labelEl.textContent=rangeLabel+(rate!==null?' — Pass Rate: '+rate+'%':'');
+  }
+  const fpyLine=weeks.map(wk=>{
+    const v=wm[wk]; if(!v) return null;
+    const t=v.pass+v.fail; return t>0?Math.round(v.pass/t*100):null;
+  });
+  if(window.ChartDataLabels) Chart.register(ChartDataLabels);
+  return new Chart(el,{
+    type:'bar',
+    data:{
+      labels:weeks,
+      datasets:[
+        {label:'Pass',data:weeks.map(w=>wm[w]?.pass||0),backgroundColor:ccBar(passColor,'CC'),borderColor:ccBar(passColor),borderWidth:1,borderRadius:3,stack:'counts',yAxisID:'y'},
+        {label:'Fail',data:weeks.map(w=>wm[w]?.fail||0),backgroundColor:ccBar('#FF8A65','CC'),borderColor:ccBar('#FF8A65'),borderWidth:1,borderRadius:3,stack:'counts',yAxisID:'y'},
+        {label:'Pass Rate %',data:fpyLine,type:'line',yAxisID:'y2',
+         borderColor:ccBar('#CE93D8'),backgroundColor:'transparent',
+         pointBackgroundColor:ccBar('#CE93D8'),pointRadius:4,pointHoverRadius:6,
+         borderWidth:2.5,tension:.35,spanGaps:true,
+         datalabels:{display:true,align:'end',anchor:'end',
+           color:()=>document.body.classList.contains('light-mode')?'#000':'#fff',
+           font:{family:"'DM Mono',monospace",size:13,weight:'500'},
+           formatter:(v)=>v!==null&&v!==''?v+'%':''}}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:window.ChartDataLabels?{anchor:'center',align:'center',color:'#fff',
+          font:{family:"'DM Mono',monospace",size:18,weight:'500'},
+          formatter:(v,ctx)=>ctx.dataset.type==='line'?'':(v>0?v:'')}:{display:false},
+        tooltip:{callbacks:{afterBody:(items)=>{
+          const wk=items[0]?.label; if(!wk||!wm[wk]) return '';
+          const {pass,fail}=wm[wk]; const t=pass+fail;
+          return 'Total: '+t+'  |  Pass Rate: '+(t>0?Math.round(pass/t*100):0)+'%';
+        }}}
+      },
+      scales:{
+        x:{stacked:true,ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45},grid:{color:cc().grid}},
+        y:{stacked:true,beginAtZero:true,position:'left',
+           ticks:{color:cc().tickFade,font:{size:13},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
+           grid:{color:cc().grid},title:{display:true,text:'Reviews',color:cc().tickDim,font:{size:11}}},
+        y2:{beginAtZero:false,min:0,max:110,position:'right',
+            ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
+            grid:{drawOnChartArea:false},title:{display:true,text:'Pass Rate %',color:cc().purple,font:{size:11}}}
+      }
+    }
+  });
+}
+
+function _buildPEWeekMap(legacyRows, level, approvedColIdx, rejectedColIdx, newRaws, rangeStart, rangeEnd){
+  /* Pass logic: eventual approval wins — if approved date exists → pass */
+  const wm={};
+  // Legacy rows (≤ WW22_CUTOFF)
+  legacyRows.forEach(r=>{
+    if(level && getLevel(colG(r))!==level) return;
+    const dateField=col(r,approvedColIdx)||col(r,rejectedColIdx);
+    if(!dateField) return;
+    const d=parseDate(dateField);
+    if(!d||isNaN(d)||d>WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const wk=isoWeek(d);
+    if(!wm[wk]) wm[wk]={pass:0,fail:0};
+    if(col(r,approvedColIdx)) wm[wk].pass++; else wm[wk].fail++;
+  });
+  // WW22+ rows (separate raw arrays: col 6=date, col 7=pass/fail)
+  newRaws.forEach(r=>{
+    const d=parseDate(col(r,6));
+    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
+    const val=col(r,7).toLowerCase();
+    if(val!=='pass'&&val!=='fail') return;
+    const wk=isoWeek(d);
+    if(!wm[wk]) wm[wk]={pass:0,fail:0};
+    if(val==='pass') wm[wk].pass++; else wm[wk].fail++;
+  });
+  return wm;
+}
+
+function renderPEElecLotChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('peElecLotChart');
+  if(peElecLotChart){peElecLotChart.destroy();peElecLotChart=null;}
+  const wm=_buildPEWeekMap(rawRows,'Lot-Level Design',16,17,lotElecRaws,rangeStart,rangeEnd);
+  const weeks=Object.keys(wm).sort();
+  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
+  peElecLotChart=_renderPEChart(el,document.getElementById('pe-elec-lot-label'),wm,weeks,'#4FC3F7',rangeLabel);
+}
+
+function renderPEStrucLotChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('peStrucLotChart');
+  if(peStrucLotChart){peStrucLotChart.destroy();peStrucLotChart=null;}
+  const wm=_buildPEWeekMap(rawRows,'Lot-Level Design',20,21,lotStrucRaws,rangeStart,rangeEnd);
+  const weeks=Object.keys(wm).sort();
+  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
+  peStrucLotChart=_renderPEChart(el,document.getElementById('pe-struc-lot-label'),wm,weeks,'#4FC3F7',rangeLabel);
+}
+
+function renderPEElecCommChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('peElecCommChart');
+  if(peElecCommChart){peElecCommChart.destroy();peElecCommChart=null;}
+  const wm=_buildPEWeekMap(rawRows,'Community-Level Design',16,17,commElecRaws,rangeStart,rangeEnd);
+  const weeks=Object.keys(wm).sort();
+  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
+  peElecCommChart=_renderPEChart(el,document.getElementById('pe-elec-comm-label'),wm,weeks,'#69F0AE',rangeLabel);
+}
+
+function renderPEStrucCommChart(rangeStart, rangeEnd, rangeLabel){
+  const el=document.getElementById('peStrucCommChart');
+  if(peStrucCommChart){peStrucCommChart.destroy();peStrucCommChart=null;}
+  const wm=_buildPEWeekMap(rawRows,'Community-Level Design',20,21,commStrucRaws,rangeStart,rangeEnd);
+  const weeks=Object.keys(wm).sort();
+  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
+  peStrucCommChart=_renderPEChart(el,document.getElementById('pe-struc-comm-label'),wm,weeks,'#69F0AE',rangeLabel);
 }
 
 
@@ -3305,6 +3488,10 @@ function renderScreen7(){
   renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel);
   renderC4FpyChart(rangeStart, rangeEnd, rangeLabel);
   renderL7FpyChart(rangeStart, rangeEnd, rangeLabel);
+  renderPEElecCommChart(rangeStart, rangeEnd, rangeLabel);
+  renderPEStrucCommChart(rangeStart, rangeEnd, rangeLabel);
+  renderPEElecLotChart(rangeStart, rangeEnd, rangeLabel);
+  renderPEStrucLotChart(rangeStart, rangeEnd, rangeLabel);
 }
 
 function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){

@@ -461,7 +461,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <span class="screen-label">Screen</span>
           <div class="screen-dot active" onclick="goTo(0)" title="Totals & in progress"></div>
           <div class="screen-dot" onclick="goTo(1)" title="Designer cards"></div>
-          <div class="screen-dot" onclick="goTo(2)" title="Level groups"></div>
+          
           <div class="screen-dot" onclick="goTo(3)" title="Trend & ranking"></div>
           <div class="screen-dot" onclick="goTo(4)" title="Productivity equivalency"></div>
           <div class="screen-dot" onclick="goTo(5)" title="Team reports"></div>
@@ -3057,8 +3057,8 @@ function _renderPEChart(el, labelEl, wm, weeks, passColor, rangeLabel){
     labelEl.textContent=rangeLabel+(rate!==null?' — Pass Rate: '+rate+'%':'');
   }
   const fpyLine=weeks.map(wk=>{
-    const v=wm[wk]; if(!v) return null;
-    const t=v.pass+v.fail; return t>0?Math.round(v.pass/t*100):null;
+    const v=wm[wk]; if(!v) return 100;
+    const t=v.pass+v.fail; return t>0?Math.round(v.pass/t*100):100;
   });
   if(window.ChartDataLabels) Chart.register(ChartDataLabels);
   return new Chart(el,{
@@ -3699,8 +3699,8 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
   if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
-    const {pass,fail}=wm[wk]; const t=pass+fail;
-    return t>0?Math.round(pass/t*100):null;
+    const {pass,fail}=wm[wk]||{pass:0,fail:0}; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):100;
   });
 
   if(c4FpyChart) c4FpyChart.destroy();
@@ -3787,8 +3787,8 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
   if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
-    const {pass,fail}=wm[wk]; const t=pass+fail;
-    return t>0?Math.round(pass/t*100):null;
+    const {pass,fail}=wm[wk]||{pass:0,fail:0}; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):100;
   });
 
   if(l7FpyChart) l7FpyChart.destroy();

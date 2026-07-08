@@ -462,12 +462,12 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div class="screen-dot active" onclick="goTo(0)" title="Totals & in progress"></div>
           <div class="screen-dot" onclick="goTo(1)" title="Designer cards"></div>
           
-          <div class="screen-dot" onclick="goTo(3)" title="Trend & ranking"></div>
-          <div class="screen-dot" onclick="goTo(4)" title="Productivity equivalency"></div>
-          <div class="screen-dot" onclick="goTo(5)" title="Team reports"></div>
-          <div class="screen-dot" onclick="goTo(6)" title="SLA report"></div>
-          <div class="screen-dot" onclick="goTo(7)" title="FPY report"></div>
-          <div class="screen-dot" onclick="goTo(8)" title="Design Pass Rate"></div>
+          <div class="screen-dot" onclick="goTo(2)" title="Trend & ranking"></div>
+          <div class="screen-dot" onclick="goTo(3)" title="Productivity equivalency"></div>
+          <div class="screen-dot" onclick="goTo(4)" title="Team reports"></div>
+          <div class="screen-dot" onclick="goTo(5)" title="SLA report"></div>
+          <div class="screen-dot" onclick="goTo(6)" title="FPY report"></div>
+          <div class="screen-dot" onclick="goTo(7)" title="Design Pass Rate"></div>
         </div>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <button class="btn-xs hi" onclick="openIP()" style="border-color:var(--border2);color:var(--text);" id="ip-btn">✎ In Progress</button>
@@ -654,7 +654,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
     </div>
 
     <!-- SCREEN 3: Trend + Rank -->
-    <div class="screen" id="screen-3"><!-- merged into screen-2; hidden by default --></div>
+    <div id="screen-3" style="display:none;"><!-- merged into screen-2 --></div>
 
     <!-- SCREEN 8: Productivity Equivalency -->
     <div class="screen" id="screen-4">
@@ -1284,7 +1284,7 @@ let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
 let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null,
     peElecLotChart=null, peElecCommChart=null, peStrucLotChart=null, peStrucCommChart=null, peqDonutChart=null, peqView='daily';
-let hiddenScreens=new Set([2]); /* screen indices to hide from rotation */
+let hiddenScreens=new Set(); /* screen indices to hide from rotation */
 let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false, s7SelLast13=true;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
@@ -1970,12 +1970,12 @@ function goTo(i){
     d.classList.toggle('active',di===i);
   });
   currentScreen=i;
-  if(i===1||i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
-  if(i===4) renderScreen8([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
-  if(i===5) renderTeamReports();
-  if(i===6) renderScreen6();
+  if(i===1||i===2) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
+  if(i===3) renderScreen8([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
+  if(i===4) renderTeamReports();
+  if(i===5) renderScreen6();
+  if(i===6) renderScreen7();
   if(i===7) renderScreen7();
-  if(i===8) renderScreen7();
 }
 
 function togglePause(){
@@ -2003,8 +2003,8 @@ function renderBoard(){
   renderScreen0(designers,rows);
   renderScreen1(designers,rows);
   renderScreen2(designers,rows);
-  if(currentScreen===4) renderScreen8(designers, rows);
-  if(currentScreen===5) renderTeamReports();
+  if(currentScreen===3) renderScreen8(designers, rows);
+  if(currentScreen===4) renderTeamReports();
   updateTs();
 }
 

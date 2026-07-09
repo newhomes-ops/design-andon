@@ -1483,13 +1483,13 @@ function fetchDesignCSV(firstLoad, _attempt){
   if(!designURL) return;
   _attempt=_attempt||1;
   const cached=getCachedCSV(designURL);
-  if(cached&&!firstLoad){
-    console.log('Design CSV from cache');
-    parseDesignCSV(cached.map(r=>Object.values(r).join(',')).join('\n'), firstLoad);
-    return;
+  if(cached&&_attempt===1){
+    console.log('Design CSV from cache ('+cached.length+' rows)');
+    // Re-build text for parseDesignCSV by using cached row data
+    mergeAndApply(); return;
   }
   if(_attempt===1) showStatus('Fetching data…','loading');
-  fetchWithAuth(designURL,{cache:'no-cache'})
+  ghFetch(designURL,{cache:'no-cache'})
     .then(r=>{
       if(r.status===429){
         const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
@@ -1501,7 +1501,7 @@ function fetchDesignCSV(firstLoad, _attempt){
       if(!r.ok) throw new Error('HTTP '+r.status);
       return r.text();
     })
-    .then(text=>{if(text)parseDesignCSV(text, firstLoad);})
+    .then(text=>{if(text){setCachedCSV(designURL,[]); parseDesignCSV(text,firstLoad);}})
     .catch(err=>showStatus('Failed to load Design CSV: '+err.message,'error'));
 }
 
@@ -1578,17 +1578,30 @@ function reloadFile(){
    ═══════════════════════════════════════════════════════════════════ */
 
 /** Generic CSV fetch — returns [] on any error */
-/* ── CSV cache (sessionStorage, 10-min TTL) ── */
-const CSV_CACHE_TTL=10*60*1000;
+/* ── GitHub API routing + sessionStorage cache (14-min TTL) ── */
+const CSV_CACHE_TTL=14*60*1000; // just under 15-min auto-reload
 function getCachedCSV(url){try{const r=sessionStorage.getItem('csv_'+url);if(!r)return null;const e=JSON.parse(r);if(Date.now()-e.ts>CSV_CACHE_TTL)return null;return e.data;}catch(e){return null;}}
 function setCachedCSV(url,data){try{sessionStorage.setItem('csv_'+url,JSON.stringify({ts:Date.now(),data}));}catch(e){}}
-function fetchWithAuth(url,opts){const h=Object.assign({},opts&&opts.headers);const t=getGHToken();if(t)h['Authorization']='token '+t;return fetch(url,Object.assign({},opts,{headers:h}));}
+
+/* Route raw.githubusercontent.com → api.github.com when token available */
+function ghFetch(url, opts){
+  const tok=getGHToken();
+  if(tok){
+    const m=url.match(/https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/[^\/]+\/(.+)/);
+    if(m){
+      const apiUrl='https://api.github.com/repos/'+m[1]+'/'+m[2]+'/contents/'+m[3];
+      return fetch(apiUrl,Object.assign({},opts,{headers:Object.assign({'Authorization':'token '+tok,'Accept':'application/vnd.github.raw+json'},opts&&opts.headers)}));
+    }
+    return fetch(url,Object.assign({},opts,{headers:Object.assign({'Authorization':'token '+tok},opts&&opts.headers)}));
+  }
+  return fetch(url,opts||{});
+}
 
 function fetchCSVPromise(url, name, _attempt){
   const cached=getCachedCSV(url);
   if(cached){console.log(name+' from cache ('+cached.length+' rows)');return Promise.resolve(cached);}
   _attempt=_attempt||1;
-  return fetchWithAuth(url,{cache:'no-cache'})
+  return ghFetch(url,{cache:'no-cache'})
     .then(r=>{
       if(r.status===429){
         const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
@@ -1605,20 +1618,24 @@ function fetchCSVPromise(url, name, _attempt){
 
 /** Fetch all new sources; merge + re-render when done */
 function fetchAllNewSources(){
-  Promise.allSettled([
-    fetchCSVPromise(lotDesignURL,'Lot Design').then(d=>{lotDesignRaws=d;}),
-    fetchCSVPromise(lotQAURL,'Lot QA').then(d=>{lotQARaws=d;}),
-    fetchCSVPromise(lotElecURL,'Lot Electrical').then(d=>{lotElecRaws=d;}),
-    fetchCSVPromise(lotStrucURL,'Lot Structural').then(d=>{lotStrucRaws=d;}),
-    fetchCSVPromise(commDesignURL,'Community Design').then(d=>{commDesignRaws=d;}),
-    fetchCSVPromise(commElecURL,'Community Electrical').then(d=>{commElecRaws=d;}),
-    fetchCSVPromise(commStrucURL,'Community Structural').then(d=>{commStrucRaws=d;}),
-    fetchCSVPromise(commCommercialURL,'Commercial').then(d=>{commCommercialRaws=d;})
-  ]).then(()=>{
-    // Always merge — if legacy CSV hasn't loaded yet, mergeAndApply uses empty legacyRows
-    // which is fine; parseDesignCSV firstLoad will also call mergeAndApply once it finishes.
-    mergeAndApply();
+  /* Stagger 2s apart — cached requests resolve instantly, network ones stay spread out */
+  const sources=[
+    [lotDesignURL,    'Lot Design',          d=>{lotDesignRaws=d;}],
+    [lotQAURL,        'Lot QA',              d=>{lotQARaws=d;}],
+    [lotElecURL,      'Lot Electrical',      d=>{lotElecRaws=d;}],
+    [lotStrucURL,     'Lot Structural',      d=>{lotStrucRaws=d;}],
+    [commDesignURL,   'Community Design',    d=>{commDesignRaws=d;}],
+    [commElecURL,     'Community Electrical',d=>{commElecRaws=d;}],
+    [commStrucURL,    'Community Structural',d=>{commStrucRaws=d;}],
+    [commCommercialURL,'Commercial',         d=>{commCommercialRaws=d;}]
+  ];
+  let chain=Promise.resolve();
+  sources.forEach(([url,name,setter],i)=>{
+    chain=chain
+      .then(()=>new Promise(res=>setTimeout(res, i===0?0:2000)))
+      .then(()=>fetchCSVPromise(url,name).then(setter));
   });
+  chain.then(()=>mergeAndApply());
 }
 
 /**
@@ -2931,14 +2948,13 @@ function fetchFPYCSV(_attempt){
   if(!fpyURL) return;
   _attempt=_attempt||1;
   const cached=getCachedCSV(fpyURL);
-  if(cached){
-    console.log('FPY CSV from cache ('+cached.length+' rows)');
+  if(cached&&_attempt===1){
     fpyRawRows=cached;
+    console.log('FPY CSV from cache ('+cached.length+' rows)');
     if(currentScreen===6) renderScreen7();
-    startFPYAutoReload();
-    return;
+    startFPYAutoReload(); return;
   }
-  fetchWithAuth(fpyURL,{cache:'no-cache'})
+  ghFetch(fpyURL,{cache:'no-cache'})
     .then(r=>{
       if(r.status===429){
         const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
@@ -2951,9 +2967,8 @@ function fetchFPYCSV(_attempt){
     })
     .then(text=>{
       if(!text) return;
-      const result=Papa.parse(text,{header:true,skipEmptyLines:true});
-      fpyRawRows=result.data;
-      setCachedCSV(fpyURL, fpyRawRows);
+      fpyRawRows=Papa.parse(text,{header:true,skipEmptyLines:true}).data;
+      setCachedCSV(fpyURL,fpyRawRows);
       if(currentScreen===6) renderScreen7();
       startFPYAutoReload();
     })

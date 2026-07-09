@@ -1959,9 +1959,10 @@ function resetBar(){
 }
 
 function nextScreen(){
-  let next=(currentScreen+1)%9;
+  const total=document.querySelectorAll('.screen').length;
+  let next=(currentScreen+1)%total;
   let tries=0;
-  while(hiddenScreens.has(next)&&tries<9){ next=(next+1)%9; tries++; }
+  while(hiddenScreens.has(next)&&tries<total){ next=(next+1)%total; tries++; }
   goTo(next);
 }
 
@@ -3351,8 +3352,8 @@ function renderScreen7(){
   const wmL4={};
   Object.keys(l4LotCnt).forEach(wk=>{
     const scores=l4QA[wk]||[];
-    if(!scores.length) return; // need QA data to compute
-    const qaAvg=scores.reduce((a,b)=>a+b,0)/scores.length;
+    // If no QA scores recorded yet, treat as 100% (show PE stamp rates alone)
+    const qaAvg=scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 100;
     const cnt=l4LotCnt[wk];
     const elecFails=l4ElecFail[wk]||0;
     const strucFails=l4StrucFail[wk]||0;

@@ -1621,7 +1621,32 @@ function reloadFile(){
    ═══════════════════════════════════════════════════════════════════ */
 
 /** Generic CSV fetch — returns [] on any error */
+/* ── CSV fetch cache (sessionStorage, 10-min TTL) ── */
+const CSV_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+function getCachedCSV(url){
+  try{
+    const raw=sessionStorage.getItem('csv_cache_'+url);
+    if(!raw) return null;
+    const entry=JSON.parse(raw);
+    if(Date.now()-entry.ts > CSV_CACHE_TTL) return null; // expired
+    return entry.data;
+  }catch(e){ return null; }
+}
+
+function setCachedCSV(url, data){
+  try{
+    sessionStorage.setItem('csv_cache_'+url, JSON.stringify({ts:Date.now(), data}));
+  }catch(e){ /* quota exceeded — skip caching */ }
+}
+
 function fetchCSVPromise(url, name, _attempt){
+  // Serve from cache if fresh
+  const cached=getCachedCSV(url);
+  if(cached){
+    console.log(name+' served from cache ('+cached.length+' rows)');
+    return Promise.resolve(cached);
+  }
   _attempt=_attempt||1;
   return fetch(url,{cache:'no-cache'})
     .then(r=>{
@@ -1635,7 +1660,11 @@ function fetchCSVPromise(url, name, _attempt){
       if(!r.ok) throw new Error('HTTP '+r.status);
       return r.text();
     })
-    .then(text=>Papa.parse(text,{header:true,skipEmptyLines:true}).data)
+    .then(text=>{
+      const data=Papa.parse(text,{header:true,skipEmptyLines:true}).data;
+      setCachedCSV(url, data); // store in cache
+      return data;
+    })
     .catch(err=>{console.warn(name+' fetch failed:',err.message); return [];});
 }
 

@@ -1479,12 +1479,29 @@ window.addEventListener('load', ()=>{
   startFromURLs();
 });
 
-function fetchDesignCSV(firstLoad){
+function fetchDesignCSV(firstLoad, _attempt){
   if(!designURL) return;
-  showStatus('Fetching data…','loading');
-  fetch(designURL, {cache:'no-cache'})
-    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(text=>parseDesignCSV(text, firstLoad))
+  _attempt=_attempt||1;
+  const cached=getCachedCSV(designURL);
+  if(cached&&!firstLoad){
+    console.log('Design CSV from cache');
+    parseDesignCSV(cached.map(r=>Object.values(r).join(',')).join('\n'), firstLoad);
+    return;
+  }
+  if(_attempt===1) showStatus('Fetching data…','loading');
+  fetchWithAuth(designURL,{cache:'no-cache'})
+    .then(r=>{
+      if(r.status===429){
+        const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
+        console.warn('Design CSV 429 — retrying in '+delay+'ms (attempt '+_attempt+')');
+        showStatus('Rate limited — retrying in '+(delay/1000)+'s…','loading');
+        if(_attempt<=3){setTimeout(()=>fetchDesignCSV(firstLoad,_attempt+1),delay);return;}
+        throw new Error('HTTP 429 after '+_attempt+' attempts');
+      }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .then(text=>{if(text)parseDesignCSV(text, firstLoad);})
     .catch(err=>showStatus('Failed to load Design CSV: '+err.message,'error'));
 }
 
@@ -1565,13 +1582,13 @@ function reloadFile(){
 const CSV_CACHE_TTL=10*60*1000;
 function getCachedCSV(url){try{const r=sessionStorage.getItem('csv_'+url);if(!r)return null;const e=JSON.parse(r);if(Date.now()-e.ts>CSV_CACHE_TTL)return null;return e.data;}catch(e){return null;}}
 function setCachedCSV(url,data){try{sessionStorage.setItem('csv_'+url,JSON.stringify({ts:Date.now(),data}));}catch(e){}}
+function fetchWithAuth(url,opts){const h=Object.assign({},opts&&opts.headers);const t=getGHToken();if(t)h['Authorization']='token '+t;return fetch(url,Object.assign({},opts,{headers:h}));}
 
 function fetchCSVPromise(url, name, _attempt){
   const cached=getCachedCSV(url);
   if(cached){console.log(name+' from cache ('+cached.length+' rows)');return Promise.resolve(cached);}
   _attempt=_attempt||1;
-  const _h={};const _tok=getGHToken();if(_tok)_h['Authorization']='token '+_tok;
-  return fetch(url,{cache:'no-cache',headers:_h})
+  return fetchWithAuth(url,{cache:'no-cache'})
     .then(r=>{
       if(r.status===429){
         const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
@@ -2910,14 +2927,34 @@ function s6SelectMonth(m){
 function fpyColJ(r){ return Object.values(r)[9]||''; }
 function fpyColL(r){ return Object.values(r)[11]||''; }
 
-function fetchFPYCSV(){
+function fetchFPYCSV(_attempt){
   if(!fpyURL) return;
-  fetch(fpyURL, {cache:'no-cache'})
-    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+  _attempt=_attempt||1;
+  const cached=getCachedCSV(fpyURL);
+  if(cached){
+    console.log('FPY CSV from cache ('+cached.length+' rows)');
+    fpyRawRows=cached;
+    if(currentScreen===6) renderScreen7();
+    startFPYAutoReload();
+    return;
+  }
+  fetchWithAuth(fpyURL,{cache:'no-cache'})
+    .then(r=>{
+      if(r.status===429){
+        const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
+        console.warn('FPY CSV 429 — retrying in '+delay+'ms (attempt '+_attempt+')');
+        if(_attempt<=3){setTimeout(()=>fetchFPYCSV(_attempt+1),delay);return;}
+        throw new Error('HTTP 429 after '+_attempt+' attempts');
+      }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.text();
+    })
     .then(text=>{
+      if(!text) return;
       const result=Papa.parse(text,{header:true,skipEmptyLines:true});
       fpyRawRows=result.data;
-      if(currentScreen===8) renderScreen7();
+      setCachedCSV(fpyURL, fpyRawRows);
+      if(currentScreen===6) renderScreen7();
       startFPYAutoReload();
     })
     .catch(err=>console.warn('FPY CSV fetch failed:',err.message));

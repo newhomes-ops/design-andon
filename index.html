@@ -432,6 +432,14 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 .ip-cell-label{font-size:.55rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
 .ip-cell-val{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;color:var(--accent);}
 .ip-cell-val.zero{color:var(--dim);font-size:1.2rem;}
+
+/* ── screen-9 compact layout ── */
+#screen-9 { padding: .7rem 1.4rem !important; }
+#screen-9 .panel { padding: .55rem .9rem; }
+#screen-9 .panel-header { margin-bottom: .3rem; }
+#screen-9 .trend-legend { gap: .4rem; }
+#screen-9 .leg-item { font-size: .58rem; gap: .25rem; }
+#screen-9 .panel-title { font-size: .58rem; letter-spacing: .07em; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -903,7 +911,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 9: Design Pass Rate -->
     <div class="screen" id="screen-9">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;">
         <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN PASS RATE</div>
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:.4rem;">
@@ -920,14 +928,14 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.9rem;flex:1;min-height:0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.55rem;flex:1;min-height:0;">
 
         <!-- C4 Community Design Pass Rate -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
-              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
@@ -942,10 +950,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- L7 Lot Design Pass Rate -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
-              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
@@ -961,10 +969,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- PE Electrical Community -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community PE Electrical Review &mdash; by week</div>
-              <div id="pe-elec-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="pe-elec-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#A5D6A7"></span>Pass</span>
@@ -979,10 +987,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- PE Structural Community -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community PE Structural Review &mdash; by week</div>
-              <div id="pe-struc-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="pe-struc-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#FFCC80"></span>Pass</span>
@@ -997,10 +1005,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- PE Electrical Lot -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot PE Electrical Review &mdash; by week</div>
-              <div id="pe-elec-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="pe-elec-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#80DEEA"></span>Pass</span>
@@ -1015,10 +1023,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- PE Structural Lot -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
+          <div class="panel-header" style="margin-bottom:.3rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
               <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot PE Structural Review &mdash; by week</div>
-              <div id="pe-struc-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div id="pe-struc-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#FFAB91"></span>Pass</span>
@@ -2812,6 +2820,86 @@ function percentile(sorted, p){
   return sorted[lo]+(sorted[hi]-sorted[lo])*(idx-lo);
 }
 
+
+let _slaTypeCharts=[];
+
+function renderSLATypeCharts(rows, weeks){
+  const container=document.getElementById('sla-type-charts');
+  if(!container) return;
+
+  // Destroy previous instances
+  _slaTypeCharts.forEach(c=>{try{c.destroy();}catch(e){}});
+  _slaTypeCharts=[];
+
+  const LV_COLORS=['#4FC3F7','#69F0AE','#FFB74D'];
+
+  // Build level → week → [sla values]
+  const lvMap={};
+  LEVELS.forEach(lv=>{ lvMap[lv]={}; weeks.forEach(wk=>{ lvMap[lv][wk]=[]; }); });
+  rows.forEach(r=>{
+    const d=parseDate(colJ(r)); if(!d) return;
+    const wk=isoWeek(d);
+    const lv=getLevel(colG(r));
+    const sla=getSLA(r);
+    if(sla===null||!LEVELS.includes(lv)||!lvMap[lv][wk]) return;
+    lvMap[lv][wk].push(sla);
+  });
+
+  function metricVal(arr){
+    if(!arr||!arr.length) return null;
+    const s=[...arr].sort((a,b)=>a-b);
+    if(slaTypeMetric==='avg') return parseFloat((arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1));
+    if(slaTypeMetric==='p50') return parseFloat(percentile(s,50).toFixed(1));
+    if(slaTypeMetric==='p90') return parseFloat(percentile(s,90).toFixed(1));
+    return null;
+  }
+
+  // Build HTML: one canvas per level, stacked
+  container.innerHTML=`<div style="display:flex;flex-direction:column;gap:.5rem;height:100%;">
+    ${LEVELS.map((lv,i)=>`
+      <div style="flex:1;min-height:0;position:relative;">
+        <canvas id="slaTypeChart_${i}" role="img" aria-label="${LV_SHORT[lv]} SLA trend"></canvas>
+      </div>`).join('')}
+  </div>`;
+
+  const colors=cc();
+  LEVELS.forEach((lv,i)=>{
+    const canvas=document.getElementById('slaTypeChart_'+i);
+    if(!canvas) return;
+    const data=weeks.map(wk=>metricVal(lvMap[lv][wk]));
+    const hasData=data.some(v=>v!==null);
+    const chart=new Chart(canvas,{
+      type:'bar',
+      data:{
+        labels:weeks,
+        datasets:[{
+          label:LV_SHORT[lv],
+          data,
+          backgroundColor:LV_COLORS[i]+'55',
+          borderColor:LV_COLORS[i],
+          borderWidth:1.5,
+          borderRadius:2,
+          datalabels:{display:false}
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          title:{display:true,text:LV_SHORT[lv],color:LV_COLORS[i],font:{size:10,weight:'bold'},padding:{bottom:2}},
+          tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y!==null?c.parsed.y.toFixed(1)+'d':'—'}`}}
+        },
+        scales:{
+          x:{ticks:{color:colors.tick,font:{size:7},maxRotation:45,minRotation:30},grid:{color:colors.grid}},
+          y:{beginAtZero:true,ticks:{color:colors.tickFade,font:{size:8},callback:v=>v+'d'},
+             grid:{color:colors.grid}}
+        }
+      }
+    });
+    _slaTypeCharts.push(chart);
+  });
+}
+
 function renderScreen6(){
   const allRows=rawRows;
   const allDates=allRows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d));
@@ -2929,7 +3017,7 @@ function renderScreen6(){
 
   /* Update big chart title to reflect selected metric */
   const metricLabel={'avg':'Average','p50':'P.50','p90':'P.90'}[slaTypeMetric]||'Average';
-  const bigTitleEl=document.querySelector('#screen-6 .panel-title');
+  const bigTitleEl=document.querySelector('#screen-7 .panel-title');
   if(bigTitleEl) bigTitleEl.textContent=`${metricLabel} SLA by week — all levels`;
 
   function levelMetricVal(vals){

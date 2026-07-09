@@ -1648,7 +1648,10 @@ function fetchCSVPromise(url, name, _attempt){
     return Promise.resolve(cached);
   }
   _attempt=_attempt||1;
-  return fetch(url,{cache:'no-cache'})
+  const _headers={};
+  const _tok=getGHToken();
+  if(_tok) _headers['Authorization']='token '+_tok;
+  return fetch(url,{cache:'no-cache', headers:_headers})
     .then(r=>{
       if(r.status===429){
         const retryAfter=parseInt(r.headers.get('Retry-After')||'0',10);

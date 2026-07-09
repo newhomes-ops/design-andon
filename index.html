@@ -461,13 +461,13 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <span class="screen-label">Screen</span>
           <div class="screen-dot active" onclick="goTo(0)" title="Totals & in progress"></div>
           <div class="screen-dot" onclick="goTo(1)" title="Designer cards"></div>
-          
-          <div class="screen-dot" onclick="goTo(2)" title="Trend & ranking"></div>
-          <div class="screen-dot" onclick="goTo(3)" title="Productivity equivalency"></div>
-          <div class="screen-dot" onclick="goTo(4)" title="Team reports"></div>
-          <div class="screen-dot" onclick="goTo(5)" title="SLA report"></div>
-          <div class="screen-dot" onclick="goTo(6)" title="FPY report"></div>
-          <div class="screen-dot" onclick="goTo(7)" title="Design Pass Rate"></div>
+          <div class="screen-dot" onclick="goTo(2)" title="Level groups"></div>
+          <div class="screen-dot" onclick="goTo(3)" title="Trend & ranking"></div>
+          <div class="screen-dot" onclick="goTo(4)" title="Productivity equivalency"></div>
+          <div class="screen-dot" onclick="goTo(5)" title="Team reports"></div>
+          <div class="screen-dot" onclick="goTo(6)" title="SLA report"></div>
+          <div class="screen-dot" onclick="goTo(7)" title="FPY report"></div>
+          <div class="screen-dot" onclick="goTo(8)" title="Design Pass Rate"></div>
         </div>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <button class="btn-xs hi" onclick="openIP()" style="border-color:var(--border2);color:var(--text);" id="ip-btn">✎ In Progress</button>
@@ -495,7 +495,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <input type="date" id="sf-from-0" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-0').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-0" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-0').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 13 weeks</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
         <button class="slicer-btn" id="ytd-btn-0" onclick="setYTDFilter()">YTD</button>
       </div>
       <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DESIGN PIPELINE</div>
@@ -607,7 +607,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <input type="date" id="sf-from-1" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-1').value)">
         <span style="font-size:.68rem;color:var(--dim);">to</span>
         <input type="date" id="sf-to-1" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-1').value, this.value)">
-        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 13 weeks</button>
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
         <button class="slicer-btn" id="ytd-btn-1" onclick="setYTDFilter()">YTD</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;">
@@ -622,21 +622,34 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 2: Level Groups -->
     <div class="screen" id="screen-2">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
-        <div class="section-label" style="color:var(--text);margin-bottom:0;">OUTPUT &amp; LEVEL SUMMARY</div>
-        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
-          <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
-          <div id="screen-q-slicer-2" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
-          <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Range</span>
-          <input type="date" id="sf-from-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-2').value)">
-          <span style="font-size:.68rem;color:var(--dim);">to</span>
-          <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
-          <button class="btn-xs btn-last7" onclick="resetScreenFilter()">Last 13 weeks</button>
-          <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
-        </div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
+        <div id="screen-q-slicer-2" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-left:.4rem;">Range</span>
+        <input type="date" id="sf-from-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-2').value)">
+        <span style="font-size:.68rem;color:var(--dim);">to</span>
+        <input type="date" id="sf-to-2" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-2').value, this.value)">
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-2" onclick="setYTDFilter()">YTD</button>
       </div>
-      <div id="level-summary-tiles" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem;"></div>
-      <div class="bottom-panels" style="flex:1;min-height:0;">
+      <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">LEVEL BREAKDOWN</div>
+      <div class="level-group-grid" id="level-group-grid"></div>
+    </div>
+
+    <!-- SCREEN 3: Trend + Rank -->
+    <div id="screen-3" style="display:none;">
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
+        <div id="screen-q-slicer-3" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-left:.4rem;">Range</span>
+        <input type="date" id="sf-from-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-3').value)">
+        <span style="font-size:.68rem;color:var(--dim);">to</span>
+        <input type="date" id="sf-to-3" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-3').value, this.value)">
+        <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-3" onclick="setYTDFilter()">YTD</button>
+      </div>
+      <div class="section-label" style="color:var(--text);margin-bottom:.8rem;">DAILY OUTPUT &amp; RANKING</div>
+      <div class="bottom-panels">
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">Daily output — designs per day</div>
@@ -647,14 +660,13 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">Ranking — volume &amp; quality</div></div>
+          <div class="panel-header">
+            <div class="panel-title">Ranking — volume &amp; quality</div>
+          </div>
           <div id="rank-list" style="flex:1;overflow-y:auto;min-height:0;"></div>
         </div>
       </div>
     </div>
-
-    <!-- SCREEN 3: Trend + Rank -->
-    <div id="screen-3" style="display:none;"><!-- merged into screen-2 --></div>
 
     <!-- SCREEN 8: Productivity Equivalency -->
     <div class="screen" id="screen-4">
@@ -667,7 +679,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <input type="date" id="sf-from-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-8').value)">
           <span style="font-size:.68rem;color:var(--dim);">to</span>
           <input type="date" id="sf-to-8" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-8').value, this.value)">
-          <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 13 weeks</button>
+          <button class="btn-xs" onclick="resetScreenFilter()" class="btn-xs btn-last7">Last 7 work days</button>
           <button class="slicer-btn" id="ytd-btn-4" onclick="setYTDFilter()">YTD</button>
           <button class="btn-xs hi" onclick="openPEQSettings()" style="border-color:var(--border2);color:var(--text);">✎ Edit weights</button>
         </div>
@@ -768,7 +780,6 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
-            <button class="slicer-btn" id="s6-last13-btn" onclick="s6SelectLast13()">Last 13W</button>
             <button class="slicer-btn" id="s6-ytd-btn" onclick="s6SelectYTD()">YTD</button>
           </div>
         </div>
@@ -778,7 +789,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
       <div style="display:grid;grid-template-columns:1fr 600px;gap:1rem;height:calc(100% - 48px);">
 
         <!-- LEFT: stat panels + mini charts -->
-        <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;overflow-y:auto;">
+        <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;overflow:hidden;">
 
           <!-- Stat panels -->
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;" id="sla-stat-panels"></div>
@@ -797,7 +808,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
 
           <!-- Mini charts grid -->
-          <div id="sla-type-charts" style="flex:1;min-height:0;overflow-y:auto;"></div>
+          <div id="sla-type-charts" style="flex:1;min-height:0;"></div>
         </div>
 
         <!-- RIGHT: trend chart -->
@@ -832,8 +843,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
             <div id="fpy-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
           </div>
-          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-last13-btn" class="slicer-btn" onclick="s7SelectLast13()">Last 13W</button>
-          <button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button></div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button></div>
         </div>
       </div>
 
@@ -893,7 +903,6 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 9: Design Pass Rate -->
     <div class="screen" id="screen-9">
-      <!-- SLA-style compact header -->
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem;">
         <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN PASS RATE</div>
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
@@ -911,99 +920,45 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
       </div>
-      <!-- 3×2 chart grid -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.9rem;height:calc(100% - 48px);">
-        <!-- R1C1 Community QA -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;flex:1;min-height:0;">
+
+        <!-- C4 Community Design Pass Rate -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — Design Quality Audit</div>
-              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level Design Quality Audit &mdash; by week</div>
+              <div id="c4-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
               <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
             </div>
           </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="c4FpyChart"></canvas></div>
+          <div style="position:relative;flex:1;min-height:0;">
+            <canvas id="c4FpyChart" role="img" aria-label="Community design pass rate by week"></canvas>
+          </div>
         </div>
-        <!-- R1C2 Community PE Electrical -->
+
+        <!-- L7 Lot Design Pass Rate -->
         <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
           <div class="panel-header" style="margin-bottom:.6rem;">
             <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — PE Electrical</div>
-              <div id="pe-elec-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
-            </div>
-            <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
-            </div>
-          </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="peElecCommChart"></canvas></div>
-        </div>
-        <!-- R1C3 Community PE Structural -->
-        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Community-Level — PE Structural</div>
-              <div id="pe-struc-comm-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
-            </div>
-            <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#69F0AE"></span>Pass</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
-            </div>
-          </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="peStrucCommChart"></canvas></div>
-        </div>
-        <!-- R2C1 Lot QA -->
-        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — Design Quality Audit</div>
-              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
+              <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level Design Quality Audit &mdash; by week</div>
+              <div id="l7-fpy-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.07em;color:var(--text)"></div>
             </div>
             <div class="trend-legend">
               <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
               <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Pass Rate %</span>
             </div>
           </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="l7FpyChart"></canvas></div>
-        </div>
-        <!-- R2C2 Lot PE Electrical -->
-        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — PE Electrical</div>
-              <div id="pe-elec-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
-            </div>
-            <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
-            </div>
+          <div style="position:relative;flex:1;min-height:0;">
+            <canvas id="l7FpyChart" role="img" aria-label="Lot design pass rate by week"></canvas>
           </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="peElecLotChart"></canvas></div>
         </div>
-        <!-- R2C3 Lot PE Structural -->
-        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
-          <div class="panel-header" style="margin-bottom:.6rem;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <div class="panel-title" style="font-size:.72rem;letter-spacing:.1em;color:var(--text);opacity:.7;">Lot-Level — PE Structural</div>
-              <div id="pe-struc-lot-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--text)"></div>
-            </div>
-            <div class="trend-legend">
-              <span class="leg-item"><span class="leg-dot" style="background:#4FC3F7"></span>Pass</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#FF8A65"></span>Fail</span>
-              <span class="leg-item"><span class="leg-dot" style="background:#CE93D8"></span>Rate %</span>
-            </div>
-          </div>
-          <div style="position:relative;flex:1;min-height:0;"><canvas id="peStrucLotChart"></canvas></div>
-        </div>
-      </div><!-- /3x2 pass rate grid -->
+
+      </div><!-- /pass rate grid -->
     </div><!-- /screen-9 -->
 
       </div><!-- /screens-wrapper -->
@@ -1282,10 +1237,9 @@ let slaTargets = {
 let slaTypeCharts = {}; /* keyed by design type */
 let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
-let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null,
-    peElecLotChart=null, peElecCommChart=null, peStrucLotChart=null, peStrucCommChart=null, peqDonutChart=null, peqView='daily';
+let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null, peqDonutChart=null, peqView='daily';
 let hiddenScreens=new Set(); /* screen indices to hide from rotation */
-let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false, s7SelLast13=true;
+let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
 let s4SelYear=null, s4SelQ=null, s4SelMonth=null, s4SelYTD=false;
@@ -1295,7 +1249,7 @@ let trSelYear=null, trSelQ=null, trSelMonth=null, trSelYTD=false;
 /* Per-screen date filter state for screens 0-3 (shared — same date range applies) */
 let sfFrom='', sfTo='';
 let s5SelYear=null, s5SelQ=null, s5SelMonth=null, s5SelYTD=false;
-let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false, s6SelLast13=true;
+let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false;
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
 let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0 };
 /* { 'Lot-Level Design': n, 'Community-Level Design': n, 'Commercial Design': n } */
@@ -1463,12 +1417,11 @@ function lastNWorkDays(n, fromDate){
 function toYMD(d){return d instanceof Date?d.toISOString().slice(0,10):'';}
 function engr(name){return name?'Engr. '+name:name;}
 /* Set date filters to last 10 work days relative to latest date in data */
-function applyLast13Weeks(){
+function applyLastTenWorkDays(){
   const dates = rawRows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d));
   if(!dates.length) return;
   const maxDate = new Date(Math.max(...dates));
-  const minDate = new Date(maxDate);
-  minDate.setDate(minDate.getDate()-91); // 13 weeks = 91 calendar days
+  const minDate = lastNWorkDays(7, maxDate);
   sfFrom = toYMD(minDate);
   sfTo   = toYMD(maxDate);
 }
@@ -1512,7 +1465,7 @@ let commCommercialRaws = [];
 
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
-const AUTO_RELOAD_MS = 15 * 60 * 1000;
+const AUTO_RELOAD_MS = 5 * 60 * 1000;
 
 /* ── URL CONFIG SCREEN ── */
 function startFromURLs(){
@@ -1526,24 +1479,12 @@ window.addEventListener('load', ()=>{
   startFromURLs();
 });
 
-function fetchDesignCSV(firstLoad, _attempt){
+function fetchDesignCSV(firstLoad){
   if(!designURL) return;
-  _attempt=_attempt||1;
   showStatus('Fetching data…','loading');
   fetch(designURL, {cache:'no-cache'})
-    .then(r=>{
-      if(r.status===429){
-        const retryAfter=parseInt(r.headers.get('Retry-After')||'0',10);
-        const delay=retryAfter>0 ? retryAfter*1000 : Math.min(120000, _attempt*60000);
-        showStatus('Rate limited (429) — retrying in '+(delay/1000)+'s…','loading');
-        if(_attempt<=3) setTimeout(()=>fetchDesignCSV(firstLoad,_attempt+1),delay);
-        else showStatus('Failed to load Design CSV: HTTP 429 — rate limited','error');
-        return;
-      }
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.text();
-    })
-    .then(text=>{ if(text) parseDesignCSV(text, firstLoad); })
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(text=>parseDesignCSV(text, firstLoad))
     .catch(err=>showStatus('Failed to load Design CSV: '+err.message,'error'));
 }
 
@@ -1557,7 +1498,7 @@ function parseDesignCSV(text, firstLoad){
     const keys=Object.keys(sampleRow);
     console.log('CSV columns:',keys);
     showStatus(`Loaded ${rawRows.length} rows.`,'success');
-    applyLast13Weeks();
+    applyLastTenWorkDays();
     syncScreenFilters();
     buildScreenQuarterSlicers();
     try{ const saved=localStorage.getItem('andon_ip'); if(saved){ const p=JSON.parse(saved); if(p&&typeof p==='object'&&!Array.isArray(p)) inProgress=p; } }catch(e){}
@@ -1599,8 +1540,7 @@ function startAutoReload(){
   autoReloadTimer=setInterval(()=>{
     if(designURL) fetchDesignCSV(false);
     fetchIPFromGitHub();
-    /* Delay new sources by 5s so design CSV request clears first */
-    setTimeout(fetchAllNewSources, 5000);
+    fetchAllNewSources(); // also refresh WW22+ sources
   }, AUTO_RELOAD_MS);
 }
 
@@ -1621,75 +1561,47 @@ function reloadFile(){
    ═══════════════════════════════════════════════════════════════════ */
 
 /** Generic CSV fetch — returns [] on any error */
-/* ── CSV fetch cache (sessionStorage, 10-min TTL) ── */
-const CSV_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
-
-function getCachedCSV(url){
-  try{
-    const raw=sessionStorage.getItem('csv_cache_'+url);
-    if(!raw) return null;
-    const entry=JSON.parse(raw);
-    if(Date.now()-entry.ts > CSV_CACHE_TTL) return null; // expired
-    return entry.data;
-  }catch(e){ return null; }
-}
-
-function setCachedCSV(url, data){
-  try{
-    sessionStorage.setItem('csv_cache_'+url, JSON.stringify({ts:Date.now(), data}));
-  }catch(e){ /* quota exceeded — skip caching */ }
-}
+/* ── CSV cache (sessionStorage, 10-min TTL) ── */
+const CSV_CACHE_TTL=10*60*1000;
+function getCachedCSV(url){try{const r=sessionStorage.getItem('csv_'+url);if(!r)return null;const e=JSON.parse(r);if(Date.now()-e.ts>CSV_CACHE_TTL)return null;return e.data;}catch(e){return null;}}
+function setCachedCSV(url,data){try{sessionStorage.setItem('csv_'+url,JSON.stringify({ts:Date.now(),data}));}catch(e){}}
 
 function fetchCSVPromise(url, name, _attempt){
-  // Serve from cache if fresh
   const cached=getCachedCSV(url);
-  if(cached){
-    console.log(name+' served from cache ('+cached.length+' rows)');
-    return Promise.resolve(cached);
-  }
+  if(cached){console.log(name+' from cache ('+cached.length+' rows)');return Promise.resolve(cached);}
   _attempt=_attempt||1;
-  const _headers={};
-  const _tok=getGHToken();
-  if(_tok) _headers['Authorization']='token '+_tok;
-  return fetch(url,{cache:'no-cache', headers:_headers})
+  const _h={};const _tok=getGHToken();if(_tok)_h['Authorization']='token '+_tok;
+  return fetch(url,{cache:'no-cache',headers:_h})
     .then(r=>{
       if(r.status===429){
-        const retryAfter=parseInt(r.headers.get('Retry-After')||'0',10);
-        const delay=retryAfter>0 ? retryAfter*1000 : Math.min(90000, _attempt*30000);
-        console.warn(name+' rate-limited (429); retrying in '+delay+'ms (attempt '+_attempt+')');
-        if(_attempt<=3) return new Promise(res=>setTimeout(res,delay)).then(()=>fetchCSVPromise(url,name,_attempt+1));
-        throw new Error('HTTP 429 — rate limited after '+_attempt+' attempts');
+        const delay=parseInt(r.headers.get('Retry-After')||'0',10)*1000||Math.min(90000,_attempt*30000);
+        console.warn(name+' 429 — retrying in '+delay+'ms (attempt '+_attempt+')');
+        if(_attempt<=3)return new Promise(res=>setTimeout(res,delay)).then(()=>fetchCSVPromise(url,name,_attempt+1));
+        throw new Error('HTTP 429 after '+_attempt+' attempts');
       }
-      if(!r.ok) throw new Error('HTTP '+r.status);
+      if(!r.ok)throw new Error('HTTP '+r.status);
       return r.text();
     })
-    .then(text=>{
-      const data=Papa.parse(text,{header:true,skipEmptyLines:true}).data;
-      setCachedCSV(url, data); // store in cache
-      return data;
-    })
-    .catch(err=>{console.warn(name+' fetch failed:',err.message); return [];});
+    .then(text=>{const data=Papa.parse(text,{header:true,skipEmptyLines:true}).data;setCachedCSV(url,data);return data;})
+    .catch(err=>{console.warn(name+' fetch failed:',err.message);return [];});
 }
 
 /** Fetch all new sources; merge + re-render when done */
 function fetchAllNewSources(){
-  /* Stagger requests 1.5 s apart to avoid GitHub rate limits (429) */
-  const sources=[
-    [lotDesignURL,    'Lot Design',           d=>{lotDesignRaws=d;}],
-    [lotQAURL,        'Lot QA',               d=>{lotQARaws=d;}],
-    [lotElecURL,      'Lot Electrical',        d=>{lotElecRaws=d;}],
-    [lotStrucURL,     'Lot Structural',        d=>{lotStrucRaws=d;}],
-    [commDesignURL,   'Community Design',      d=>{commDesignRaws=d;}],
-    [commElecURL,     'Community Electrical',  d=>{commElecRaws=d;}],
-    [commStrucURL,    'Community Structural',  d=>{commStrucRaws=d;}],
-    [commCommercialURL,'Commercial',           d=>{commCommercialRaws=d;}],
-  ];
-  let chain=Promise.resolve();
-  sources.forEach(([url,name,setter],i)=>{
-    chain=chain.then(()=>new Promise(res=>setTimeout(res, i===0?0:1500)))
-               .then(()=>fetchCSVPromise(url,name).then(setter));
+  Promise.allSettled([
+    fetchCSVPromise(lotDesignURL,'Lot Design').then(d=>{lotDesignRaws=d;}),
+    fetchCSVPromise(lotQAURL,'Lot QA').then(d=>{lotQARaws=d;}),
+    fetchCSVPromise(lotElecURL,'Lot Electrical').then(d=>{lotElecRaws=d;}),
+    fetchCSVPromise(lotStrucURL,'Lot Structural').then(d=>{lotStrucRaws=d;}),
+    fetchCSVPromise(commDesignURL,'Community Design').then(d=>{commDesignRaws=d;}),
+    fetchCSVPromise(commElecURL,'Community Electrical').then(d=>{commElecRaws=d;}),
+    fetchCSVPromise(commStrucURL,'Community Structural').then(d=>{commStrucRaws=d;}),
+    fetchCSVPromise(commCommercialURL,'Commercial').then(d=>{commCommercialRaws=d;})
+  ]).then(()=>{
+    // Always merge — if legacy CSV hasn't loaded yet, mergeAndApply uses empty legacyRows
+    // which is fine; parseDesignCSV firstLoad will also call mergeAndApply once it finishes.
+    mergeAndApply();
   });
-  chain.then(()=>mergeAndApply());
 }
 
 /**
@@ -1916,7 +1828,7 @@ function syncScreenQuarterSlicers(){
       btn.classList.toggle('active', sfFrom===toYMD(qStart)&&sfTo===toYMD(qEnd));
     });
   });
-  /* Highlight "Last 13 weeks" buttons when active */
+  /* Highlight "Last 7 work days" buttons when active */
   const last7Active=isLast7WorkDays();
   document.querySelectorAll('.btn-last7').forEach(btn=>btn.classList.toggle('active',last7Active));
 }
@@ -1953,7 +1865,7 @@ function resetScreenFilter(){
     const btn=document.getElementById('ytd-btn-'+n);
     if(btn) btn.classList.remove('active');
   });
-  applyLast13Weeks();
+  applyLastTenWorkDays();
   syncScreenFilters();
   applyFilters();
 }
@@ -2007,12 +1919,12 @@ function goTo(i){
     d.classList.toggle('active',di===i);
   });
   currentScreen=i;
-  if(i===1||i===2) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
-  if(i===3) renderScreen8([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
-  if(i===4) renderTeamReports();
-  if(i===5) renderScreen6();
-  if(i===6) renderScreen7();
+  if(i===3) renderTrend([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
+  if(i===4) renderScreen8([...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort(), filteredRows);
+  if(i===5) renderTeamReports();
+  if(i===6) renderScreen6();
   if(i===7) renderScreen7();
+  if(i===8) renderScreen7();
 }
 
 function togglePause(){
@@ -2037,11 +1949,15 @@ function renderBoard(){
   const designers=[...new Set(rows.map(r=>colI(r)).filter(Boolean))].sort();
 
   renderScreen3(designers,rows);
-  renderScreen0(designers,rows);
+  try{ renderScreen0(designers,rows); }catch(e){
+    const g=document.getElementById('designer-grid');
+    if(g) g.innerHTML=`<div style="color:#ff6b6b;padding:2rem;font-size:.8rem;white-space:pre-wrap;">renderScreen0 threw:\n${e.stack||e}</div>`;
+    console.error('renderScreen0 error:',e);
+  }
   renderScreen1(designers,rows);
   renderScreen2(designers,rows);
-  if(currentScreen===3) renderScreen8(designers, rows);
-  if(currentScreen===4) renderTeamReports();
+  if(currentScreen===4) renderScreen8(designers, rows);
+  if(currentScreen===5) renderTeamReports();
   updateTs();
 }
 
@@ -2066,7 +1982,20 @@ function renderScreen0(designers,rows){
     return {...m, volNorm, score};
   }).sort((a,b)=>(b.score??-1)-(a.score??-1));
 
-    document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,score},rank)=>{
+  if(!scored.length){
+    const sampleI=filteredRows.slice(0,3).map(r=>JSON.stringify(col(r,8))).join(', ');
+    const sampleJ=filteredRows.slice(0,3).map(r=>JSON.stringify(col(r,9))).join(', ');
+    document.getElementById('designer-grid').innerHTML=`<div style="color:var(--muted);padding:2rem;font-size:.8rem;">
+      No designer cards.<br>
+      filteredRows: ${filteredRows.length} | rawRows: ${rawRows.length}<br>
+      sfFrom: ${sfFrom} | sfTo: ${sfTo}<br>
+      designers passed in: ${designers.length}<br>
+      sample colI(rows[0..2]): ${sampleI}<br>
+      sample colJ(rows[0..2]): ${sampleJ}
+    </div>`;
+    return;
+  }
+  document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,score},rank)=>{
     const dTotal=dR.length;
     const lv={};
     LEVELS.forEach(l=>lv[l]=dR.filter(r=>getLevel(colG(r))===l).length);
@@ -2847,15 +2776,8 @@ function renderScreen6(){
   /* Date range */
   let rangeStart, rangeEnd, rangeLabel;
   const s6ytdBtn=document.getElementById('s6-ytd-btn');
-  const s6l13Btn=document.getElementById('s6-last13-btn');
   if(s6ytdBtn) s6ytdBtn.classList.toggle('active',s6SelYTD);
-  if(s6l13Btn) s6l13Btn.classList.toggle('active',s6SelLast13&&!s6SelYTD);
-  if(s6SelLast13&&!s6SelYTD){
-    const allD=allDates; const maxD=new Date(Math.max(...allD));
-    rangeEnd=new Date(maxD.getFullYear(),maxD.getMonth(),maxD.getDate(),23,59,59);
-    rangeStart=new Date(rangeEnd); rangeStart.setDate(rangeStart.getDate()-91);
-    rangeLabel='Last 13 weeks';
-  } else if(s6SelYTD){
+  if(s6SelYTD){
     rangeStart=new Date(s6SelYear,0,1);
     rangeEnd  =new Date(s6SelYear,11,31,23,59,59);
     rangeLabel=`YTD ${s6SelYear}`;
@@ -2971,7 +2893,9 @@ function renderScreen6(){
 }
 
 function s6SelectQ(year,q){
-  s6SelYear=parseInt(year); s6SelQ=parseInt(q); s6SelMonth=null; s6SelLast13=false;
+  s6SelYear=parseInt(year);
+  s6SelQ=parseInt(q);
+  s6SelMonth=null;
   renderScreen6();
 }
 
@@ -3001,240 +2925,8 @@ function fetchFPYCSV(){
 
 function startFPYAutoReload(){
   if(fpyAutoReloadTimer) clearInterval(fpyAutoReloadTimer);
-  fpyAutoReloadTimer=setInterval(()=>{ if(fpyURL) fetchFPYCSV(); }, 15*60*1000);
+  fpyAutoReloadTimer=setInterval(()=>{ if(fpyURL) fetchFPYCSV(); }, 5*60*1000);
 }
-
-function renderSLATypeCharts(rows, weeks){
-  const types=SLA_TYPES;
-  const container=document.getElementById('sla-type-charts');
-  if(!container) return;
-
-  Object.values(slaTypeCharts).forEach(c=>{try{c.destroy();}catch(e){}});
-  slaTypeCharts={};
-
-  const typeWeekMap={};
-  types.forEach(t=>typeWeekMap[t]={});
-  rows.forEach(r=>{
-    const d=parseDate(colJ(r));if(!d)return;
-    const wk=isoWeek(d);
-    const type=colG(r);
-    const sla=getSLA(r);
-    if(sla===null||!typeWeekMap[type])return;
-    if(!typeWeekMap[type][wk])typeWeekMap[type][wk]=[];
-    typeWeekMap[type][wk].push(sla);
-  });
-
-  const metricLabel={'avg':'Average','p50':'P.50','p90':'P.90'}[slaTypeMetric]||'Average';
-
-  function metricVal(vals){
-    if(!vals||!vals.length) return null;
-    const sorted=[...vals].sort((a,b)=>a-b);
-    if(slaTypeMetric==='avg') return parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2));
-    if(slaTypeMetric==='p50') return parseFloat(percentile(sorted,50).toFixed(2));
-    if(slaTypeMetric==='p90') return parseFloat(percentile(sorted,90).toFixed(2));
-    return null;
-  }
-
-  const LV_COLOR_HEX2={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
-
-  const typesWithData=types.filter(t=>weeks.some(wk=>typeWeekMap[t][wk]?.length>0));
-
-  let inner='';
-  LEVELS.forEach(level=>{
-    const lvTypes=typesWithData.filter(t=>getLevel(t)===level);
-    if(!lvTypes.length) return;
-    const lvColor=LV_COLOR_HEX2[level];
-    inner+=`<div style="margin-bottom:.7rem;">
-      <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:${lvColor};margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px solid ${lvColor}33;">${LV_SHORT[level]}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;">
-        ${lvTypes.map(t=>{
-          const target=slaTargets[slaTypeMetric]?.[t];
-          return `<div class="panel" style="padding:.6rem .8rem;border-color:${lvColor}22;">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.3rem;">
-              <div style="font-size:.62rem;font-weight:500;color:var(--text);letter-spacing:.02em;">${t}</div>
-              <div style="font-size:.55rem;color:var(--dim);">tgt: <span style="color:${lvColor};font-weight:500;">${target!==undefined?target+'d':'—'}</span></div>
-            </div>
-            <div style="position:relative;width:100%;height:75px;">
-              <canvas id="sla-type-${t.replace(/\W/g,'_')}" role="img" aria-label="SLA trend for ${t}"></canvas>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
-  });
-  container.innerHTML=inner||'<div style="font-size:.82rem;color:var(--dim);padding:1rem 0;">No data for selected period.</div>';
-
-  types.forEach(t=>{
-    if(!typesWithData.includes(t))return;
-    const canvasId='sla-type-'+t.replace(/\W/g,'_');
-    const ctx=document.getElementById(canvasId);
-    if(!ctx)return;
-    const lvColor=LV_COLOR_HEX2[getLevel(t)]||'#CE93D8';
-    const data=weeks.map(wk=>metricVal(typeWeekMap[t][wk]));
-    const target=slaTargets[slaTypeMetric]?.[t]??null;
-    const datasets=[{
-      label:metricLabel+' SLA',
-      data,
-      borderColor:lvColor,
-      backgroundColor:lvColor+'22',
-      pointRadius:2,pointHoverRadius:4,
-      borderWidth:2,tension:.35,spanGaps:true,
-      fill:true
-    }];
-    if(target!==null){
-      datasets.push({
-        label:'Target',
-        data:weeks.map(()=>target),
-        borderColor:'rgba(255,183,77,.7)',
-        borderWidth:1.5,
-        borderDash:[5,4],
-        pointRadius:0,
-        fill:false,
-        tension:0
-      });
-    }
-    slaTypeCharts[t]=new Chart(ctx,{
-      type:'line',
-      data:{labels:weeks,datasets},
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{
-          legend:{display:false},
-          tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y!==null?c.parsed.y.toFixed(1)+'d':'—')}}
-        },
-        scales:{
-          x:{display:false},
-          y:{beginAtZero:false,
-             ticks:{color:cc().tickFade,font:{size:12},callback:v=>v+'d'},
-             grid:{color:cc().grid}}
-        }
-      }
-    });
-  });
-}
-
-
-/* ── PE pass rate chart helper ── */
-function _renderPEChart(el, labelEl, wm, weeks, passColor, rangeLabel){
-  if(!el) return;
-  if(labelEl){
-    const totalPass=weeks.reduce((s,w)=>s+(wm[w]?.pass||0),0);
-    const totalFail=weeks.reduce((s,w)=>s+(wm[w]?.fail||0),0);
-    const tot=totalPass+totalFail;
-    const rate=tot>0?Math.round(totalPass/tot*100):null;
-    labelEl.textContent=rangeLabel+(rate!==null?' — Pass Rate: '+rate+'%':'');
-  }
-  const fpyLine=weeks.map(wk=>{
-    const v=wm[wk]; if(!v) return 100;
-    const t=v.pass+v.fail; return t>0?Math.round(v.pass/t*100):100;
-  });
-  if(window.ChartDataLabels) Chart.register(ChartDataLabels);
-  return new Chart(el,{
-    type:'bar',
-    data:{
-      labels:weeks,
-      datasets:[
-        {label:'Pass',data:weeks.map(w=>wm[w]?.pass||0),backgroundColor:ccBar(passColor,'CC'),borderColor:ccBar(passColor),borderWidth:1,borderRadius:3,stack:'counts',yAxisID:'y'},
-        {label:'Fail',data:weeks.map(w=>wm[w]?.fail||0),backgroundColor:ccBar('#FF8A65','CC'),borderColor:ccBar('#FF8A65'),borderWidth:1,borderRadius:3,stack:'counts',yAxisID:'y'},
-        {label:'Pass Rate %',data:fpyLine,type:'line',yAxisID:'y2',
-         borderColor:ccBar('#CE93D8'),backgroundColor:'transparent',
-         pointBackgroundColor:ccBar('#CE93D8'),pointRadius:4,pointHoverRadius:6,
-         borderWidth:2.5,tension:.35,spanGaps:true,
-         datalabels:{display:true,align:'end',anchor:'end',
-           color:()=>document.body.classList.contains('light-mode')?'#000':'#fff',
-           font:{family:"'DM Mono',monospace",size:13,weight:'500'},
-           formatter:(v)=>v!==null&&v!==''?v+'%':''}}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        datalabels:window.ChartDataLabels?{anchor:'center',align:'center',color:'#fff',
-          font:{family:"'DM Mono',monospace",size:18,weight:'500'},
-          formatter:(v,ctx)=>ctx.dataset.type==='line'?'':(v>0?v:'')}:{display:false},
-        tooltip:{callbacks:{afterBody:(items)=>{
-          const wk=items[0]?.label; if(!wk||!wm[wk]) return '';
-          const {pass,fail}=wm[wk]; const t=pass+fail;
-          return 'Total: '+t+'  |  Pass Rate: '+(t>0?Math.round(pass/t*100):0)+'%';
-        }}}
-      },
-      scales:{
-        x:{stacked:true,ticks:{color:cc().tick,font:{size:13},autoSkip:false,maxRotation:45},grid:{color:cc().grid}},
-        y:{stacked:true,beginAtZero:true,position:'left',
-           ticks:{color:cc().tickFade,font:{size:13},stepSize:1,callback:v=>Number.isInteger(v)?v:''},
-           grid:{color:cc().grid},title:{display:true,text:'Reviews',color:cc().tickDim,font:{size:11}}},
-        y2:{beginAtZero:false,min:0,max:110,position:'right',
-            ticks:{color:cc().purple,font:{size:13},callback:v=>v<=100?v+'%':''},
-            grid:{drawOnChartArea:false},title:{display:true,text:'Pass Rate %',color:cc().purple,font:{size:11}}}
-      }
-    }
-  });
-}
-
-function _buildPEWeekMap(legacyRows, level, approvedColIdx, rejectedColIdx, newRaws, rangeStart, rangeEnd){
-  /* Pass logic: eventual approval wins — if approved date exists → pass */
-  const wm={};
-  // Legacy rows (≤ WW22_CUTOFF)
-  legacyRows.forEach(r=>{
-    if(level && getLevel(colG(r))!==level) return;
-    const dateField=col(r,approvedColIdx)||col(r,rejectedColIdx);
-    if(!dateField) return;
-    const d=parseDate(dateField);
-    if(!d||isNaN(d)||d>WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
-    const wk=isoWeek(d);
-    if(!wm[wk]) wm[wk]={pass:0,fail:0};
-    if(col(r,approvedColIdx)) wm[wk].pass++; else wm[wk].fail++;
-  });
-  // WW22+ rows (separate raw arrays: col 6=date, col 7=pass/fail)
-  newRaws.forEach(r=>{
-    const d=parseDate(col(r,6));
-    if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
-    const val=col(r,7).toLowerCase();
-    if(val!=='pass'&&val!=='fail') return;
-    const wk=isoWeek(d);
-    if(!wm[wk]) wm[wk]={pass:0,fail:0};
-    if(val==='pass') wm[wk].pass++; else wm[wk].fail++;
-  });
-  return wm;
-}
-
-function renderPEElecLotChart(rangeStart, rangeEnd, rangeLabel){
-  const el=document.getElementById('peElecLotChart');
-  if(peElecLotChart){peElecLotChart.destroy();peElecLotChart=null;}
-  const wm=_buildPEWeekMap(rawRows,'Lot-Level Design',16,17,lotElecRaws,rangeStart,rangeEnd);
-  const weeks=Object.keys(wm).sort();
-  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
-  peElecLotChart=_renderPEChart(el,document.getElementById('pe-elec-lot-label'),wm,weeks,'#4FC3F7',rangeLabel);
-}
-
-function renderPEStrucLotChart(rangeStart, rangeEnd, rangeLabel){
-  const el=document.getElementById('peStrucLotChart');
-  if(peStrucLotChart){peStrucLotChart.destroy();peStrucLotChart=null;}
-  const wm=_buildPEWeekMap(rawRows,'Lot-Level Design',20,21,lotStrucRaws,rangeStart,rangeEnd);
-  const weeks=Object.keys(wm).sort();
-  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
-  peStrucLotChart=_renderPEChart(el,document.getElementById('pe-struc-lot-label'),wm,weeks,'#4FC3F7',rangeLabel);
-}
-
-function renderPEElecCommChart(rangeStart, rangeEnd, rangeLabel){
-  const el=document.getElementById('peElecCommChart');
-  if(peElecCommChart){peElecCommChart.destroy();peElecCommChart=null;}
-  const wm=_buildPEWeekMap(rawRows,'Community-Level Design',16,17,commElecRaws,rangeStart,rangeEnd);
-  const weeks=Object.keys(wm).sort();
-  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
-  peElecCommChart=_renderPEChart(el,document.getElementById('pe-elec-comm-label'),wm,weeks,'#69F0AE',rangeLabel);
-}
-
-function renderPEStrucCommChart(rangeStart, rangeEnd, rangeLabel){
-  const el=document.getElementById('peStrucCommChart');
-  if(peStrucCommChart){peStrucCommChart.destroy();peStrucCommChart=null;}
-  const wm=_buildPEWeekMap(rawRows,'Community-Level Design',20,21,commStrucRaws,rangeStart,rangeEnd);
-  const weeks=Object.keys(wm).sort();
-  if(!weeks.length){if(el)el.getContext('2d').clearRect(0,0,el.width,el.height);return;}
-  peStrucCommChart=_renderPEChart(el,document.getElementById('pe-struc-comm-label'),wm,weeks,'#69F0AE',rangeLabel);
-}
-
 
 function renderScreen7(){
   const noData=document.getElementById('fpy-no-data');
@@ -3297,16 +2989,7 @@ function renderScreen7(){
 
   /* Date range */
   let rangeStart, rangeEnd, rangeLabel;
-  const s7l13Btn=document.getElementById('fpy-last13-btn');
-  const s7ytdBtn=document.getElementById('fpy-ytd-btn');
-  if(s7l13Btn) s7l13Btn.classList.toggle('active',s7SelLast13&&!s7SelYTD);
-  if(s7ytdBtn) s7ytdBtn.classList.toggle('active',s7SelYTD);
-  if(s7SelLast13&&!s7SelYTD){
-    const maxD2=new Date(Math.max(...allDates));
-    rangeEnd=new Date(maxD2.getFullYear(),maxD2.getMonth(),maxD2.getDate(),23,59,59);
-    rangeStart=new Date(rangeEnd); rangeStart.setDate(rangeStart.getDate()-91);
-    rangeLabel='Last 13 weeks';
-  } else if(s7SelYTD){
+  if(s7SelYTD){
     rangeStart=new Date(s7SelYear,0,1);
     rangeEnd  =new Date(s7SelYear,11,31,23,59,59);
     rangeLabel=`YTD ${s7SelYear}`;
@@ -3384,7 +3067,7 @@ function renderScreen7(){
   const wmL4={};
   Object.keys(l4LotCnt).forEach(wk=>{
     const scores=l4QA[wk]||[];
-    // If no QA scores recorded yet, treat as 100% (show PE stamp rates alone)
+    // No QA scores yet → default 100%
     const qaAvg=scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 100;
     const cnt=l4LotCnt[wk];
     const elecFails=l4ElecFail[wk]||0;
@@ -3565,10 +3248,6 @@ function renderScreen7(){
   renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel);
   renderC4FpyChart(rangeStart, rangeEnd, rangeLabel);
   renderL7FpyChart(rangeStart, rangeEnd, rangeLabel);
-  renderPEElecCommChart(rangeStart, rangeEnd, rangeLabel);
-  renderPEStrucCommChart(rangeStart, rangeEnd, rangeLabel);
-  renderPEElecLotChart(rangeStart, rangeEnd, rangeLabel);
-  renderPEStrucLotChart(rangeStart, rangeEnd, rangeLabel);
 }
 
 function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
@@ -3631,8 +3310,8 @@ function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
   const wmC4={};
   Object.keys(c4CommCnt).forEach(wk=>{
     const scores=c4QA[wk]||[];
-    if(!scores.length) return;
-    const qaAvg=scores.reduce((a,b)=>a+b,0)/scores.length;
+    // No QA scores yet → default 100%
+    const qaAvg=scores.length>0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 100;
     const cnt=c4CommCnt[wk];
     const elecRate=Math.max(0,(cnt-(c4ElecFail[wk]||0))/cnt);
     const strucRate=Math.max(0,(cnt-(c4StrucFail[wk]||0))/cnt);
@@ -3690,7 +3369,7 @@ function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
 }
 
 function s7SelectQ(year,q){
-  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null; s7SelLast13=false; s7SelYTD=false;
+  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null; s7SelYTD=false;
   renderScreen7();
 }
 function s7SelectMonth(m){
@@ -3730,21 +3409,13 @@ function s5SelectYTD(){
   if(s5SelYTD){ s5SelMonth=null; }
   renderScreen5();
 }
-function s6SelectLast13(){
-  s6SelLast13=true; s6SelYTD=false; s6SelMonth=null;
-  renderScreen6();
-}
 function s6SelectYTD(){
   s6SelYTD=!s6SelYTD;
-  if(s6SelYTD){ s6SelLast13=false; s6SelMonth=null; }
+  if(s6SelYTD){ s6SelMonth=null; }
   renderScreen6();
 }
-function s7SelectLast13(){
-  s7SelLast13=true; s7SelYTD=false; s7SelMonth=null;
-  renderScreen7();
-}
 function s7SelectYTD(){
-  s7SelYTD=true; s7SelLast13=false;
+  s7SelYTD=true;
   s7SelMonth=null;
   renderScreen7();
 }
@@ -3784,8 +3455,8 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
   if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
-    const {pass,fail}=wm[wk]||{pass:0,fail:0}; const t=pass+fail;
-    return t>0?Math.round(pass/t*100):100;
+    const {pass,fail}=wm[wk]; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):null;
   });
 
   if(c4FpyChart) c4FpyChart.destroy();
@@ -3872,8 +3543,8 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
   if(label) label.textContent=rangeLabel+(fpy!==null?' — Pass Rate: '+fpy+'%':'');
 
   const fpyLine=weeks.map(wk=>{
-    const {pass,fail}=wm[wk]||{pass:0,fail:0}; const t=pass+fail;
-    return t>0?Math.round(pass/t*100):100;
+    const {pass,fail}=wm[wk]; const t=pass+fail;
+    return t>0?Math.round(pass/t*100):null;
   });
 
   if(l7FpyChart) l7FpyChart.destroy();
@@ -4558,25 +4229,42 @@ function renderScreen1(designers, rows){
 function renderTrend(designers, rows){ renderScreen1(designers, rows); }
 
 function renderScreen2(designers, rows){
-  const tiles=document.getElementById('level-summary-tiles');
-  if(!tiles) return;
+  const grid=document.getElementById('level-group-grid');
+  if(!grid) return;
 
-  tiles.innerHTML=LEVELS.map(lv=>{
+  grid.innerHTML=LEVELS.map(lv=>{
     const lvRows=rows.filter(r=>getLevel(colG(r))===lv);
+    const lvDesigners=designers.filter(d=>rows.some(r=>colI(r)===d&&getLevel(colG(r))===lv));
     const color=LV_COLOR[lv]||'var(--text)';
     const total=lvRows.length;
     const q=avgQual(lvRows);
     const otd=calcOTD(lvRows);
-    const qVal=q!==null?Math.round(q):null;
-    const qC=qVal!==null?qColor(qVal):'var(--dim)';
-    const otdC=otd.total>0?(otd.pct>=90?'var(--pass)':otd.pct>=70?'#FFB74D':'var(--fail)'):'var(--dim)';
-    return `<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--border-radius-lg);padding:.9rem 1.1rem;display:flex;flex-direction:column;gap:.35rem;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.06em;color:${color};">${lv}</div>
-      <div style="display:flex;gap:1.4rem;align-items:baseline;flex-wrap:wrap;">
-        <span style="font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Bebas Neue',sans-serif;">${total}</span>
-        <span style="font-size:.62rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;">completed</span>
-        ${qVal!==null?`<span style="font-size:.8rem;font-weight:600;color:${qC};">${qVal}% QA</span>`:''}
-        ${otd.total>0?`<span style="font-size:.8rem;font-weight:600;color:${otdC};">${otd.pct}% OTD</span>`:''}
+
+    const designerRows=lvDesigners.map(d=>{
+      const dR=lvRows.filter(r=>colI(r)===d);
+      const dq=avgQual(dR);
+      const dotd=calcOTD(dR);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:.75rem;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;">${engr(d)}</div>
+        <div style="display:flex;gap:1rem;align-items:baseline;">
+          <span style="font-size:.65rem;color:var(--muted);">${dR.length} designs</span>
+          ${dq!==null?`<span style="font-size:.65rem;color:${qColor(dq)};">${Math.round(dq)}% QA</span>`:''}
+          ${dotd.total>0?`<span style="font-size:.65rem;color:${dotd.pct>=90?'var(--pass)':dotd.pct>=70?'#FFB74D':'var(--fail)'};">${dotd.pct}% OTD</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="level-group-card">
+      <div style="padding:1rem 1.2rem;border-bottom:1px solid var(--border);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:${color};">${lv}</div>
+        <div style="display:flex;gap:1.5rem;margin-top:.4rem;">
+          <span style="font-size:.65rem;color:var(--muted);">${total} completed</span>
+          ${q!==null?`<span style="font-size:.65rem;color:${qColor(q)};">${Math.round(q)}% avg QA</span>`:''}
+          ${otd.total>0?`<span style="font-size:.65rem;color:${otd.pct>=90?'var(--pass)':otd.pct>=70?'#FFB74D':'var(--fail)'};">${otd.pct}% OTD</span>`:''}
+        </div>
+      </div>
+      <div style="padding:.8rem 1.2rem;max-height:320px;overflow-y:auto;">
+        ${lvDesigners.length?designerRows:`<div style="font-size:.72rem;color:var(--dim);padding:.5rem 0;">No designers in this period.</div>`}
       </div>
     </div>`;
   }).join('');

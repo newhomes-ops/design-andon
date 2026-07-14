@@ -1293,10 +1293,22 @@ let absencesData = [];
 const DEFAULT_SCORING_WEIGHTS = {quality:35, otd:25, volume:20, sla:10, fpy:10, attendance:0};
 let scoringWeights = {...DEFAULT_SCORING_WEIGHTS};
 /* Token loaded from localStorage — never stored in code */
-const GH_IP_USER  = 'MarkKevinOlivar';
+const GH_IP_USER  = 'newhomes-ops';
 const GH_IP_REPO  = 'design-andon';
 const GH_IP_FILE  = 'ip.json';
 function getGHToken(){ try{ return localStorage.getItem('andon_gh_token')||''; }catch(e){ return ''; } }
+
+const DEFAULT_ADMIN_PASSWORD='sunpower2026';
+function getAdminPassword(){
+  try{ const s=localStorage.getItem('andon_admin_pw'); return s?atob(s):DEFAULT_ADMIN_PASSWORD; }
+  catch(e){ return DEFAULT_ADMIN_PASSWORD; }
+}
+function checkAdminPassword(callback){
+  const pw=prompt('Enter admin password:');
+  if(pw===null) return; // cancelled
+  if(pw===getAdminPassword()){ callback(); }
+  else{ alert('Incorrect password.'); }
+}
 
 function ghFetch(rawUrl, opts={}){
   const tok=getGHToken();
@@ -1345,6 +1357,7 @@ let s5SelYear=null, s5SelQ=null, s5SelMonth=null, s5SelYTD=false;
 let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false;
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
 let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0 };
+let initialFilterSet=false; // set to true after first mergeAndApply so auto-reloads don't reset filter
 /* { 'Lot-Level Design': n, 'Community-Level Design': n, 'Commercial Design': n } */
 function ipTotal(type){ return (inProgress[type]||0); }
 
@@ -1533,22 +1546,22 @@ function colDateJ(r){ return parseDate(colJ(r)); }
 /* ── DRAG-DROP / FILE ── */
 function showStatus(msg,type){const el=document.getElementById('status-bar');el.textContent=msg;el.className='status-bar '+type;el.style.display='block';}
 
-let designURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/design.csv';
-let fpyURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/fpy.csv';
+let designURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/design.csv';
+let fpyURL    = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/fpy.csv';
 
 /* ── WW22+ NEW DATA SOURCE URLS (Lot-Level only) ── */
-let lotDesignURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Design.csv';
-let lotQAURL      = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20QA.csv';
-let lotElecURL    = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Electrical%20Review.csv';
-let lotStrucURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Lot%20Structural%20Review.csv';
+let lotDesignURL  = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Design.csv';
+let lotQAURL      = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20QA.csv';
+let lotElecURL    = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Electrical%20Review.csv';
+let lotStrucURL   = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Structural%20Review.csv';
 
 /* ── WW22+ COMMUNITY-LEVEL SOURCES ── */
-let commDesignURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Design%20and%20QA.csv';
-let commElecURL   = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Electrical%20Review.csv';
-let commStrucURL  = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Community%20Structural%20Review.csv';
+let commDesignURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Community%20Design%20and%20QA.csv';
+let commElecURL   = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Community%20Electrical%20Review.csv';
+let commStrucURL  = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Community%20Structural%20Review.csv';
 
 /* ── WW22+ COMMERCIAL SOURCE ── */
-let commCommercialURL = 'https://raw.githubusercontent.com/MarkKevinOlivar/design-andon/main/Commercial.csv';
+let commCommercialURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Commercial.csv';
 /* WW21/22 boundary: ISO WW21 2026 ends May 24 23:59:59; WW22 starts May 25 */
 const WW22_CUTOFF = new Date(2026, 4, 24, 23, 59, 59);
 let legacyDesignRaws = []; // original design.csv rows, stored for merge
@@ -1591,7 +1604,6 @@ function parseDesignCSV(text, firstLoad){
     const keys=Object.keys(sampleRow);
     console.log('CSV columns:',keys);
     showStatus(`Loaded ${rawRows.length} rows.`,'success');
-    applyLastTenWorkDays();
     syncScreenFilters();
     buildScreenQuarterSlicers();
     try{ const saved=localStorage.getItem('andon_ip'); if(saved){ const p=JSON.parse(saved); if(p&&typeof p==='object'&&!Array.isArray(p)) inProgress=p; } }catch(e){}
@@ -1856,6 +1868,7 @@ function mergeAndApply(){
 
   rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows];
   buildScreenQuarterSlicers();
+  if(!initialFilterSet){ applyLastTenWorkDays(); initialFilterSet=true; }
   applyFilters();
 }
 
@@ -4642,7 +4655,8 @@ function overlayClick(e){
 }
 
 /* ── IN PROGRESS OVERLAY ── */
-function openIP(){
+function openIP(){ checkAdminPassword(_openIP); }
+function _openIP(){
   const grid=document.getElementById('ip-grid');
   grid.innerHTML=LEVELS.map(lv=>`
     <div style="display:grid;grid-template-columns:1fr 90px;align-items:center;gap:.6rem;padding:.4rem 0;border-bottom:1px solid var(--border);">
@@ -4656,20 +4670,28 @@ function closeIP(){ document.getElementById('ip-overlay').classList.remove('open
 
 function pushIPToGitHub(){
   const token=getGHToken();
-  if(!token) return; // no token — skip GitHub push; localStorage already saved
+  if(!token){
+    showStatus('In Progress saved locally. Set GH token in Settings to sync across browsers.','loading');
+    return;
+  }
   const apiUrl='https://api.github.com/repos/'+GH_IP_USER+'/'+GH_IP_REPO+'/contents/'+GH_IP_FILE;
   const headers={'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json',
                   'Content-Type':'application/json','User-Agent':'andon-board'};
-  const encoded=btoa(JSON.stringify(inProgress,null,2));
+  // Encode JSON safely (handle any Unicode)
+  const json=JSON.stringify(inProgress,null,2);
+  const encoded=btoa(unescape(encodeURIComponent(json)));
   fetch(apiUrl,{headers})
-    .then(r=>r.ok?r.json():null)
+    .then(r=>r.ok?r.json():(r.status===404?null:r.json().then(e=>{throw new Error(r.status+': '+(e.message||''));})))
     .then(data=>{
-      const body={message:'Update ip.json — in-progress counts',content:encoded};
+      const body={message:'Update ip.json',content:encoded};
       if(data&&data.sha) body.sha=data.sha;
       return fetch(apiUrl,{method:'PUT',headers,body:JSON.stringify(body)});
     })
-    .then(r=>{if(!r.ok)console.warn('IP push failed:',r.status);else console.log('ip.json updated');})
-    .catch(e=>console.warn('IP push error:',e));
+    .then(r=>{
+      if(!r.ok){ r.json().then(e=>showStatus('IP sync failed: '+(e.message||r.status),'error')).catch(()=>showStatus('IP sync failed: HTTP '+r.status,'error')); }
+      else{ showStatus('In Progress saved & synced to GitHub ✓','success'); }
+    })
+    .catch(e=>{ showStatus('IP sync error: '+e.message,'error'); console.warn('pushIPToGitHub:',e); });
 }
 function saveIP(){
   LEVELS.forEach(lv=>{

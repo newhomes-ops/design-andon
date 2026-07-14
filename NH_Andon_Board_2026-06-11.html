@@ -694,7 +694,7 @@
       <span class="section-title">C4: Community Award to Final Design Approved</span>
       <span class="section-pill pill-blue">YTD 2026</span>
     </div>
-    <div style="position:relative;height:380px;margin-bottom:24px;">
+    <div style="position:relative;height:220px;margin-bottom:12px;">
       <canvas id="d-chart-c4"></canvas>
     </div>
 
@@ -710,7 +710,7 @@
       <span class="section-title">L7: Lot Design Requested to Lot Design Completed</span>
       <span class="section-pill pill-blue">YTD 2026</span>
     </div>
-    <div style="position:relative;height:420px;">
+    <div style="position:relative;height:220px;">
       <canvas id="d-chart-l7"></canvas>
     </div>
   </div>
@@ -2333,48 +2333,27 @@ function dFilterL7(){
   else if(dL7Filter==='fq')idxs=indices.filter(i=>dWWFQ(dL7Labels[i])===currFQ);
   else if(dL7Filter==='fm')idxs=indices.filter(i=>dWWMonth(dL7Labels[i])===currFM);
   else idxs=indices;
-  return{labels:idxs.map(i=>dL7Labels[i]),pass:idxs.map(i=>dL7Pass[i]),fail:idxs.map(i=>dL7Fail[i]),fpy:idxs.map(i=>dL7FPY[i])};
+  return{labels:idxs.map(i=>dL7Labels[i]),permit:idxs.map(i=>dPermitFPY[i]),l7:idxs.map(i=>dL7FPY[i])};
 }
 
-// C4: Community Award to Final Design Approved — weekly FPY
-// C4 Community Design FPY — source: Design Andon Board (c4DesignFpyChart + c4FpyChart)
+// C4: Community Award to Final Design Approved — FPY % only (matches GitHub c4DesignFpyChart exactly)
 const dC4Data=[
-  {ww:'2026-W01',pass:1,fail:0,fpy:100},
-  {ww:'2026-W02',pass:13,fail:4,fpy:76},
-  {ww:'2026-W03',pass:12,fail:0,fpy:100},
-  {ww:'2026-W04',pass:9,fail:0,fpy:100},
-  {ww:'2026-W05',pass:9,fail:0,fpy:100},
-  {ww:'2026-W06',pass:4,fail:0,fpy:100},
-  {ww:'2026-W07',pass:6,fail:0,fpy:100},
-  {ww:'2026-W08',pass:9,fail:0,fpy:100},
-  {ww:'2026-W09',pass:4,fail:0,fpy:100},
-  {ww:'2026-W10',pass:3,fail:0,fpy:100},
-  {ww:'2026-W11',pass:4,fail:0,fpy:100},
-  {ww:'2026-W12',pass:1,fail:0,fpy:100},
-  {ww:'2026-W13',pass:1,fail:0,fpy:100},
-  {ww:'2026-W15',pass:2,fail:0,fpy:100},
-  {ww:'2026-W16',pass:2,fail:0,fpy:100},
-  {ww:'2026-W18',pass:1,fail:0,fpy:100},
-  {ww:'2026-W19',pass:4,fail:1,fpy:80},
-  {ww:'2026-W20',pass:5,fail:0,fpy:100},
-  {ww:'2026-W21',pass:2,fail:0,fpy:100},
-  {ww:'2026-W22',pass:0,fail:1,fpy:0},
-  {ww:'2026-W23',pass:9,fail:0,fpy:100},
-  {ww:'2026-W24',pass:3,fail:0,fpy:100},
-  {ww:'2026-W26',pass:3,fail:0,fpy:100},
-  {ww:'2026-W27',pass:1,fail:0,fpy:100},
-  {ww:'2026-W28',pass:4,fail:0,fpy:100},
-  {ww:'2026-W29',pass:1,fail:0,fpy:100},
+  {ww:'2026-W01',fpy:100},{ww:'2026-W02',fpy:99},{ww:'2026-W03',fpy:100},{ww:'2026-W04',fpy:100},
+  {ww:'2026-W05',fpy:100},{ww:'2026-W06',fpy:100},{ww:'2026-W07',fpy:100},{ww:'2026-W08',fpy:100},
+  {ww:'2026-W09',fpy:100},{ww:'2026-W10',fpy:100},{ww:'2026-W11',fpy:100},{ww:'2026-W12',fpy:100},
+  {ww:'2026-W13',fpy:100},{ww:'2026-W15',fpy:100},{ww:'2026-W16',fpy:100},{ww:'2026-W17',fpy:100},
+  {ww:'2026-W18',fpy:100},{ww:'2026-W19',fpy:99},{ww:'2026-W20',fpy:100},{ww:'2026-W21',fpy:100},
+  {ww:'2026-W22',fpy:98},{ww:'2026-W23',fpy:100},{ww:'2026-W24',fpy:100},{ww:'2026-W26',fpy:99},
+  {ww:'2026-W27',fpy:98},{ww:'2026-W28',fpy:100},{ww:'2026-W29',fpy:100},
 ];
 
-// L7 Lot Design FPY — source: Design Andon Board (l7FpyChart), W14–W26 2026
+// L7 / Permit FPY — matches GitHub fpyChart exactly: Permit FPY % (pre-WW22) stitched with L7 Design FPY % (WW22+)
 const dL7Labels=['2026-W01','2026-W02','2026-W03','2026-W04','2026-W05','2026-W06','2026-W07',
   '2026-W08','2026-W09','2026-W10','2026-W11','2026-W12','2026-W13','2026-W14','2026-W15',
   '2026-W16','2026-W17','2026-W18','2026-W19','2026-W20','2026-W21','2026-W22','2026-W23',
   '2026-W24','2026-W25','2026-W26','2026-W27'];
-const dL7Pass=[10,61,33,34,75,48,75,22,24,50,64,42,38,17,41,58,32,26,15,39,54,51,52,21,23,6,7];
-const dL7Fail=[0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,9,10,6,6,2,4,2,0,3];
-const dL7FPY=[100,100,94,100,100,100,100,100,100,100,100,100,100,100,100,100,100,93,63,80,90,89,96,84,92,100,70];
+const dPermitFPY=[100,90,100,88,100,93,100,100,90,100,100,100,100,100,98,100,100,100,100,100,100,null,null,null,null,null,null];
+const dL7FPY=[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,100,100,100,100,100,99];
 
 function dRenderC4(){
   const fd=dFilterC4();
@@ -2387,31 +2366,24 @@ function dRenderC4(){
   if(dCI['c4'])dCI['c4'].destroy();
   dCI['c4']=new Chart(document.getElementById('d-chart-c4'),{
     data:{labels,datasets:[
-      {type:'bar',label:'Pass',data:fd.map(d=>d.pass),
-        backgroundColor:'rgba(0,188,212,0.55)',borderColor:'#00bcd4',borderWidth:1,borderRadius:3,order:2},
-      {type:'bar',label:'Fail',data:fd.map(d=>d.fail),
-        backgroundColor:'rgba(239,83,80,0.60)',borderColor:'#ef5350',borderWidth:1,borderRadius:3,order:2},
       {type:'line',label:'C4 Design FPY %',data:fd.map(d=>d.fpy),
-        borderColor:'#00bcd4',backgroundColor:'transparent',
+        borderColor:'#00bcd4',backgroundColor:'rgba(0,188,212,0.08)',
         borderWidth:2.5,tension:0.3,pointRadius:5,pointHoverRadius:7,
         pointBackgroundColor:pts,pointBorderColor:pts,pointBorderWidth:0,
-        yAxisID:'yFPY',order:1},
-      {...mkTarget(100,fd.map(d=>d.ww)),yAxisID:'yFPY',order:0}
+        fill:true,spanGaps:true,order:1},
+      mkTarget(100,labels)
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{position:'top',labels:{color:tc,boxWidth:12,padding:14,font:{size:11}}},
-        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10}
+        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10,
+          callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y!==null?ctx.parsed.y.toFixed(0)+'%':'No data'}`}}
       },
       scales:{
         x:{ticks:{color:tc,font:{size:10},maxRotation:45,minRotation:30},grid:{color:gc}},
-        y:{position:'left',min:0,ticks:{color:tc,font:{size:10},stepSize:1},grid:{color:gc},
-           title:{display:true,text:'Count',color:tc,font:{size:10}}},
-        yFPY:{position:'right',min:0,max:100,
-          ticks:{color:tc,font:{size:10},callback:v=>v+'%'},
-          grid:{display:false},
-          title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
+        y:{min:0,max:100,ticks:{color:tc,font:{size:10},stepSize:20,callback:v=>v+'%'},grid:{color:gc},
+           title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
       }
     }
   });
@@ -2423,36 +2395,36 @@ function dRenderL7(){
   const gc=lightMode?'#dce1ea':'#333';
   const tbg=lightMode?'rgba(255,255,255,0.95)':'rgba(30,30,30,0.95)';
   const tbd=lightMode?'#bbb':'#555';
-  const fpyPts=fd.fpy.map(v=>pointColor(v));
+  const permitPts=fd.permit.map(v=>v===null?'transparent':pointColor(v));
+  const l7Pts=fd.l7.map(v=>v===null?'transparent':pointColor(v));
   if(dCI['l7'])dCI['l7'].destroy();
   dCI['l7']=new Chart(document.getElementById('d-chart-l7'),{
     data:{labels:fd.labels,datasets:[
-      {type:'bar',label:'Pass',data:fd.pass,
-        backgroundColor:'rgba(100,181,246,0.55)',borderColor:'#64b5f6',borderWidth:1,borderRadius:3,order:2},
-      {type:'bar',label:'Fail',data:fd.fail,
-        backgroundColor:'rgba(239,83,80,0.60)',borderColor:'#ef5350',borderWidth:1,borderRadius:3,order:2},
-      {type:'line',label:'L7 Design FPY %',data:fd.fpy,
-        borderColor:'#818cf8',backgroundColor:'transparent',
+      {type:'line',label:'Permit FPY %',data:fd.permit,
+        borderColor:'#818cf8',backgroundColor:'rgba(129,140,248,0.08)',
         borderWidth:2.5,tension:0.3,
-        pointRadius:5,pointHoverRadius:7,
-        pointBackgroundColor:fpyPts,pointBorderColor:fpyPts,pointBorderWidth:0,
-        yAxisID:'yFPY',order:1},
-      {...mkTarget(100,fd.labels),yAxisID:'yFPY',order:0}
+        pointRadius:fd.permit.map(v=>v===null?0:5),pointHoverRadius:7,
+        pointBackgroundColor:permitPts,pointBorderColor:permitPts,pointBorderWidth:0,
+        fill:true,spanGaps:false,order:1},
+      {type:'line',label:'L7 Design FPY %',data:fd.l7,
+        borderColor:'#00bcd4',backgroundColor:'rgba(0,188,212,0.08)',
+        borderWidth:2.5,tension:0.3,
+        pointRadius:fd.l7.map(v=>v===null?0:5),pointHoverRadius:7,
+        pointBackgroundColor:l7Pts,pointBorderColor:l7Pts,pointBorderWidth:0,
+        fill:true,spanGaps:false,order:1},
+      mkTarget(100,fd.labels)
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{position:'top',labels:{color:tc,boxWidth:12,padding:14,font:{size:11}}},
-        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10}
+        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10,
+          callbacks:{label:ctx=>ctx.parsed.y===null?null:` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(0)}%`}}
       },
       scales:{
         x:{ticks:{color:tc,font:{size:10},maxRotation:45,minRotation:30},grid:{color:gc}},
-        y:{position:'left',min:0,ticks:{color:tc,font:{size:10},stepSize:10},grid:{color:gc},
-           title:{display:true,text:'Count',color:tc,font:{size:10}}},
-        yFPY:{position:'right',min:0,max:100,
-          ticks:{color:tc,font:{size:10},callback:v=>v+'%'},
-          grid:{display:false},
-          title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
+        y:{min:0,max:100,ticks:{color:tc,font:{size:10},stepSize:20,callback:v=>v+'%'},grid:{color:gc},
+           title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
       }
     }
   });

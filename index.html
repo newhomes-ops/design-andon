@@ -1621,9 +1621,11 @@ function parseDesignCSV(text, firstLoad){
     if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length){
       mergeAndApply();
     } else {
-      applyFilters();
+      // New sources not loaded yet — suppress stale legacy-only render.
+      // fetchAllNewSources will call mergeAndApply() once data arrives.
+      showStatus('Loading all sources…','loading');
     }
-    return; // applyFilters already called inside mergeAndApply / above
+    return;
   }
   applyFilters();
 }
@@ -1672,7 +1674,6 @@ function fetchCSVPromise(url, name){
 
 /** Fetch all new sources; merge + re-render when done */
 function fetchAllNewSources(){
-  const DELAY=2000;
   const sources=[
     [lotDesignURL,'Lot Design', d=>{lotDesignRaws=d;}],
     [lotQAURL,'Lot QA', d=>{lotQARaws=d;}],
@@ -1683,14 +1684,21 @@ function fetchAllNewSources(){
     [commStrucURL,'Community Structural', d=>{commStrucRaws=d;}],
     [commCommercialURL,'Commercial', d=>{commCommercialRaws=d;}]
   ];
-  sources.reduce((chain,[url,name,assign],i)=>
-    chain.then(()=>new Promise(res=>setTimeout(()=>{
-      fetchCSVPromise(url,name).then(d=>{assign(d);res();}).catch(()=>res());
-    }, i===0?0:DELAY)))
-  , Promise.resolve()).then(()=>{
-    // Always merge after all sources loaded
-    mergeAndApply();
-  });
+  const done=()=>mergeAndApply();
+  if(getGHToken()){
+    // Token present → api.github.com (5000 req/hr) — fire in parallel
+    Promise.all(sources.map(([url,name,assign])=>
+      fetchCSVPromise(url,name).then(d=>assign(d)).catch(()=>{})
+    )).then(done);
+  } else {
+    // No token → raw.githubusercontent.com (60 req/hr) — stagger 2s apart
+    const DELAY=2000;
+    sources.reduce((chain,[url,name,assign],i)=>
+      chain.then(()=>new Promise(res=>setTimeout(()=>{
+        fetchCSVPromise(url,name).then(d=>{assign(d);res();}).catch(()=>res());
+      }, i===0?0:DELAY)))
+    , Promise.resolve()).then(done);
+  }
 }
 
 /**
@@ -4645,12 +4653,31 @@ function openIP(){
   document.getElementById('ip-overlay').classList.add('open');
 }
 function closeIP(){ document.getElementById('ip-overlay').classList.remove('open'); }
+
+function pushIPToGitHub(){
+  const token=getGHToken();
+  if(!token) return; // no token — skip GitHub push; localStorage already saved
+  const apiUrl='https://api.github.com/repos/'+GH_IP_USER+'/'+GH_IP_REPO+'/contents/'+GH_IP_FILE;
+  const headers={'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json',
+                  'Content-Type':'application/json','User-Agent':'andon-board'};
+  const encoded=btoa(JSON.stringify(inProgress,null,2));
+  fetch(apiUrl,{headers})
+    .then(r=>r.ok?r.json():null)
+    .then(data=>{
+      const body={message:'Update ip.json — in-progress counts',content:encoded};
+      if(data&&data.sha) body.sha=data.sha;
+      return fetch(apiUrl,{method:'PUT',headers,body:JSON.stringify(body)});
+    })
+    .then(r=>{if(!r.ok)console.warn('IP push failed:',r.status);else console.log('ip.json updated');})
+    .catch(e=>console.warn('IP push error:',e));
+}
 function saveIP(){
   LEVELS.forEach(lv=>{
     const el=document.getElementById('ip-'+lv.replace(/\s+/g,'-'));
     if(el) inProgress[lv]=parseInt(el.value)||0;
   });
   try{ localStorage.setItem('andon_ip',JSON.stringify(inProgress)); }catch(e){}
+  pushIPToGitHub(); // persist to ip.json so reloads keep the values
   closeIP();
   const designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
   if(typeof renderScreen0==='function') renderScreen0(designers,filteredRows);

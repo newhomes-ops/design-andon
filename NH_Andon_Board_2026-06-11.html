@@ -215,9 +215,9 @@
   <div style="padding:12px 20px 0;">
     <div class="legend">
       <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
       <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Trend Comparison 2025/2026 · WW14'25 – WW25'26</span>
     </div>
   </div>
@@ -448,7 +448,7 @@
 <!-- ICO SCREEN 4 — DEPENDENCY TREND -->
 <div class="screen" id="is4">
   <div style="padding:10px 0 0;">
-    <div class="section-hdr"><span class="section-title">Interconnection Dependency Trend YTD</span><span class="section-pill pill-blue">Open Dependencies · WW01–WW25 2026</span></div>
+    <div class="section-hdr"><span class="section-title">Interconnection Dependency Trend YTD</span><span class="section-pill pill-blue">Open Dependencies · WW01'26 – WW26'26</span></div>
     <div id="is4-cards" class="cards"></div>
     <div class="chart-wrap">
       <div class="chart-title">Open Dependency Count by Work Week (with Linear Trend)</div>
@@ -486,9 +486,9 @@
   <div style="padding:10px 0 0;">
     <div class="legend">
       <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 85–97% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 85% — Off Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
       <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: NH_LR_FPY_Pareto · M2 Milestone · WW38&#39;25 – WW26&#39;26</span>
     </div>
   </div>
@@ -515,9 +515,9 @@
   <div style="padding:10px 0 0;">
     <div class="legend">
       <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 85–97% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 85% — Off Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
       <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: NH_LR_FPY_Pareto · M1 Milestone · WW06&#39;26 – WW26&#39;26</span>
     </div>
   </div>
@@ -545,7 +545,14 @@
   <div style="padding:10px 0 0;">
     <div class="section-hdr">
       <span class="section-title">Lifestyle Submission Summary YTD</span>
-      <span class="section-pill pill-blue">WW03–WW26 2026</span>
+      <span class="section-pill pill-blue" id="fs3-range-pill">WW03–WW28 2026</span>
+    </div>
+    <div class="ctrl-bar" style="margin:4px 0 8px;">
+      <button class="ctrl-btn active" id="flife-all" onclick="fSetLifeFilter('all')">All WW</button>
+      <button class="ctrl-btn"        id="flife-q1"  onclick="fSetLifeFilter('q1')">Q1</button>
+      <button class="ctrl-btn"        id="flife-q2"  onclick="fSetLifeFilter('q2')">Q2</button>
+      <button class="ctrl-btn"        id="flife-q3"  onclick="fSetLifeFilter('q3')">Q3</button>
+      <button class="ctrl-btn"        id="flife-q4"  onclick="fSetLifeFilter('q4')">Q4</button>
     </div>
     <!-- KPI banners — standard card layout, no-wrap for 16:9 -->
     <div class="cards" style="margin:10px 0 6px;flex-wrap:nowrap;">
@@ -561,7 +568,7 @@
       </div>
       <div class="card" style="flex:1;min-width:0;">
         <div class="card-label">In Rework</div>
-        <div class="card-value c-red">68</div>
+        <div class="card-value c-red">71</div>
         <div class="card-sub">active backlog</div>
       </div>
       <div class="card" style="flex:1;min-width:0;">
@@ -570,13 +577,13 @@
         <div class="card-sub">projects cancelled</div>
       </div>
       <div class="card" style="flex:1;min-width:0;">
-        <div class="card-label">Growth vs. Q1 Start</div>
-        <div class="card-value c-green">+61%</div>
+        <div class="card-label">Growth vs Q1'26 End</div>
+        <div class="card-value c-green">+69%</div>
         <div class="card-sub">approval growth</div>
       </div>
       <div class="card" style="flex:1;min-width:0;">
-        <div class="card-label">Financier Payments</div>
-        <div class="card-value c-teal">$500K</div>
+        <div class="card-label">Projected Financier Payments</div>
+        <div class="card-value c-teal">$1.67M</div>
         <div class="card-sub">payments processed</div>
       </div>
     </div>
@@ -610,10 +617,10 @@
   <div style="padding:10px 0 0;">
     <div class="legend">
       <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 80–94% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 80% — Off Target</span>
-      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Cash Application Attainment · Summary Tab · WW14–WW25 2026</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Cash Application Attainment · Summary Tab · WW14–WW26 2026</span>
     </div>
   </div>
   <div style="padding:6px 0 0;">
@@ -640,12 +647,8 @@
      TEAM: DESIGN
      ════════════════════════════════════════════════ -->
 <div id="team-design" class="team-section" style="display:none;">
-<div class="screen-nav">
-  <button class="screen-btn active" onclick="dSwitchScreen(0)">🎯 C4 Community FPY</button>
-  <button class="screen-btn" onclick="dSwitchScreen(1)">📐 L7 Lot Design FPY</button>
-</div>
 
-<!-- DESIGN SCREEN 0 — C4 COMMUNITY FPY -->
+<!-- DESIGN — COMBINED C4 + L7 FPY -->
 <div class="screen active" id="ds0">
   <div style="padding:10px 0 0;">
     <!-- KPI banners -->
@@ -673,11 +676,13 @@
     </div>
     <div class="legend" style="padding:8px 0 4px;">
       <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
-      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Design Andon Board · Q2 2026 (W15–W26)</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Design Andon Board (live) · C4: W01–W29 · L7: W01–W27 · 2026</span>
     </div>
+
+    <!-- C4 -->
     <div class="ctrl-bar" style="margin:4px 0 8px;">
       <button class="ctrl-btn active" id="dc4-all"    onclick="dSetC4Filter('all')">All WW</button>
       <button class="ctrl-btn"        id="dc4-recent" onclick="dSetC4Filter('recent')">Last 13 WW</button>
@@ -689,22 +694,11 @@
       <span class="section-title">C4: Community Award to Final Design Approved</span>
       <span class="section-pill pill-blue">YTD 2026</span>
     </div>
-    <div style="position:relative;height:380px;">
+    <div style="position:relative;height:380px;margin-bottom:24px;">
       <canvas id="d-chart-c4"></canvas>
     </div>
-  </div>
-</div>
 
-<!-- DESIGN SCREEN 1 — L7 LOT DESIGN FPY -->
-<div class="screen" id="ds1">
-  <div style="padding:10px 0 0;">
-    <div class="legend" style="padding:8px 0 4px;">
-      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
-      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
-      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Design Andon Board · 2026-W14 – 2026-W26</span>
-    </div>
+    <!-- L7 -->
     <div class="ctrl-bar" style="margin:4px 0 8px;">
       <button class="ctrl-btn active" id="dl7-all"    onclick="dSetL7Filter('all')">All WW</button>
       <button class="ctrl-btn"        id="dl7-recent" onclick="dSetL7Filter('recent')">Last 13 WW</button>
@@ -770,7 +764,7 @@ function switchTeam(btn,t){
   document.querySelectorAll('.team-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   if(t==='ico'&&!iInitialized){iRenderWeekly();iRenderDaily();iRenderDeficiency();iRenderCycleTime();iInitialized=true;}
-  if(t==='design'&&!dInitialized){dRenderC4();dInitialized=true;}
+  if(t==='design'&&!dInitialized){dRenderC4();dRenderL7();dInitialized=true;dL7Initialized=true;}
   if(t==='funding'&&!fInitialized){fRenderWeekly();fRenderM1();fInitialized=true;}
   if(t==='ar'&&!arInitialized){arRenderWeekly();arRenderVariance();arInitialized=true;}
 }
@@ -844,7 +838,8 @@ const jWeeklyWL=[
   {ww:'WW22',yr:2026,approved:25,rejected:0,total:25,fpy:100},
   {ww:'WW23',yr:2026,approved:39,rejected:0,total:39,fpy:100},
   {ww:'WW24',yr:2026,approved:52,rejected:0,total:52,fpy:100},
-  {ww:'WW25',yr:2026,approved:31,rejected:0,total:31,fpy:100}
+  {ww:'WW25',yr:2026,approved:31,rejected:0,total:31,fpy:100},
+  {ww:'WW26',yr:2026,approved:27,rejected:0,total:27,fpy:100}
 ];
 const jWeeklyWOL=[
   {ww:'WW14',yr:2025,approved:131,rejected:42,total:173,fpy:75.7},
@@ -910,7 +905,8 @@ const jWeeklyWOL=[
   {ww:'WW22',yr:2026,approved:25,rejected:0,total:25,fpy:100},
   {ww:'WW23',yr:2026,approved:39,rejected:0,total:39,fpy:100},
   {ww:'WW24',yr:2026,approved:52,rejected:0,total:52,fpy:100},
-  {ww:'WW25',yr:2026,approved:30,rejected:0,total:30,fpy:100}
+  {ww:'WW25',yr:2026,approved:30,rejected:0,total:30,fpy:100},
+  {ww:'WW26',yr:2026,approved:27,rejected:0,total:27,fpy:100}
 ];
 const jDailyWL=[
   {day:'WW14.1',fpy:76.2,date:'03/31'},{day:'WW14.2',fpy:88.7,date:'04/01'},{day:'WW14.3',fpy:78.3,date:'04/02'},{day:'WW14.4',fpy:58.6,date:'04/03'},{day:'WW14.5',fpy:92.9,date:'04/04'},
@@ -973,7 +969,8 @@ const jDailyWL=[
   {day:'WW22.5',fpy:100,date:'05/29'},{day:'WW23.1',fpy:100,date:'06/01'},{day:'WW23.2',fpy:100,date:'06/02'},{day:'WW23.3',fpy:100,date:'06/03'},{day:'WW23.4',fpy:100,date:'06/04'},
   {day:'WW23.5',fpy:100,date:'06/05'},{day:'WW24.1',fpy:100,date:'06/08'},{day:'WW24.2',fpy:100,date:'06/09'},{day:'WW24.3',fpy:100,date:'06/10'},{day:'WW24.4',fpy:100,date:'06/11'},
   {day:'WW24.5',fpy:100,date:'06/12'},{day:'WW25.1',fpy:100,date:'06/15'},{day:'WW25.2',fpy:100,date:'06/16'},{day:'WW25.3',fpy:100,date:'06/17'},{day:'WW25.4',fpy:100,date:'06/18'},
-  {day:'WW25.5',fpy:100,date:'06/19'}
+  {day:'WW25.5',fpy:100,date:'06/19'},
+  {day:'WW26.1',fpy:100,date:'06/22'},{day:'WW26.2',fpy:100,date:'06/23'},{day:'WW26.3',fpy:100,date:'06/24'},{day:'WW26.4',fpy:100,date:'06/25'},{day:'WW26.5',fpy:100,date:'06/26'}
 ];
 const jDailyWOL=[
   {day:'WW14.1',fpy:76.2,date:'03/31'},{day:'WW14.2',fpy:71.4,date:'04/01'},{day:'WW14.3',fpy:79.6,date:'04/02'},{day:'WW14.4',fpy:58.6,date:'04/03'},{day:'WW14.5',fpy:90.9,date:'04/04'},
@@ -1035,7 +1032,8 @@ const jDailyWOL=[
   {day:'WW22.4',fpy:100,date:'05/28'},{day:'WW22.5',fpy:100,date:'05/29'},{day:'WW23.1',fpy:100,date:'06/01'},{day:'WW23.2',fpy:100,date:'06/02'},{day:'WW23.3',fpy:100,date:'06/03'},
   {day:'WW23.4',fpy:100,date:'06/04'},{day:'WW23.5',fpy:100,date:'06/05'},{day:'WW24.1',fpy:100,date:'06/08'},{day:'WW24.2',fpy:100,date:'06/09'},{day:'WW24.3',fpy:100,date:'06/10'},
   {day:'WW24.4',fpy:100,date:'06/11'},{day:'WW24.5',fpy:100,date:'06/12'},{day:'WW25.1',fpy:100,date:'06/15'},{day:'WW25.2',fpy:100,date:'06/16'},{day:'WW25.3',fpy:100,date:'06/17'},
-  {day:'WW25.4',fpy:100,date:'06/18'},{day:'WW25.5',fpy:100,date:'06/19'}
+  {day:'WW25.4',fpy:100,date:'06/18'},{day:'WW25.5',fpy:100,date:'06/19'},
+  {day:'WW26.1',fpy:100,date:'06/22'},{day:'WW26.2',fpy:100,date:'06/23'},{day:'WW26.3',fpy:100,date:'06/24'},{day:'WW26.4',fpy:100,date:'06/25'},{day:'WW26.5',fpy:100,date:'06/26'}
 ];
 
 
@@ -1460,21 +1458,33 @@ const iDailyData=[
   {day:'WW47.4',fpy:100.0,passed:8, failed:0,total:8},  {day:'WW47.5',fpy:100.0,passed:11,failed:0,total:11},
   {day:'WW48.1',fpy:100.0,passed:20,failed:0,total:20}, {day:'WW48.2',fpy:100.0,passed:16,failed:0,total:16},
   {day:'WW48.3',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW48.5',fpy:100.0,passed:4, failed:0,total:4},
+  {day:'WW49.1',fpy:100.0,passed:22,failed:0,total:22}, {day:'WW49.2',fpy:100.0,passed:45,failed:0,total:45},
+  {day:'WW49.3',fpy:100.0,passed:5, failed:0,total:5},  {day:'WW49.4',fpy:100.0,passed:26,failed:0,total:26},
+  {day:'WW49.5',fpy:100.0,passed:9, failed:0,total:9},  {day:'WW50.1',fpy:100.0,passed:10,failed:0,total:10},
+  {day:'WW50.2',fpy:100.0,passed:15,failed:0,total:15}, {day:'WW50.3',fpy:100.0,passed:15,failed:0,total:15},
+  {day:'WW50.4',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW50.5',fpy:100.0,passed:9, failed:0,total:9},
+  {day:'WW51.1',fpy:100.0,passed:14,failed:0,total:14}, {day:'WW51.2',fpy:100.0,passed:27,failed:0,total:27},
+  {day:'WW51.3',fpy:100.0,passed:2, failed:0,total:2},  {day:'WW51.4',fpy:100.0,passed:4, failed:0,total:4},
+  {day:'WW51.5',fpy:100.0,passed:13,failed:0,total:13}, {day:'WW52.1',fpy:100.0,passed:19,failed:0,total:19},
+  {day:'WW52.2',fpy:100.0,passed:6, failed:0,total:6},  {day:'WW52.5',fpy:100.0,passed:23,failed:0,total:23},
+  {day:'WW01.5',fpy:100.0,passed:29,failed:0,total:29}, {day:'WW02.1',fpy:100.0,passed:15,failed:0,total:15},
+  {day:'WW02.2',fpy:100.0,passed:7, failed:0,total:7},  {day:'WW02.3',fpy:100.0,passed:8, failed:0,total:8},
+  {day:'WW02.4',fpy:100.0,passed:12,failed:0,total:12}, {day:'WW02.5',fpy:100.0,passed:10,failed:0,total:10},
 ];
 
 const iDefTypes=['OHO Rework','IA Form Deficiency','FSP Deficiency','Incorrect Inverter','Rejected PTO','Mismatch SLD Address','Missing Battery Desc.','Incorrect Battery App.','NEM Deficiency','Other'];
-const iDefWWs=['WW22','WW23','WW24','WW25','WW26','WW27','WW28','WW29','WW30','WW31','WW32','WW33','WW34','WW35'];
+const iDefWWs=["WW22'25","WW23'25","WW24'25","WW25'25","WW26'25","WW27'25","WW28'25","WW29'25","WW30'25","WW31'25","WW32'25","WW33'25","WW34'25","WW35'25","WW36'25","WW37'25","WW38'25","WW39'25","WW40'25","WW41'25","WW42'25","WW43'25","WW44'25","WW45'25","WW46'25","WW47'25","WW48'25","WW49'25","WW50'25","WW51'25","WW52'25","WW01'26","WW02'26","WW03'26","WW04'26","WW05'26","WW06'26","WW07'26","WW08'26","WW09'26","WW10'26","WW11'26","WW12'26","WW13'26","WW14'26","WW15'26","WW16'26","WW17'26","WW18'26","WW19'26","WW20'26","WW21'26","WW22'26","WW23'26","WW24'26","WW25'26"];
 const iDefData={
-  'OHO Rework':           [13,2,8,3,5,8,1,3,4,1,0,1,1,0],
-  'IA Form Deficiency':   [5, 0,1,1,0,0,1,0,0,0,0,0,0,0],
-  'FSP Deficiency':       [2, 0,5,3,1,0,0,0,1,2,0,0,0,0],
-  'Incorrect Inverter':   [0, 0,2,0,0,1,2,0,0,0,2,2,0,0],
-  'Rejected PTO':         [0, 0,3,0,3,0,0,0,0,0,0,0,0,0],
-  'Mismatch SLD Address': [1, 0,1,0,0,0,0,1,0,0,0,0,0,0],
-  'Missing Battery Desc.':[0, 0,0,0,0,0,0,0,0,0,0,0,0,1],
-  'Incorrect Battery App.':[1,0,0,1,0,0,0,1,0,0,0,0,0,0],
-  'NEM Deficiency':       [0, 1,1,0,0,0,0,0,0,0,0,1,0,0],
-  'Other':                [4, 1,1,3,2,0,0,2,0,2,0,0,0,0],
+  'OHO Rework':[13,2,8,3,5,8,1,3,4,1,0,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'IA Form Deficiency':[5,0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'FSP Deficiency':[2,0,5,3,1,0,0,0,1,2,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+  'Incorrect Inverter':[0,0,2,0,0,1,2,0,0,0,2,2,0,0,1,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'Rejected PTO':[0,0,3,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'Mismatch SLD Address':[1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'Missing Battery Desc.':[0,0,0,0,0,0,0,2,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'Incorrect Battery App.':[1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'NEM Deficiency':[0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  'Other':[4,1,1,3,2,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 };
 
 const iCycleTimeData=[
@@ -1707,7 +1717,9 @@ const fWeeklyData=[
   {ww:'WW23',yr:2026,fpy:100,passed:11,failed:0,total:11},
   {ww:'WW24',yr:2026,fpy:100,passed:6,failed:0,total:6},
   {ww:'WW25',yr:2026,fpy:100,passed:10,failed:0,total:10},
-  {ww:'WW26',yr:2026,fpy:100,passed:6,failed:0,total:6}
+  {ww:'WW26',yr:2026,fpy:100,passed:6,failed:0,total:6},
+  {ww:'WW27',yr:2026,fpy:100,passed:2,failed:0,total:2},
+  {ww:'WW28',yr:2026,fpy:100,passed:10,failed:0,total:10}
 ];
 // M1 data: 2026 only, weeks with volume > 0
 const fM1Data=[
@@ -1730,7 +1742,9 @@ const fM1Data=[
   {ww:'WW23',yr:2026,fpy:100,passed:3,failed:0,total:3},
   {ww:'WW24',yr:2026,fpy:100,passed:19,failed:0,total:19},
   {ww:'WW25',yr:2026,fpy:100,passed:2,failed:0,total:2},
-  {ww:'WW26',yr:2026,fpy:100,passed:5,failed:0,total:5}
+  {ww:'WW26',yr:2026,fpy:100,passed:5,failed:0,total:5},
+  {ww:'WW27',yr:2026,fpy:100,passed:3,failed:0,total:3},
+  {ww:'WW28',yr:2026,fpy:100,passed:3,failed:0,total:3}
 ];
 const fParetoData=[
   {cat:'Electrical Photos',n:18,cum:21.7},
@@ -1796,21 +1810,21 @@ function fFilterM1(){
 }
 function fWWLabel(r){return r.ww+"'"+(r.yr%100);}
 function fFpyStatus(v){
-  if(v===100)return'✅ On Target';
-  if(v>=95)return'🔶 Near Target';
+  if(v>=98)return'✅ On Target';
   if(v>=85)return'⚠️ Caution';
+  if(v>=70)return'🔶 At Risk';
   return'🔴 Off Target';
 }
 function fFpyColor(v){
-  if(v===100)return'color:var(--green)';
-  if(v>=95)return'color:var(--yellow)';
-  if(v>=85)return'color:var(--orange)';
+  if(v>=98)return'color:var(--green)';
+  if(v>=85)return'color:var(--yellow)';
+  if(v>=70)return'color:var(--orange)';
   return'color:var(--red)';
 }
 function fPtColor(v){
-  if(v===100)return'#00c853';
-  if(v>=95)return'#ffd600';
-  if(v>=85)return'#ff6d00';
+  if(v>=98)return'#00c853';
+  if(v>=85)return'#ffd600';
+  if(v>=70)return'#ff6d00';
   return'#f44336';
 }
 
@@ -1920,7 +1934,7 @@ function fRenderPareto(){
 // AR OPERATIONS — DATA
 // ═══════════════════════════════════════════════════════
 const arData=[
-  {ww:'WW14',yr:2026,payment:338297.82,identified:336227.50,variance:2070.32,  rate:99.39,reason:'No remittance advice'},
+  {ww:'WW14',yr:2026,payment:338297.82,identified:336227.50,variance:2070.32,  rate:99.39,reason:'Incomplete remittance details'},
   {ww:'WW15',yr:2026,payment:252736.18,identified:252736.18,variance:0,        rate:100,  reason:''},
   {ww:'WW16',yr:2026,payment:376576.20,identified:376576.20,variance:0,        rate:100,  reason:''},
   {ww:'WW17',yr:2026,payment:225428.75,identified:225428.75,variance:0,        rate:100,  reason:''},
@@ -1929,18 +1943,19 @@ const arData=[
   {ww:'WW20',yr:2026,payment:95881.43, identified:95881.43, variance:0,        rate:100,  reason:''},
   {ww:'WW21',yr:2026,payment:321961.80,identified:321961.80,variance:0,        rate:100,  reason:''},
   {ww:'WW22',yr:2026,payment:96845.00, identified:96845.00, variance:0,        rate:100,  reason:''},
-  {ww:'WW23',yr:2026,payment:586948.78,identified:329557.59,variance:257391.19,rate:56.15,reason:'Incomplete, No remittance advice'},
-  {ww:'WW24',yr:2026,payment:280561.41,identified:43331.19, variance:237230.22,rate:15.44,reason:'Incomplete Remittance Advice'},
-  {ww:'WW25',yr:2026,payment:46592.37, identified:46592.37, variance:0,        rate:100,  reason:''}
+  {ww:'WW23',yr:2026,payment:586948.78,identified:446700.59,variance:140248.19,rate:76.11,reason:'Incomplete remittance details'},
+  {ww:'WW24',yr:2026,payment:280561.41,identified:280561.41,variance:0,        rate:100,  reason:''},
+  {ww:'WW25',yr:2026,payment:46592.37, identified:46592.37, variance:0,        rate:100,  reason:''},
+  {ww:'WW26',yr:2026,payment:99679.32, identified:99679.32, variance:0,        rate:100,  reason:''}
 ];
 
 // ═══════════════════════════════════════════════════════
 // AR OPERATIONS — HELPERS & FILTERS
 // ═══════════════════════════════════════════════════════
 function fmtDollar(v){return'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function arRateColor(v){if(v===100)return'color:var(--green)';if(v>=95)return'color:var(--yellow)';if(v>=80)return'color:var(--orange)';return'color:var(--red)';}
-function arRateStatus(v){if(v===100)return'✅ On Target';if(v>=95)return'🔶 Near Target';if(v>=80)return'⚠️ Caution';return'🔴 Off Target';}
-function arPtColor(v){if(v===100)return'#00c853';if(v>=95)return'#ffd600';if(v>=80)return'#ff6d00';return'#f44336';}
+function arRateColor(v){if(v>=98)return'color:var(--green)';if(v>=85)return'color:var(--yellow)';if(v>=70)return'color:var(--orange)';return'color:var(--red)';}
+function arRateStatus(v){if(v>=98)return'✅ On Target';if(v>=85)return'⚠️ Caution';if(v>=70)return'🔶 At Risk';return'🔴 Off Target';}
+function arPtColor(v){if(v>=98)return'#00c853';if(v>=85)return'#ffd600';if(v>=70)return'#ff6d00';return'#f44336';}
 
 const arLastRef=arData[arData.length-1];
 const arCurrFY=arLastRef.yr;
@@ -2025,16 +2040,17 @@ function arRenderVariance(){
 // INTERCONNECTION — DEPENDENCY TREND
 // ═══════════════════════════════════════════════════════
 const iDepData=[
-  {ww:'WW01',count:404},{ww:'WW02',count:348},{ww:'WW03',count:327},
-  {ww:'WW04',count:322},{ww:'WW05',count:327},{ww:'WW06',count:309},
-  {ww:'WW07',count:282},{ww:'WW08',count:244},{ww:'WW09',count:237},
-  {ww:'WW10',count:235},{ww:'WW11',count:212},{ww:'WW12',count:203},
-  {ww:'WW13',count:200},{ww:'WW14',count:193},{ww:'WW15',count:190},
-  {ww:'WW16',count:195},{ww:'WW17',count:188},{ww:'WW18',count:186},
-  {ww:'WW19',count:180},{ww:'WW20',count:161},{ww:'WW21',count:191},
-  {ww:'WW22',count:185},{ww:'WW23',count:177},{ww:'WW24',count:172},
-  {ww:'WW25',count:169}
+  {ww:'WW01',yr:2026,count:404},{ww:'WW02',yr:2026,count:348},{ww:'WW03',yr:2026,count:327},
+  {ww:'WW04',yr:2026,count:322},{ww:'WW05',yr:2026,count:327},{ww:'WW06',yr:2026,count:309},
+  {ww:'WW07',yr:2026,count:282},{ww:'WW08',yr:2026,count:244},{ww:'WW09',yr:2026,count:237},
+  {ww:'WW10',yr:2026,count:235},{ww:'WW11',yr:2026,count:212},{ww:'WW12',yr:2026,count:203},
+  {ww:'WW13',yr:2026,count:200},{ww:'WW14',yr:2026,count:193},{ww:'WW15',yr:2026,count:190},
+  {ww:'WW16',yr:2026,count:195},{ww:'WW17',yr:2026,count:188},{ww:'WW18',yr:2026,count:186},
+  {ww:'WW19',yr:2026,count:180},{ww:'WW20',yr:2026,count:191},{ww:'WW21',yr:2026,count:191},
+  {ww:'WW22',yr:2026,count:185},{ww:'WW23',yr:2026,count:177},{ww:'WW24',yr:2026,count:172},
+  {ww:'WW25',yr:2026,count:169},{ww:'WW26',yr:2026,count:171}
 ];
+function iDepLabel(r){return r.ww+"'"+(r.yr%100);}
 function iLinReg(vals){
   const n=vals.length,xs=vals.map((_,i)=>i+1);
   const sx=xs.reduce((a,b)=>a+b,0),sy=vals.reduce((a,b)=>a+b,0);
@@ -2057,13 +2073,13 @@ function iRenderDependency(){
   document.getElementById('is4-cards').innerHTML=`
     <div style="width:100%;background:linear-gradient(135deg,#1565c0,#1976d2);border-radius:8px;padding:14px 24px;margin-bottom:8px;text-align:center;">
       <span style="color:#fff;font-size:17px;font-weight:700;letter-spacing:.3px;">
-        ↓ ${Math.abs(pctChg)}% Reduction YTD &nbsp;·&nbsp; ${first} Open Cases (${d[0].ww}) → ~${last} (${d[d.length-1].ww})
+        ↓ ${Math.abs(pctChg)}% Reduction of Interconnection Dependencies YTD &nbsp;·&nbsp; ${first} Open Cases (${iDepLabel(d[0])}) → ~${last} (${iDepLabel(d[d.length-1])})
       </span>
     </div>
-    <div class="card"><div class="card-label">Current Open</div><div class="card-value c-blue">${last}</div><div class="card-sub">${d[d.length-1].ww} 2026</div></div>
+    <div class="card"><div class="card-label">Current Open</div><div class="card-value c-blue">${last}</div><div class="card-sub">${iDepLabel(d[d.length-1])}</div></div>
     <div class="card"><div class="card-label">YTD Reduction</div><div class="card-value c-green">↓ ${first-last}</div><div class="card-sub">${Math.abs(pctChg)}% improvement</div></div>
     <div class="card"><div class="card-label">Period Average</div><div class="card-value" style="color:var(--yellow)">${avgCount}</div><div class="card-sub">open dependencies</div></div>
-    <div class="card"><div class="card-label">Lowest WW</div><div class="card-value c-green">${weekMin.count}</div><div class="card-sub">${weekMin.ww}</div></div>
+    <div class="card"><div class="card-label">Lowest WW</div><div class="card-value c-green">${weekMin.count}</div><div class="card-sub">${iDepLabel(weekMin)}</div></div>
     <div class="card"><div class="card-label">Trend Slope</div><div class="card-value c-green">↓ ${Math.abs(Math.round((trend[trend.length-1]-trend[0])/(d.length-1)))} / wk</div><div class="card-sub">avg weekly reduction</div></div>`;
 
   const c=getCC();
@@ -2073,7 +2089,7 @@ function iRenderDependency(){
   iCI['dep']=new Chart(document.getElementById('i-chart-dep'),{
     plugins:[ChartDataLabels],
     data:{
-      labels:d.map(r=>r.ww),
+      labels:d.map(r=>iDepLabel(r)),
       datasets:[
         {type:'bar',label:'Open Dependencies',data:counts,
          backgroundColor:BAR_COLOR,borderColor:BAR_BORDER,borderWidth:1,borderRadius:2,
@@ -2101,7 +2117,7 @@ function iRenderDependency(){
   });
   document.getElementById('is4-tbody').innerHTML=d.map((r,i)=>{
     const wow=i===0?'—':(counts[i]-counts[i-1]>0?'<span style="color:var(--red)">+':'<span style="color:var(--green)">')+`${counts[i]-counts[i-1]}</span>`;
-    return`<tr><td class="left ww-label">${r.ww}</td><td style="font-weight:600;color:var(--blue)">${r.count}</td><td>${wow}</td><td style="color:var(--muted)">${trend[i].toFixed(0)}</td></tr>`;
+    return`<tr><td class="left ww-label">${iDepLabel(r)}</td><td style="font-weight:600;color:var(--blue)">${r.count}</td><td>${wow}</td><td style="color:var(--muted)">${trend[i].toFixed(0)}</td></tr>`;
   }).join('');
 }
 
@@ -2171,10 +2187,31 @@ const fLifeData=[
   {ww:'WW24',rework:67, appCum:118, cancelled:4, m1m2:0,  lifestyle:1,  newProj:3},
   {ww:'WW25',rework:65, appCum:121, cancelled:4, m1m2:0,  lifestyle:1,  newProj:1},
   {ww:'WW26',rework:68, appCum:125, cancelled:4, m1m2:3,  lifestyle:0,  newProj:9},
+  {ww:'WW27',rework:71, appCum:125, cancelled:4, m1m2:0,  lifestyle:0,  newProj:0},
+  {ww:'WW28',rework:68, appCum:125, cancelled:4, m1m2:0,  lifestyle:3,  newProj:0},
 ];
 
+let fLifeFilter='all';
+function fSetLifeFilter(f){
+  fLifeFilter=f;
+  ['all','q1','q2','q3','q4'].forEach(k=>{const b=document.getElementById('flife-'+k);if(b)b.classList.toggle('active',k===f);});
+  fRenderLifestyle();
+}
+function fFilterLife(){
+  if(fLifeFilter==='all')return fLifeData;
+  const qMap={q1:'Q1',q2:'Q2',q3:'Q3',q4:'Q4'};
+  const want=qMap[fLifeFilter];
+  return fLifeData.filter(d=>jFQLabel(d.ww)===want);
+}
 function fRenderLifestyle(){
-  const labels=fLifeData.map(d=>d.ww);
+  const fd=fFilterLife();
+  const pill=document.getElementById('fs3-range-pill');
+  if(pill){
+    if(fLifeFilter==='all')pill.textContent='WW03–WW28 2026';
+    else if(fd.length)pill.textContent=`${fd[0].ww}–${fd[fd.length-1].ww} 2026 (${fLifeFilter.toUpperCase()})`;
+    else pill.textContent='No data';
+  }
+  const labels=fd.map(d=>d.ww);
   const tc=lightMode?'#111111':'#ccc';
   const gc=lightMode?'#dce1ea':'#333';
   const tbg=lightMode?'rgba(255,255,255,0.95)':'rgba(30,30,30,0.95)';
@@ -2188,17 +2225,17 @@ function fRenderLifestyle(){
     data:{
       labels,
       datasets:[
-        {type:'bar',label:'Rework',data:fLifeData.map(d=>d.rework),
+        {type:'bar',label:'Rework',data:fd.map(d=>d.rework),
           backgroundColor:'rgba(31,78,121,0.80)',borderColor:'#1f4e79',borderWidth:1,borderRadius:3},
-        {type:'bar',label:'New Submissions',data:fLifeData.map(d=>d.newProj),
+        {type:'bar',label:'New Submissions',data:fd.map(d=>d.newProj),
           backgroundColor:'rgba(0,168,107,0.75)',borderColor:'#00a86b',borderWidth:1,borderRadius:3},
-        {type:'bar',label:'For M1/M2 Review',data:fLifeData.map(d=>d.m1m2),
+        {type:'bar',label:'For M1/M2 Review',data:fd.map(d=>d.m1m2),
           backgroundColor:'rgba(91,155,213,0.80)',borderColor:'#5b9bd5',borderWidth:1,borderRadius:3},
-        {type:'bar',label:'For Lifestyle Review',data:fLifeData.map(d=>d.lifestyle),
+        {type:'bar',label:'For Lifestyle Review',data:fd.map(d=>d.lifestyle),
           backgroundColor:'rgba(153,102,255,0.75)',borderColor:'#9966ff',borderWidth:1,borderRadius:3},
-        {type:'bar',label:'Cancelled',data:fLifeData.map(d=>d.cancelled),
+        {type:'bar',label:'Cancelled',data:fd.map(d=>d.cancelled),
           backgroundColor:'rgba(200,50,50,0.65)',borderColor:'#c83232',borderWidth:1,borderRadius:3},
-        {type:'line',label:'Approved YTD (cumulative)',data:fLifeData.map(d=>d.appCum),
+        {type:'line',label:'Approved YTD (cumulative)',data:fd.map(d=>d.appCum),
           borderColor:'#ffb300',backgroundColor:'rgba(255,179,0,0.10)',
           borderWidth:2.5,pointRadius:3,
           pointBackgroundColor:'#ffb300',pointBorderColor:'#e65100',pointBorderWidth:1.5,
@@ -2246,13 +2283,6 @@ function fRenderLifestyle(){
 // ════════════════════════════════════════════════════════
 // DESIGN — C4 COMMUNITY FPY + L7 LOT DESIGN FPY
 // ════════════════════════════════════════════════════════
-
-function dSwitchScreen(n){
-  const sec=document.getElementById('team-design');
-  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
-  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
-  if(n===1&&!dL7Initialized){dRenderL7();dL7Initialized=true;}
-}
 
 // ═══════════════════════════════════════════════════════
 // DESIGN — FILTER STATE & HELPERS
@@ -2309,24 +2339,42 @@ function dFilterL7(){
 // C4: Community Award to Final Design Approved — weekly FPY
 // C4 Community Design FPY — source: Design Andon Board (c4DesignFpyChart + c4FpyChart)
 const dC4Data=[
+  {ww:'2026-W01',pass:1,fail:0,fpy:100},
+  {ww:'2026-W02',pass:13,fail:4,fpy:76},
+  {ww:'2026-W03',pass:12,fail:0,fpy:100},
+  {ww:'2026-W04',pass:9,fail:0,fpy:100},
+  {ww:'2026-W05',pass:9,fail:0,fpy:100},
+  {ww:'2026-W06',pass:4,fail:0,fpy:100},
+  {ww:'2026-W07',pass:6,fail:0,fpy:100},
+  {ww:'2026-W08',pass:9,fail:0,fpy:100},
+  {ww:'2026-W09',pass:4,fail:0,fpy:100},
+  {ww:'2026-W10',pass:3,fail:0,fpy:100},
+  {ww:'2026-W11',pass:4,fail:0,fpy:100},
+  {ww:'2026-W12',pass:1,fail:0,fpy:100},
+  {ww:'2026-W13',pass:1,fail:0,fpy:100},
   {ww:'2026-W15',pass:2,fail:0,fpy:100},
   {ww:'2026-W16',pass:2,fail:0,fpy:100},
   {ww:'2026-W18',pass:1,fail:0,fpy:100},
-  {ww:'2026-W19',pass:4,fail:1,fpy:99},
+  {ww:'2026-W19',pass:4,fail:1,fpy:80},
   {ww:'2026-W20',pass:5,fail:0,fpy:100},
   {ww:'2026-W21',pass:2,fail:0,fpy:100},
-  {ww:'2026-W22',pass:0,fail:1,fpy:98},
+  {ww:'2026-W22',pass:0,fail:1,fpy:0},
   {ww:'2026-W23',pass:9,fail:0,fpy:100},
   {ww:'2026-W24',pass:3,fail:0,fpy:100},
-  {ww:'2026-W26',pass:3,fail:0,fpy:99},
+  {ww:'2026-W26',pass:3,fail:0,fpy:100},
+  {ww:'2026-W27',pass:1,fail:0,fpy:100},
+  {ww:'2026-W28',pass:4,fail:0,fpy:100},
+  {ww:'2026-W29',pass:1,fail:0,fpy:100},
 ];
 
 // L7 Lot Design FPY — source: Design Andon Board (l7FpyChart), W14–W26 2026
-const dL7Labels=['2026-W14','2026-W15','2026-W16','2026-W17','2026-W18',
-  '2026-W19','2026-W20','2026-W21','2026-W22','2026-W23','2026-W24','2026-W25','2026-W26'];
-const dL7Pass=[3,41,58,32,26,15,39,54,51,52,21,23,6];
-const dL7Fail=[0,0,0,0,2,9,10,6,6,2,4,2,0];
-const dL7FPY=[100,100,100,100,93,63,80,90,89,96,84,92,100];
+const dL7Labels=['2026-W01','2026-W02','2026-W03','2026-W04','2026-W05','2026-W06','2026-W07',
+  '2026-W08','2026-W09','2026-W10','2026-W11','2026-W12','2026-W13','2026-W14','2026-W15',
+  '2026-W16','2026-W17','2026-W18','2026-W19','2026-W20','2026-W21','2026-W22','2026-W23',
+  '2026-W24','2026-W25','2026-W26','2026-W27'];
+const dL7Pass=[10,61,33,34,75,48,75,22,24,50,64,42,38,17,41,58,32,26,15,39,54,51,52,21,23,6,7];
+const dL7Fail=[0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,9,10,6,6,2,4,2,0,3];
+const dL7FPY=[100,100,94,100,100,100,100,100,100,100,100,100,100,100,100,100,100,93,63,80,90,89,96,84,92,100,70];
 
 function dRenderC4(){
   const fd=dFilterC4();

@@ -2821,84 +2821,118 @@ function percentile(sorted, p){
 }
 
 
-let _slaTypeCharts=[];
-
 function renderSLATypeCharts(rows, weeks){
+  const types=SLA_TYPES;
   const container=document.getElementById('sla-type-charts');
   if(!container) return;
 
-  // Destroy previous instances
-  _slaTypeCharts.forEach(c=>{try{c.destroy();}catch(e){}});
-  _slaTypeCharts=[];
+  Object.values(slaTypeCharts).forEach(c=>{try{c.destroy();}catch(e){}});
+  slaTypeCharts={};
 
-  const LV_COLORS=['#4FC3F7','#69F0AE','#FFB74D'];
-
-  // Build level → week → [sla values]
-  const lvMap={};
-  LEVELS.forEach(lv=>{ lvMap[lv]={}; weeks.forEach(wk=>{ lvMap[lv][wk]=[]; }); });
+  const typeWeekMap={};
+  types.forEach(t=>typeWeekMap[t]={});
   rows.forEach(r=>{
-    const d=parseDate(colJ(r)); if(!d) return;
+    const d=parseDate(colJ(r));if(!d)return;
     const wk=isoWeek(d);
-    const lv=getLevel(colG(r));
+    const type=colG(r);
     const sla=getSLA(r);
-    if(sla===null||!LEVELS.includes(lv)||!lvMap[lv][wk]) return;
-    lvMap[lv][wk].push(sla);
+    if(sla===null||!typeWeekMap[type])return;
+    if(!typeWeekMap[type][wk])typeWeekMap[type][wk]=[];
+    typeWeekMap[type][wk].push(sla);
   });
 
-  function metricVal(arr){
-    if(!arr||!arr.length) return null;
-    const s=[...arr].sort((a,b)=>a-b);
-    if(slaTypeMetric==='avg') return parseFloat((arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1));
-    if(slaTypeMetric==='p50') return parseFloat(percentile(s,50).toFixed(1));
-    if(slaTypeMetric==='p90') return parseFloat(percentile(s,90).toFixed(1));
+  const metricLabel={'avg':'Average','p50':'P.50','p90':'P.90'}[slaTypeMetric]||'Average';
+
+  function metricVal(vals){
+    if(!vals||!vals.length) return null;
+    const sorted=[...vals].sort((a,b)=>a-b);
+    if(slaTypeMetric==='avg') return parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2));
+    if(slaTypeMetric==='p50') return parseFloat(percentile(sorted,50).toFixed(2));
+    if(slaTypeMetric==='p90') return parseFloat(percentile(sorted,90).toFixed(2));
     return null;
   }
 
-  // Build HTML: one canvas per level, stacked
-  container.innerHTML=`<div style="display:flex;flex-direction:column;gap:.5rem;height:100%;">
-    ${LEVELS.map((lv,i)=>`
-      <div style="flex:1;min-height:0;position:relative;">
-        <canvas id="slaTypeChart_${i}" role="img" aria-label="${LV_SHORT[lv]} SLA trend"></canvas>
-      </div>`).join('')}
-  </div>`;
+  /* Group types by design level, skip types with zero data in period */
+  const LV_COLOR_HEX2={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
 
-  const colors=cc();
-  LEVELS.forEach((lv,i)=>{
-    const canvas=document.getElementById('slaTypeChart_'+i);
-    if(!canvas) return;
-    const data=weeks.map(wk=>metricVal(lvMap[lv][wk]));
-    const hasData=data.some(v=>v!==null);
-    const chart=new Chart(canvas,{
-      type:'bar',
-      data:{
-        labels:weeks,
-        datasets:[{
-          label:LV_SHORT[lv],
-          data,
-          backgroundColor:LV_COLORS[i]+'55',
-          borderColor:LV_COLORS[i],
-          borderWidth:1.5,
-          borderRadius:2,
-          datalabels:{display:false}
-        }]
-      },
+  /* Check which types have any data */
+  const typesWithData=types.filter(t=>weeks.some(wk=>typeWeekMap[t][wk]?.length>0));
+
+  /* Build grouped HTML */
+  let html='';
+  LEVELS.forEach(level=>{
+    const lvTypes=typesWithData.filter(t=>getLevel(t)===level);
+    if(!lvTypes.length) return;
+    const lvColor=LV_COLOR_HEX2[level];
+    html+=`<div style="margin-bottom:.7rem;">
+      <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:${lvColor};margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px solid ${lvColor}33;">${LV_SHORT[level]}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;">
+        ${lvTypes.map(t=>{
+          const target=slaTargets[slaTypeMetric]?.[t];
+          return `<div class="panel" style="padding:.6rem .8rem;border-color:${lvColor}22;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.3rem;">
+              <div style="font-size:.62rem;font-weight:500;color:var(--text);letter-spacing:.02em;">${t}</div>
+              <div style="font-size:.55rem;color:var(--dim);">tgt: <span style="color:${lvColor};font-weight:500;">${target!==undefined?target+'d':'—'}</span></div>
+            </div>
+            <div style="position:relative;width:100%;height:75px;">
+              <canvas id="sla-type-${t.replace(/\W/g,'_')}" role="img" aria-label="SLA trend for ${t}"></canvas>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  container.innerHTML=html||'<div style="font-size:.82rem;color:var(--dim);padding:1rem 0;">No data for selected period.</div>';
+
+  types.forEach(t=>{
+    if(!typesWithData.includes(t))return; /* skip — hidden */
+    const canvasId='sla-type-'+t.replace(/\W/g,'_');
+    const ctx=document.getElementById(canvasId);
+    if(!ctx)return;
+    const lvColor=LV_COLOR_HEX2[getLevel(t)]||'#CE93D8';
+    const data=weeks.map(wk=>metricVal(typeWeekMap[t][wk]));
+    const target=slaTargets[slaTypeMetric]?.[t]??null;
+    const datasets=[{
+      label:metricLabel+' SLA',
+      data,
+      borderColor:lvColor,
+      backgroundColor:lvColor+'22',
+      pointRadius:2,pointHoverRadius:4,
+      borderWidth:2,tension:.35,spanGaps:true,
+      fill:true
+    }];
+    if(target!==null){
+      datasets.push({
+        label:'Target',
+        data:weeks.map(()=>target),
+        borderColor:'rgba(255,183,77,.7)',
+        borderWidth:1.5,
+        borderDash:[5,4],
+        pointRadius:0,
+        fill:false,
+        tension:0
+      });
+    }
+    slaTypeCharts[t]=new Chart(ctx,{
+      type:'line',
+      data:{labels:weeks,datasets},
       options:{
         responsive:true,maintainAspectRatio:false,
         plugins:{
           legend:{display:false},
-          title:{display:true,text:LV_SHORT[lv],color:LV_COLORS[i],font:{size:10,weight:'bold'},padding:{bottom:2}},
-          tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y!==null?c.parsed.y.toFixed(1)+'d':'—'}`}}
+          tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y!==null?c.parsed.y.toFixed(1)+'d':'—')}}
         },
         scales:{
-          x:{ticks:{color:colors.tick,font:{size:7},maxRotation:45,minRotation:30},grid:{color:colors.grid}},
-          y:{beginAtZero:true,ticks:{color:colors.tickFade,font:{size:8},callback:v=>v+'d'},
-             grid:{color:colors.grid}}
+          x:{display:false},
+          y:{beginAtZero:false,
+             ticks:{color:cc().tickFade,font:{size:12},callback:v=>v+'d'},
+             grid:{color:cc().grid}}
         }
       }
     });
-    _slaTypeCharts.push(chart);
   });
 }
+
 
 function renderScreen6(){
   const allRows=rawRows;

@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NH Andon Board</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  :root {
+    --bg:#0d0d0d;--surface:#1a1a1a;--surface2:#252525;--border:#333;
+    --text:#e8e8e8;--muted:#888;
+    --green:#00c853;--green-bg:#00391a;
+    --yellow:#ffd600;--yellow-bg:#3a3000;
+    --orange:#ff6d00;--orange-bg:#3a1a00;
+    --red:#f44336;--red-bg:#3a0000;
+    --blue:#2196f3;--blue-bg:#0d2a4a;
+    --purple:#ab47bc;--purple-bg:#2a0a30;
+    --teal:#26c6da;--teal-bg:#003840;
+    --header-h:58px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:13px;min-height:100vh;}
+
+  /* HEADER */
+  .header{background:linear-gradient(90deg,#0a2d6b 0%,#1a4db0 100%);height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:2px solid #2563b8;position:sticky;top:0;z-index:100;}
+  .header-left{display:flex;align-items:center;gap:14px;}
+  .header-title{font-size:18px;font-weight:700;letter-spacing:0.5px;color:#fff;}
+  .header-sub{font-size:11px;color:#a8c0e8;margin-top:2px;}
+  .header-badge{background:#ff6d00;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:1px;}
+
+  /* TEAM TABS */
+  .team-tabs{display:flex;gap:4px;background:rgba(0,0,0,0.3);padding:4px;border-radius:8px;}
+  .team-tab{background:transparent;border:1px solid transparent;color:#a8c0e8;font-size:12px;font-weight:700;padding:6px 22px;border-radius:5px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:0.5px;}
+  .team-tab:hover{background:rgba(255,255,255,0.08);color:#fff;}
+  .team-tab.active{background:rgba(33,150,243,0.25);color:#fff;border-color:#2196f3;}
+
+  /* SCREEN NAV */
+  .screen-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;overflow-x:auto;}
+  .screen-btn{background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;padding:12px 18px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:0.5px;}
+  .screen-btn:hover{color:var(--text);}
+  .screen-btn.active{color:#fff;border-bottom-color:#2196f3;}
+
+  /* CONTROLS */
+  .controls{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .ctrl-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+  .ctrl-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:11px;font-weight:600;padding:5px 14px;border-radius:4px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:0.5px;}
+  .ctrl-btn:hover{background:#333;}
+  .ctrl-btn.active{background:#1a3a70;border-color:#2196f3;color:#fff;}
+  .ctrl-sep{width:1px;height:24px;background:var(--border);}
+
+  /* SCREENS */
+  .screen{display:none;padding:20px;}
+  .screen.active{display:block;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* SECTION HEADER */
+  .section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .section-title{font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px;}
+  .section-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.5px;}
+  .pill-blue{background:var(--blue-bg);color:var(--blue);border:1px solid #1a4db0;}
+  .pill-green{background:var(--green-bg);color:var(--green);border:1px solid #00571a;}
+  .pill-teal{background:var(--teal-bg);color:var(--teal);border:1px solid #006a75;}
+  .pill-purple{background:var(--purple-bg);color:var(--purple);border:1px solid #6a0080;}
+  .pill-orange{background:var(--orange-bg);color:var(--orange);border:1px solid #6a2800;}
+
+  /* CARDS */
+  .cards{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 18px;min-width:140px;flex:1 1 150px;}
+  .card-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+  .card-value{font-size:22px;font-weight:700;}
+  .card-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+  .c-green{color:var(--green);}.c-yellow{color:var(--yellow);}.c-orange{color:var(--orange);}.c-red{color:var(--red);}.c-blue{color:var(--blue);}.c-teal{color:var(--teal);}
+
+  /* TABLES */
+  .tbl-wrap{overflow-x:auto;border-radius:6px;border:1px solid var(--border);margin-bottom:20px;}
+  table{border-collapse:collapse;width:100%;}
+  thead th{background:#1a2a4a;color:#a8c0e8;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;text-align:center;border-bottom:2px solid #2563b8;white-space:nowrap;}
+  thead th.left{text-align:left;}
+  tbody tr:nth-child(even){background:#161616;}
+  tbody tr:hover{background:#222;}
+  tbody td{padding:7px 10px;text-align:center;border-bottom:1px solid #222;font-size:12px;white-space:nowrap;}
+  tbody td.left{text-align:left;font-weight:600;}
+  tbody td.metric{font-weight:700;font-size:13px;}
+  .ww-label{font-weight:700;color:#a8c0e8;font-size:11px;}
+
+  /* FPY CELLS */
+  .fpy-green{background:var(--green-bg);color:var(--green);font-weight:700;border-radius:3px;padding:3px 7px;display:inline-block;}
+  .fpy-yellow{background:var(--yellow-bg);color:var(--yellow);font-weight:700;border-radius:3px;padding:3px 7px;display:inline-block;}
+  .fpy-orange{background:var(--orange-bg);color:var(--orange);font-weight:700;border-radius:3px;padding:3px 7px;display:inline-block;}
+  .fpy-red{background:var(--red-bg);color:var(--red);font-weight:700;border-radius:3px;padding:3px 7px;display:inline-block;}
+  .fpy-na{color:var(--muted);font-style:italic;}
+
+  /* LEGEND */
+  .legend{display:flex;gap:14px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;}
+  .leg-dot{width:10px;height:10px;border-radius:2px;}
+
+  /* CHARTS */
+  .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-bottom:20px;}
+  .chart-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+  .chart-container{position:relative;height:220px;}
+  .chart-container.tall{height:300px;}
+
+  /* WW GROUPS */
+  .ww-group{margin-bottom:24px;}
+  .ww-group-hdr{background:#1a2a4a;color:#a8c0e8;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:6px 12px;border-radius:4px 4px 0 0;border:1px solid #2563b8;border-bottom:none;}
+
+  /* DEFICIENCY BAR */
+  .def-bar-cell{background:var(--surface2);height:6px;border-radius:3px;overflow:hidden;margin-top:3px;}
+  .def-bar-fill{height:100%;border-radius:3px;background:var(--red);transition:width .3s;}
+
+  /* JCO comparison row tags */
+  .row-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:4px;}
+  .tag-wl{background:#1a3a70;color:#64b5f6;}
+  .tag-wol{background:#1a3a1a;color:#69f0ae;}
+
+  /* ── LIGHT MODE ─────────────────────────────── */
+  body.light-mode {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface2: #f5f5f5;
+    --border: #d0d5de;
+    --text: #111111;
+    --muted: #111111;
+  }
+  body.light-mode .screen-nav { background:#ffffff; }
+  body.light-mode .controls   { background:#f5f5f5; }
+  body.light-mode .card       { background:#ffffff; border-color:#d0d5de; }
+  body.light-mode .chart-wrap { background:#ffffff; border-color:#d0d5de; }
+  body.light-mode .tbl-wrap   { border-color:#d0d5de; }
+  body.light-mode thead th    { background:#e4eaf6; color:#111111; border-bottom-color:#6b96da; }
+  body.light-mode tbody tr:nth-child(even) { background:#f5f7fc; }
+  body.light-mode tbody tr:hover { background:#edf2fc; }
+  body.light-mode .ww-group-hdr { background:#e4eaf6; color:#111111; border-color:#6b96da; }
+  body.light-mode .screen-btn.active { color:#111111; border-bottom-color:#2196f3; }
+  body.light-mode .screen-btn { color:#333333; }
+  body.light-mode .screen-btn:hover { color:#000000; }
+  body.light-mode .chart-title { color:#333333; }
+  body.light-mode .section-title { color:#111111; }
+  body.light-mode .ww-label { color:#1a3a6b; }
+  body.light-mode .def-bar-cell { background:#e4eaf6; }
+
+  /* FPY color cells stay vivid in both modes */
+
+  /* Mode toggle button */
+  .mode-toggle {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 14px; border-radius: 20px;
+    cursor: pointer; transition: all .15s;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .mode-toggle:hover { background: rgba(0,0,0,0.4); }
+  body.light-mode .mode-toggle {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+  }
+
+</style>
+</head>
+<body class="light-mode">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="header-title">NH Andon Board</div>
+      <div class="header-sub">First Pass Yield Monitoring · 2025–2026</div>
+    </div>
+    <div class="header-badge">Andon Board</div>
+  </div>
+  <button class="mode-toggle" id="modeToggle" onclick="toggleMode()">🌙 Dark</button>
+  <div class="team-tabs">
+    <button class="team-tab active" onclick="switchTeam(this,'jco')">JCO</button>
+    <button class="team-tab" onclick="switchTeam(this,'ico')">Interconnection</button>
+    <button class="team-tab" onclick="switchTeam(this,'funding')">Funding</button>
+    <button class="team-tab" onclick="switchTeam(this,'ar')">AR Operations</button>
+    <button class="team-tab" onclick="switchTeam(this,'design')">Design</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     TEAM: JCO
+     ════════════════════════════════════════════════ -->
+<div id="team-jco" class="team-section">
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="jSwitchScreen(0)">📊 Weekly FPY</button>
+  <button class="screen-btn" onclick="jSwitchScreen(1)">📅 Daily FPY</button>
+  <button class="screen-btn" onclick="jSwitchScreen(2)">⚖️ Comparison</button>
+  <button class="screen-btn" onclick="jSwitchScreen(3)">🗓 FY by Quarter</button>
+</div>
+
+<!-- JCO SCREEN 0 — WEEKLY FPY -->
+<div class="screen active" id="js0">
+  <div class="controls">
+    <span class="ctrl-label">View:</span>
+    <button class="ctrl-btn active" onclick="jSetView('js0','wl')">With Leonard</button>
+    <button class="ctrl-btn" onclick="jSetView('js0','wol')">Without Leonard</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn" id="js0-all" onclick="jSetWWFilter('all')">All WW</button>
+    <button class="ctrl-btn" id="js0-recent" onclick="jSetWWFilter('recent')">Last 13 WW</button>
+    <button class="ctrl-btn" id="js0-latest" onclick="jSetWWFilter('latest')">Last 4 WW</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="js0-fy" onclick="jSetWWFilter('fy')" title="Current Fiscal Year">Current Year</button>
+    <button class="ctrl-btn" id="js0-fq" onclick="jSetWWFilter('fq')" title="Current Fiscal Quarter">Current Quarter</button>
+    <button class="ctrl-btn" id="js0-fm" onclick="jSetWWFilter('fm')" title="Current Fiscal Month">Current Month</button>
+  </div>
+  <div style="padding:12px 20px 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Trend Comparison 2025/2026 · WW14'25 – WW25'26</span>
+    </div>
+  </div>
+  <div class="view active" id="js0-wl" style="padding:0;">
+    <div style="padding:10px 20px 0;">
+      <div class="section-hdr"><span class="section-title">All Accounts — With Leonard</span><span class="section-pill pill-blue">Incl. Leonard Roofing</span></div>
+      <div class="cards" id="js0-wl-cards"></div>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="chart-wrap"><div class="chart-title">Weekly FPY % Trend — With Leonard</div><div class="chart-container"><canvas id="j-chart-wl-fpy"></canvas></div></div>
+      <div class="chart-wrap"><div class="chart-title">Weekly Volume — Approved vs. Rejected</div><div class="chart-container"><canvas id="j-chart-wl-vol"></canvas></div></div>
+      <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>Approved</th><th>Rejected</th><th>Total</th><th>FPY %</th><th>Rejection Rate</th><th>Status</th></tr></thead><tbody id="js0-wl-tbody"></tbody></table></div>
+    </div>
+  </div>
+  <div class="view" id="js0-wol" style="padding:0;">
+    <div style="padding:10px 20px 0;">
+      <div class="section-hdr"><span class="section-title">All Accounts — Without Leonard</span><span class="section-pill pill-green">Excl. Leonard Roofing</span></div>
+      <div class="cards" id="js0-wol-cards"></div>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="chart-wrap"><div class="chart-title">Weekly FPY % Trend — Without Leonard</div><div class="chart-container"><canvas id="j-chart-wol-fpy"></canvas></div></div>
+      <div class="chart-wrap"><div class="chart-title">Weekly Volume — Approved vs. Rejected</div><div class="chart-container"><canvas id="j-chart-wol-vol"></canvas></div></div>
+      <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>Approved</th><th>Rejected</th><th>Total</th><th>FPY %</th><th>Rejection Rate</th><th>Status</th></tr></thead><tbody id="js0-wol-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- JCO SCREEN 1 — DAILY FPY -->
+<div class="screen" id="js1">
+  <div class="controls">
+    <span class="ctrl-label">View:</span>
+    <button class="ctrl-btn active" onclick="jSetView('js1','wl')">With Leonard</button>
+    <button class="ctrl-btn" onclick="jSetView('js1','wol')">Without Leonard</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Show:</span>
+    <button class="ctrl-btn" id="js1-all" onclick="jSetDailyFilter('all')">All Days</button>
+    <button class="ctrl-btn" id="js1-recent" onclick="jSetDailyFilter('recent')">Last 30 Days</button>
+    <button class="ctrl-btn" id="js1-latest" onclick="jSetDailyFilter('latest')">Last 10 Days</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="js1-fy" onclick="jSetDailyFilter('fy')">Current Year</button>
+    <button class="ctrl-btn" id="js1-fq" onclick="jSetDailyFilter('fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="js1-fm" onclick="jSetDailyFilter('fm')">Current Month</button>
+  </div>
+  <div style="padding:12px 20px 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> ≥ 95%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70%</span>
+    </div>
+  </div>
+  <div class="view active" id="js1-wl" style="padding:10px 20px;">
+    <div class="section-hdr"><span class="section-title">Daily FPY — With Leonard</span><span class="section-pill pill-blue">Incl. Leonard Roofing</span></div>
+    <div class="chart-wrap"><div class="chart-title">Daily FPY % Trend — With Leonard</div><div class="chart-container tall"><canvas id="j-chart-daily-wl"></canvas></div></div>
+    <div id="js1-wl-content"></div>
+  </div>
+  <div class="view" id="js1-wol" style="padding:10px 20px;">
+    <div class="section-hdr"><span class="section-title">Daily FPY — Without Leonard</span><span class="section-pill pill-green">Excl. Leonard Roofing</span></div>
+    <div class="chart-wrap"><div class="chart-title">Daily FPY % Trend — Without Leonard</div><div class="chart-container tall"><canvas id="j-chart-daily-wol"></canvas></div></div>
+    <div id="js1-wol-content"></div>
+  </div>
+</div>
+
+<!-- JCO SCREEN 2 — COMPARISON -->
+<div class="screen" id="js2">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn" id="js2-all" onclick="jSetCmpFilter('all')">All WW</button>
+    <button class="ctrl-btn" id="js2-recent" onclick="jSetCmpFilter('recent')">Last 13 WW</button>
+    <button class="ctrl-btn" id="js2-latest" onclick="jSetCmpFilter('latest')">Last 4 WW</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="js2-fy" onclick="jSetCmpFilter('fy')">Current Year</button>
+    <button class="ctrl-btn" id="js2-fq" onclick="jSetCmpFilter('fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="js2-fm" onclick="jSetCmpFilter('fm')">Current Month</button>
+  </div>
+  <div style="padding:14px 20px 0;">
+    <div class="section-hdr"><span class="section-title">FPY Comparison — With vs. Without Leonard</span></div>
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#64b5f6"></span> With Leonard</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#69f0ae"></span> Without Leonard</span>
+    </div>
+    <div class="chart-wrap"><div class="chart-title">Weekly FPY % — With Leonard vs. Without Leonard</div><div class="chart-container" style="height:240px;"><canvas id="j-chart-cmp-fpy"></canvas></div></div>
+    <div class="chart-wrap"><div class="chart-title">FPY Gap (With − Without Leonard)</div><div class="chart-container" style="height:160px;"><canvas id="j-chart-cmp-gap"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>FPY w/ Leonard</th><th>FPY w/o Leonard</th><th>Difference</th><th>Total (w/ Leo)</th><th>Rejected (w/ Leo)</th><th>Total (w/o Leo)</th><th>Rejected (w/o Leo)</th></tr></thead><tbody id="js2-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- JCO SCREEN 3 — FY BY QUARTER -->
+<div class="screen" id="js3">
+  <div class="controls">
+    <span class="ctrl-label">View:</span>
+    <button class="ctrl-btn active" id="js3-wl" onclick="jSetFYQView('wl')">With Leonard</button>
+    <button class="ctrl-btn" id="js3-wol" onclick="jSetFYQView('wol')">Without Leonard</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label" id="js3-fy-label"></span>
+  </div>
+  <div style="padding:14px 20px 0;">
+    <div class="section-hdr"><span class="section-title" id="js3-section-title">FPY by Quarter</span></div>
+    <div class="cards" id="js3-qtr-cards"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Quarterly Avg FPY — Bar Summary</div>
+      <div class="chart-container" style="height:220px;"><canvas id="j-chart-fybq-bar"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Weekly FPY Trend — Colored by Quarter</div>
+      <div class="chart-container" style="height:240px;"><canvas id="j-chart-fybq-line"></canvas></div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th class="left">Quarter</th><th>WW Range</th><th>Weeks</th><th>Approved</th><th>Rejected</th><th>Total</th><th>Avg FPY %</th><th>Status</th></tr></thead>
+        <tbody id="js3-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div><!-- end team-jco -->
+
+<!-- ════════════════════════════════════════════════
+     TEAM: INTERCONNECTION
+     ════════════════════════════════════════════════ -->
+<div id="team-ico" class="team-section" style="display:none;">
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="iSwitchScreen(0)">📊 Weekly FPY</button>
+  <button class="screen-btn" onclick="iSwitchScreen(1)">📅 Daily FPY</button>
+  <button class="screen-btn" onclick="iSwitchScreen(2)">🔍 Deficiency</button>
+  <button class="screen-btn" onclick="iSwitchScreen(3)">⏱ Cycle Time</button>
+  <button class="screen-btn" onclick="iSwitchScreen(4)">📉 Dependency Trend</button>
+</div>
+
+<!-- ICO SCREEN 0 — WEEKLY FPY -->
+<div class="screen active" id="is0">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn" id="is0-all"    onclick="iSetFilter('is0','all')">All WW</button>
+    <button class="ctrl-btn"        id="is0-recent" onclick="iSetFilter('is0','recent')">Last 13 WW</button>
+    <button class="ctrl-btn"        id="is0-latest" onclick="iSetFilter('is0','latest')">Last 4 WW</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn"        id="is0-2025"   onclick="iSetFilter('is0','2025')">2025 Only</button>
+    <button class="ctrl-btn"        id="is0-2026"   onclick="iSetFilter('is0','2026')">2026 Only</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="is0-fy" onclick="iSetFilter('is0','fy')">Current Year</button>
+    <button class="ctrl-btn" id="is0-fq" onclick="iSetFilter('is0','fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="is0-fm" onclick="iSetFilter('is0','fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: NH PTO FPY &amp; Corporate QA Monitoring · WW22'25 – WW23'26</span>
+    </div>
+  </div>
+  <div id="is0-cards" class="cards"></div>
+  <div class="chart-wrap"><div class="chart-title">Weekly FPY % Trend — PTO First Pass Yield</div><div class="chart-container"><canvas id="i-chart-wfpy"></canvas></div></div>
+  <div class="chart-wrap"><div class="chart-title">Weekly Volume — Passed vs. Failed</div><div class="chart-container"><canvas id="i-chart-wvol"></canvas></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>Passed</th><th>Failed</th><th>Total</th><th>FPY %</th><th>Rejection %</th><th>Status</th></tr></thead><tbody id="is0-tbody"></tbody></table></div>
+</div>
+
+<!-- ICO SCREEN 1 — DAILY FPY -->
+<div class="screen" id="is1">
+  <div class="controls">
+    <span class="ctrl-label">Show:</span>
+    <button class="ctrl-btn" id="is1-all"    onclick="iSetDailyFlt('all')">All Days</button>
+    <button class="ctrl-btn"        id="is1-recent" onclick="iSetDailyFlt('recent')">Last 30 Days</button>
+    <button class="ctrl-btn"        id="is1-latest" onclick="iSetDailyFlt('latest')">Last 10 Days</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="is1-fy" onclick="iSetDailyFlt('fy')">Current Year</button>
+    <button class="ctrl-btn" id="is1-fq" onclick="iSetDailyFlt('fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="is1-fm" onclick="iSetDailyFlt('fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> ≥ 95%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84%</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70%</span>
+    </div>
+    <div class="chart-wrap"><div class="chart-title">Daily FPY % Trend</div><div class="chart-container tall"><canvas id="i-chart-dfpy"></canvas></div></div>
+    <div id="is1-content"></div>
+  </div>
+</div>
+
+<!-- ICO SCREEN 2 — DEFICIENCY -->
+<div class="screen" id="is2">
+  <div class="controls">
+    <span class="ctrl-label">View:</span>
+    <button class="ctrl-btn active" id="is2-chart" onclick="iSetDefView('chart')">Chart</button>
+    <button class="ctrl-btn"        id="is2-table" onclick="iSetDefView('table')">Table</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr"><span class="section-title">Deficiency Breakdown by Work Week</span><span class="section-pill pill-orange">Failed Submissions</span></div>
+    <div id="is2-chart-view">
+      <div class="chart-wrap"><div class="chart-title">Top Deficiency Types by WW (Stacked)</div><div class="chart-container tall"><canvas id="i-chart-def-stack"></canvas></div></div>
+      <div class="chart-wrap"><div class="chart-title">Total Deficiencies per Week</div><div class="chart-container"><canvas id="i-chart-def-total"></canvas></div></div>
+    </div>
+    <div id="is2-table-view" style="display:none;">
+      <div class="tbl-wrap"><table id="is2-def-table"><thead id="is2-def-thead"></thead><tbody id="is2-def-tbody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ICO SCREEN 3 — CYCLE TIME -->
+<div class="screen" id="is3">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn" id="is3-all"    onclick="iSetCTFilter('all')">All WW</button>
+    <button class="ctrl-btn"        id="is3-recent" onclick="iSetCTFilter('recent')">Last 13 WW</button>
+    <button class="ctrl-btn"        id="is3-latest" onclick="iSetCTFilter('latest')">Last 4 WW</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="is3-fy" onclick="iSetCTFilter('fy')">Current Year</button>
+    <button class="ctrl-btn" id="is3-fq" onclick="iSetCTFilter('fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="is3-fm" onclick="iSetCTFilter('fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr"><span class="section-title">Average Cycle Time — PTO Processing</span><span class="section-pill pill-teal">Days from Submission to PTO Issued</span></div>
+    <div id="ict-cards" class="cards"></div>
+    <div class="chart-wrap"><div class="chart-title">Avg. Cycle Time (Days) by Work Week</div><div class="chart-container tall"><canvas id="i-chart-ct"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Avg Cycle Time (Days)</th><th>vs. Avg</th><th>Status</th></tr></thead><tbody id="is3-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ICO SCREEN 4 — DEPENDENCY TREND -->
+<div class="screen" id="is4">
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr"><span class="section-title">Interconnection Dependency Trend YTD</span><span class="section-pill pill-blue">Open Dependencies · WW01–WW25 2026</span></div>
+    <div id="is4-cards" class="cards"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Open Dependency Count by Work Week (with Linear Trend)</div>
+      <div class="chart-container tall"><canvas id="i-chart-dep"></canvas></div>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Open Dependencies</th><th>WoW Change</th><th>Trend Line</th></tr></thead><tbody id="is4-tbody"></tbody></table></div>
+  </div>
+</div>
+</div><!-- end team-ico -->
+
+<!-- ════════════════════════════════════════════════
+     TEAM: FUNDING
+     ════════════════════════════════════════════════ -->
+<div id="team-funding" class="team-section" style="display:none;">
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="fSwitchScreen(1)">📋 M1 Weekly FPY</button>
+  <button class="screen-btn" onclick="fSwitchScreen(0)">💳 M2 Weekly FPY</button>
+  <button class="screen-btn" onclick="fSwitchScreen(2)">📊 Reject Pareto</button>
+  <button class="screen-btn" onclick="fSwitchScreen(3)">🌿 Lifestyle Projects</button>
+</div>
+
+<!-- FUNDING SCREEN 0 — M2 WEEKLY FPY -->
+<div class="screen" id="fs0">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn" id="fs0-all"    onclick="fSetFilter('all')">All WW</button>
+    <button class="ctrl-btn"        id="fs0-recent" onclick="fSetFilter('recent')">Last 13 WW</button>
+    <button class="ctrl-btn"        id="fs0-latest" onclick="fSetFilter('latest')">Last 4 WW</button>
+    <div class="ctrl-sep"></div>
+    <span class="ctrl-label">Fiscal:</span>
+    <button class="ctrl-btn active" id="fs0-fy" onclick="fSetFilter('fy')">Current Year</button>
+    <button class="ctrl-btn" id="fs0-fq" onclick="fSetFilter('fq')">Current Quarter</button>
+    <button class="ctrl-btn" id="fs0-fm" onclick="fSetFilter('fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 85–97% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 85% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: NH_LR_FPY_Pareto · M2 Milestone · WW38&#39;25 – WW26&#39;26</span>
+    </div>
+  </div>
+  <div style="padding:6px 0 0;">
+    <div class="section-hdr"><span class="section-title">M2 Milestone — Funding First Pass Yield</span><span class="section-pill pill-blue">NH Lightreach · Weekly</span></div>
+    <div id="fs0-cards" class="cards"></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly FPY % Trend — M2 Milestone (100% Target)</div><div class="chart-container"><canvas id="f-chart-m2fpy"></canvas></div></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly Submission Volume — Passed / Failed</div><div class="chart-container"><canvas id="f-chart-m2vol"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>Passed</th><th>Failed</th><th>Total</th><th>FPY %</th><th>Reject Rate</th><th>Status</th></tr></thead><tbody id="fs0-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FUNDING SCREEN 1 — M1 WEEKLY FPY -->
+<div class="screen active" id="fs1">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn active" id="fs1-all"    onclick="fSetM1Filter('all')">All WW</button>
+    <button class="ctrl-btn"        id="fs1-recent" onclick="fSetM1Filter('recent')">Last 13 WW</button>
+    <button class="ctrl-btn"        id="fs1-latest" onclick="fSetM1Filter('latest')">Last 4 WW</button>
+    <button class="ctrl-btn"        id="fs1-fy"     onclick="fSetM1Filter('fy')">Current Year</button>
+    <button class="ctrl-btn"        id="fs1-fq"     onclick="fSetM1Filter('fq')">Current Quarter</button>
+    <button class="ctrl-btn"        id="fs1-fm"     onclick="fSetM1Filter('fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 85–97% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 85% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: NH_LR_FPY_Pareto · M1 Milestone · WW06&#39;26 – WW26&#39;26</span>
+    </div>
+  </div>
+  <div style="padding:6px 0 0;">
+    <div class="section-hdr"><span class="section-title">M1 Milestone — Funding First Pass Yield</span><span class="section-pill pill-green">NH Lightreach · Weekly 2026</span></div>
+    <div id="fs1-cards" class="cards"></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly FPY % Trend — M1 Milestone (100% Target)</div><div class="chart-container"><canvas id="f-chart-m1fpy"></canvas></div></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly Submission Volume — M1 Passed / Failed</div><div class="chart-container"><canvas id="f-chart-m1vol"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Year</th><th>Passed</th><th>Failed</th><th>Total</th><th>FPY %</th><th>Reject Rate</th><th>Status</th></tr></thead><tbody id="fs1-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FUNDING SCREEN 2 — REJECT PARETO -->
+<div class="screen" id="fs2">
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr"><span class="section-title">M2 Reject Category Pareto</span><span class="section-pill pill-red">All Period · n=83 total rejects</span></div>
+    <div class="legend" id="fs2-legend"></div>
+    <div class="chart-wrap"><div class="chart-title">Reject Count by Category &amp; Cumulative % (Pareto)</div><div class="chart-container tall"><canvas id="f-chart-pareto"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">Reject Category</th><th>Count</th><th>% of Total</th><th>Cumulative %</th><th>Pareto Zone</th></tr></thead><tbody id="fs2-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FUNDING SCREEN 3 — LIFESTYLE APPROVED PROJECTS -->
+<div class="screen" id="fs3">
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr">
+      <span class="section-title">Lifestyle Submission Summary YTD</span>
+      <span class="section-pill pill-blue">WW03–WW26 2026</span>
+    </div>
+    <!-- KPI banners — standard card layout, no-wrap for 16:9 -->
+    <div class="cards" style="margin:10px 0 6px;flex-wrap:nowrap;">
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">Approved YTD</div>
+        <div class="card-value c-green">125</div>
+        <div class="card-sub">projects approved</div>
+      </div>
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">Total Submitted</div>
+        <div class="card-value c-blue">200</div>
+        <div class="card-sub">projects received</div>
+      </div>
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">In Rework</div>
+        <div class="card-value c-red">68</div>
+        <div class="card-sub">active backlog</div>
+      </div>
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">Cancelled</div>
+        <div class="card-value c-orange">4</div>
+        <div class="card-sub">projects cancelled</div>
+      </div>
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">Growth vs. Q1 Start</div>
+        <div class="card-value c-green">+61%</div>
+        <div class="card-sub">approval growth</div>
+      </div>
+      <div class="card" style="flex:1;min-width:0;">
+        <div class="card-label">Financier Payments</div>
+        <div class="card-value c-teal">$500K</div>
+        <div class="card-sub">payments processed</div>
+      </div>
+    </div>
+    <div style="position:relative;height:380px;">
+      <canvas id="f-chart-life"></canvas>
+    </div>
+  </div>
+</div>
+</div><!-- end team-funding -->
+
+<!-- ════════════════════════════════════════════════
+     TEAM: AR OPERATIONS
+     ════════════════════════════════════════════════ -->
+<div id="team-ar" class="team-section" style="display:none;">
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="arSwitchScreen(0)">💰 Weekly Attainment</button>
+  <button class="screen-btn" onclick="arSwitchScreen(1)">⚠️ Variance &amp; Pareto</button>
+</div>
+
+<!-- AR SCREEN 0 — WEEKLY ATTAINMENT -->
+<div class="screen active" id="ars0">
+  <div class="controls">
+    <span class="ctrl-label">Filter:</span>
+    <button class="ctrl-btn active" id="ars0-all"    onclick="arSetFilter('all')">All WW</button>
+    <button class="ctrl-btn"        id="ars0-recent" onclick="arSetFilter('recent')">Last 8 WW</button>
+    <button class="ctrl-btn"        id="ars0-latest" onclick="arSetFilter('latest')">Last 4 WW</button>
+    <button class="ctrl-btn"        id="ars0-fy"     onclick="arSetFilter('fy')">Current Year</button>
+    <button class="ctrl-btn"        id="ars0-fq"     onclick="arSetFilter('fq')">Current Quarter</button>
+    <button class="ctrl-btn"        id="ars0-fm"     onclick="arSetFilter('fm')">Current Month</button>
+  </div>
+  <div style="padding:10px 0 0;">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 95–99% — Near Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 80–94% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 80% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Cash Application Attainment · Summary Tab · WW14–WW25 2026</span>
+    </div>
+  </div>
+  <div style="padding:6px 0 0;">
+    <div class="section-hdr"><span class="section-title">Cash Application Attainment — Weekly</span><span class="section-pill pill-blue">Builder Payment Identification Rate</span></div>
+    <div id="ars0-cards" class="cards"></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly Completion Rate % (Amount Identified / Builder Payment)</div><div class="chart-container"><canvas id="ar-chart-rate"></canvas></div></div>
+    <div class="chart-wrap"><div class="chart-title">Weekly $ Volume — Identified vs. Variance (Unidentified)</div><div class="chart-container"><canvas id="ar-chart-vol"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Builder Payment</th><th>Amt Identified</th><th>Variance $</th><th>Completion Rate</th><th>Status</th></tr></thead><tbody id="ars0-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- AR SCREEN 1 — VARIANCE & PARETO -->
+<div class="screen" id="ars1">
+  <div style="padding:10px 0 0;">
+    <div class="section-hdr"><span class="section-title">Variance Analysis — Unidentified Payments</span><span class="section-pill pill-red">Weeks with Outstanding Variance</span></div>
+    <div id="ars1-cards" class="cards"></div>
+    <div class="chart-wrap"><div class="chart-title">Variance $ by Work Week</div><div class="chart-container"><canvas id="ar-chart-var"></canvas></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th class="left">WW</th><th>Builder Payment</th><th>Amt Identified</th><th>Variance $</th><th>Completion Rate</th><th>Reason (Pareto)</th></tr></thead><tbody id="ars1-tbody"></tbody></table></div>
+  </div>
+</div>
+</div><!-- end team-ar -->
+
+<!-- ════════════════════════════════════════════════
+     TEAM: DESIGN
+     ════════════════════════════════════════════════ -->
+<div id="team-design" class="team-section" style="display:none;">
+<div class="screen-nav">
+  <button class="screen-btn active" onclick="dSwitchScreen(0)">🎯 C4 Community FPY</button>
+  <button class="screen-btn" onclick="dSwitchScreen(1)">📐 L7 Lot Design FPY</button>
+</div>
+
+<!-- DESIGN SCREEN 0 — C4 COMMUNITY FPY -->
+<div class="screen active" id="ds0">
+  <div style="padding:10px 0 0;">
+    <!-- KPI banners -->
+    <div style="display:flex;gap:10px;margin:8px 0 12px;">
+      <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Permits Passed <span style="font-size:10px;">(≤WW21)</span></div>
+        <div style="font-size:30px;font-weight:700;color:var(--green);">197</div>
+        <div style="font-size:11px;color:var(--muted);">8 weeks</div>
+      </div>
+      <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Permits Failed <span style="font-size:10px;">(≤WW21)</span></div>
+        <div style="font-size:30px;font-weight:700;color:var(--red);">1</div>
+        <div style="font-size:11px;color:var(--muted);">198 total</div>
+      </div>
+      <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Permit FPY <span style="font-size:10px;">(≤WW21)</span></div>
+        <div style="font-size:30px;font-weight:700;color:var(--green);">99%</div>
+        <div style="font-size:11px;color:var(--muted);">on target</div>
+      </div>
+      <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">L7 Design FPY <span style="font-size:10px;">(WW22+)</span></div>
+        <div style="font-size:30px;font-weight:700;color:var(--green);">100%</div>
+        <div style="font-size:11px;color:var(--muted);">5 weeks · QA × Elec × Struc</div>
+      </div>
+    </div>
+    <div class="legend" style="padding:8px 0 4px;">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Design Andon Board · Q2 2026 (W15–W26)</span>
+    </div>
+    <div class="ctrl-bar" style="margin:4px 0 8px;">
+      <button class="ctrl-btn active" id="dc4-all"    onclick="dSetC4Filter('all')">All WW</button>
+      <button class="ctrl-btn"        id="dc4-recent" onclick="dSetC4Filter('recent')">Last 13 WW</button>
+      <button class="ctrl-btn"        id="dc4-latest" onclick="dSetC4Filter('latest')">Last 4 WW</button>
+      <button class="ctrl-btn"        id="dc4-fq"     onclick="dSetC4Filter('fq')">Current Quarter</button>
+      <button class="ctrl-btn"        id="dc4-fm"     onclick="dSetC4Filter('fm')">Current Month</button>
+    </div>
+    <div class="section-hdr">
+      <span class="section-title">C4: Community Award to Final Design Approved</span>
+      <span class="section-pill pill-blue">YTD 2026</span>
+    </div>
+    <div style="position:relative;height:380px;">
+      <canvas id="d-chart-c4"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- DESIGN SCREEN 1 — L7 LOT DESIGN FPY -->
+<div class="screen" id="ds1">
+  <div style="padding:10px 0 0;">
+    <div class="legend" style="padding:8px 0 4px;">
+      <span class="leg-item"><span class="leg-dot" style="background:var(--green)"></span> 100% — On Target</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--yellow)"></span> 85–97% — Caution</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span> 70–84% — At Risk</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--red)"></span> &lt; 70% — Off Target</span>
+      <span style="font-size:10px;color:var(--muted);margin-left:8px;">Source: Design Andon Board · 2026-W14 – 2026-W26</span>
+    </div>
+    <div class="ctrl-bar" style="margin:4px 0 8px;">
+      <button class="ctrl-btn active" id="dl7-all"    onclick="dSetL7Filter('all')">All WW</button>
+      <button class="ctrl-btn"        id="dl7-recent" onclick="dSetL7Filter('recent')">Last 13 WW</button>
+      <button class="ctrl-btn"        id="dl7-latest" onclick="dSetL7Filter('latest')">Last 4 WW</button>
+      <button class="ctrl-btn"        id="dl7-fq"     onclick="dSetL7Filter('fq')">Current Quarter</button>
+      <button class="ctrl-btn"        id="dl7-fm"     onclick="dSetL7Filter('fm')">Current Month</button>
+    </div>
+    <div class="section-hdr">
+      <span class="section-title">L7: Lot Design Requested to Lot Design Completed</span>
+      <span class="section-pill pill-blue">YTD 2026</span>
+    </div>
+    <div style="position:relative;height:420px;">
+      <canvas id="d-chart-l7"></canvas>
+    </div>
+  </div>
+</div>
+
+</div><!-- end team-design -->
+
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CHART.JS DEFAULTS
+// ═══════════════════════════════════════════════════════
+Chart.defaults.color='#888';Chart.defaults.borderColor='#333';
+Chart.defaults.font.family="'Segoe UI',Arial,sans-serif";Chart.defaults.font.size=11;
+Chart.defaults.layout={padding:{top:24,right:8,bottom:0,left:0}};
+Chart.defaults.datasets.line.clip=false;
+
+let lightMode=true;
+function getCC(){
+  return lightMode ? {
+    grid:'#dce1ea', tick:'#111111', leg:'#111111',
+    tbg:'#ffffff', tbd:'#cdd3df', ttl:'#000000', tbody:'#111111',
+  } : {
+    grid:'#222', tick:'#666', leg:'#aaa',
+    tbg:'#1a1a1a', tbd:'#444', ttl:'#fff', tbody:'#ccc',
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// SHARED HELPERS
+// ═══════════════════════════════════════════════════════
+function fpyClass(v){if(v===null||v===undefined)return'fpy-na';if(v>=95)return'fpy-green';if(v>=85)return'fpy-yellow';if(v>=70)return'fpy-orange';return'fpy-red';}
+function fpyCell(v){if(v===null||v===undefined)return'<span class="fpy-na">N/A</span>';return`<span class="${fpyClass(v)}">${v.toFixed(1)}%</span>`;}
+function statusLabel(v){if(v===null)return'–';if(v>=98)return'✅ On Target';if(v>=85)return'⚠️ Caution';if(v>=70)return'🔶 At Risk';return'🔴 Off Target';}
+function statusColor(v){if(v===null)return'';if(v>=98)return'color:var(--green)';if(v>=85)return'color:var(--yellow)';if(v>=70)return'color:var(--orange)';return'color:var(--red)';}
+function pointColor(v){if(v===null||v===undefined)return'#555';if(v>=98)return'#00c853';if(v>=85)return'#ffd600';if(v>=70)return'#ff6d00';return'#f44336';}
+function round1(v){return Math.round(v*10)/10;}
+function mkTarget(val,labels){
+  const col=lightMode?'rgba(60,60,60,0.7)':'rgba(255,255,255,0.3)';
+  return{type:'line',label:'Target (100%)',data:labels.map(()=>val),borderColor:col,borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false,tension:0,order:0};
+}
+
+// ═══════════════════════════════════════════════════════
+// TEAM SWITCHER
+// ═══════════════════════════════════════════════════════
+let iInitialized=false;
+let fInitialized=false;
+function switchTeam(btn,t){
+  document.querySelectorAll('.team-section').forEach(s=>s.style.display='none');
+  document.getElementById('team-'+t).style.display='block';
+  document.querySelectorAll('.team-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(t==='ico'&&!iInitialized){iRenderWeekly();iRenderDaily();iRenderDeficiency();iRenderCycleTime();iInitialized=true;}
+  if(t==='design'&&!dInitialized){dRenderC4();dInitialized=true;}
+  if(t==='funding'&&!fInitialized){fRenderWeekly();fRenderM1();fInitialized=true;}
+  if(t==='ar'&&!arInitialized){arRenderWeekly();arRenderVariance();arInitialized=true;}
+}
+
+// ═══════════════════════════════════════════════════════
+// ╔══════════════════════════════════════════════════════╗
+// ║  JCO DATA                                           ║
+// ╚══════════════════════════════════════════════════════╝
+// ═══════════════════════════════════════════════════════
+const jWeeklyWL=[
+  {ww:'WW14',yr:2025,approved:184,rejected:48,total:232,fpy:79.3},
+  {ww:'WW15',yr:2025,approved:78,rejected:18,total:96,fpy:81.2},
+  {ww:'WW16',yr:2025,approved:37,rejected:43,total:80,fpy:46.2},
+  {ww:'WW17',yr:2025,approved:14,rejected:60,total:74,fpy:18.9},
+  {ww:'WW18',yr:2025,approved:28,rejected:63,total:91,fpy:30.8},
+  {ww:'WW19',yr:2025,approved:10,rejected:95,total:105,fpy:9.5},
+  {ww:'WW20',yr:2025,approved:29,rejected:50,total:79,fpy:36.7},
+  {ww:'WW21',yr:2025,approved:37,rejected:68,total:105,fpy:35.2},
+  {ww:'WW22',yr:2025,approved:25,rejected:51,total:76,fpy:32.9},
+  {ww:'WW23',yr:2025,approved:13,rejected:36,total:49,fpy:26.5},
+  {ww:'WW24',yr:2025,approved:50,rejected:79,total:129,fpy:38.8},
+  {ww:'WW25',yr:2025,approved:82,rejected:59,total:141,fpy:58.2},
+  {ww:'WW26',yr:2025,approved:60,rejected:24,total:84,fpy:71.4},
+  {ww:'WW27',yr:2025,approved:77,rejected:39,total:116,fpy:66.4},
+  {ww:'WW28',yr:2025,approved:65,rejected:11,total:76,fpy:85.5},
+  {ww:'WW29',yr:2025,approved:40,rejected:33,total:73,fpy:54.8},
+  {ww:'WW30',yr:2025,approved:44,rejected:12,total:56,fpy:78.6},
+  {ww:'WW31',yr:2025,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW32',yr:2025,approved:51,rejected:4,total:55,fpy:92.7},
+  {ww:'WW33',yr:2025,approved:64,rejected:1,total:65,fpy:98.5},
+  {ww:'WW34',yr:2025,approved:27,rejected:9,total:36,fpy:75.0},
+  {ww:'WW35',yr:2025,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW36',yr:2025,approved:49,rejected:2,total:51,fpy:96.1},
+  {ww:'WW37',yr:2025,approved:38,rejected:13,total:51,fpy:74.5},
+  {ww:'WW38',yr:2025,approved:30,rejected:5,total:35,fpy:85.7},
+  {ww:'WW39',yr:2025,approved:38,rejected:3,total:41,fpy:92.7},
+  {ww:'WW40',yr:2025,approved:42,rejected:0,total:42,fpy:100},
+  {ww:'WW41',yr:2025,approved:62,rejected:19,total:81,fpy:76.5},
+  {ww:'WW42',yr:2025,approved:70,rejected:8,total:78,fpy:89.7},
+  {ww:'WW43',yr:2025,approved:57,rejected:0,total:57,fpy:100},
+  {ww:'WW44',yr:2025,approved:64,rejected:1,total:65,fpy:98.5},
+  {ww:'WW45',yr:2025,approved:77,rejected:0,total:77,fpy:100},
+  {ww:'WW46',yr:2025,approved:34,rejected:0,total:34,fpy:100},
+  {ww:'WW47',yr:2025,approved:84,rejected:6,total:90,fpy:93.3},
+  {ww:'WW48',yr:2025,approved:50,rejected:0,total:50,fpy:100},
+  {ww:'WW49',yr:2025,approved:110,rejected:0,total:110,fpy:100},
+  {ww:'WW50',yr:2025,approved:69,rejected:0,total:69,fpy:100},
+  {ww:'WW51',yr:2025,approved:89,rejected:0,total:89,fpy:100},
+  {ww:'WW52',yr:2025,approved:43,rejected:0,total:43,fpy:100},
+  {ww:'WW01',yr:2026,approved:49,rejected:0,total:49,fpy:100},
+  {ww:'WW02',yr:2026,approved:47,rejected:0,total:47,fpy:100},
+  {ww:'WW03',yr:2026,approved:28,rejected:0,total:28,fpy:100},
+  {ww:'WW04',yr:2026,approved:133,rejected:0,total:133,fpy:100},
+  {ww:'WW05',yr:2026,approved:90,rejected:0,total:90,fpy:100},
+  {ww:'WW06',yr:2026,approved:49,rejected:1,total:50,fpy:98.0},
+  {ww:'WW07',yr:2026,approved:31,rejected:0,total:31,fpy:100},
+  {ww:'WW08',yr:2026,approved:27,rejected:0,total:27,fpy:100},
+  {ww:'WW09',yr:2026,approved:21,rejected:0,total:21,fpy:100},
+  {ww:'WW10',yr:2026,approved:22,rejected:0,total:22,fpy:100},
+  {ww:'WW11',yr:2026,approved:11,rejected:1,total:12,fpy:91.7},
+  {ww:'WW12',yr:2026,approved:13,rejected:1,total:14,fpy:92.9},
+  {ww:'WW13',yr:2026,approved:35,rejected:0,total:35,fpy:100},
+  {ww:'WW14',yr:2026,approved:28,rejected:0,total:28,fpy:100},
+  {ww:'WW15',yr:2026,approved:77,rejected:0,total:77,fpy:100},
+  {ww:'WW16',yr:2026,approved:68,rejected:0,total:68,fpy:100},
+  {ww:'WW17',yr:2026,approved:53,rejected:0,total:53,fpy:100},
+  {ww:'WW18',yr:2026,approved:92,rejected:0,total:92,fpy:100},
+  {ww:'WW19',yr:2026,approved:48,rejected:0,total:48,fpy:100},
+  {ww:'WW20',yr:2026,approved:58,rejected:0,total:58,fpy:100},
+  {ww:'WW21',yr:2026,approved:57,rejected:0,total:57,fpy:100},
+  {ww:'WW22',yr:2026,approved:25,rejected:0,total:25,fpy:100},
+  {ww:'WW23',yr:2026,approved:39,rejected:0,total:39,fpy:100},
+  {ww:'WW24',yr:2026,approved:52,rejected:0,total:52,fpy:100},
+  {ww:'WW25',yr:2026,approved:31,rejected:0,total:31,fpy:100}
+];
+const jWeeklyWOL=[
+  {ww:'WW14',yr:2025,approved:131,rejected:42,total:173,fpy:75.7},
+  {ww:'WW15',yr:2025,approved:66,rejected:17,total:83,fpy:79.5},
+  {ww:'WW16',yr:2025,approved:33,rejected:29,total:62,fpy:53.2},
+  {ww:'WW17',yr:2025,approved:14,rejected:60,total:74,fpy:18.9},
+  {ww:'WW18',yr:2025,approved:27,rejected:63,total:90,fpy:30.0},
+  {ww:'WW19',yr:2025,approved:8,rejected:69,total:77,fpy:10.4},
+  {ww:'WW20',yr:2025,approved:28,rejected:49,total:77,fpy:36.4},
+  {ww:'WW21',yr:2025,approved:36,rejected:44,total:80,fpy:45.0},
+  {ww:'WW22',yr:2025,approved:24,rejected:48,total:72,fpy:33.3},
+  {ww:'WW23',yr:2025,approved:13,rejected:33,total:46,fpy:28.3},
+  {ww:'WW24',yr:2025,approved:50,rejected:63,total:113,fpy:44.2},
+  {ww:'WW25',yr:2025,approved:81,rejected:58,total:139,fpy:58.3},
+  {ww:'WW26',yr:2025,approved:59,rejected:24,total:83,fpy:71.1},
+  {ww:'WW27',yr:2025,approved:76,rejected:39,total:115,fpy:66.1},
+  {ww:'WW28',yr:2025,approved:65,rejected:11,total:76,fpy:85.5},
+  {ww:'WW29',yr:2025,approved:40,rejected:32,total:72,fpy:55.6},
+  {ww:'WW30',yr:2025,approved:43,rejected:9,total:52,fpy:82.7},
+  {ww:'WW31',yr:2025,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW32',yr:2025,approved:44,rejected:1,total:45,fpy:97.8},
+  {ww:'WW33',yr:2025,approved:62,rejected:1,total:63,fpy:98.4},
+  {ww:'WW34',yr:2025,approved:26,rejected:1,total:27,fpy:96.3},
+  {ww:'WW35',yr:2025,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW36',yr:2025,approved:45,rejected:2,total:47,fpy:95.7},
+  {ww:'WW37',yr:2025,approved:32,rejected:7,total:39,fpy:82.1},
+  {ww:'WW38',yr:2025,approved:28,rejected:4,total:32,fpy:87.5},
+  {ww:'WW39',yr:2025,approved:36,rejected:3,total:39,fpy:92.3},
+  {ww:'WW40',yr:2025,approved:38,rejected:0,total:38,fpy:100},
+  {ww:'WW41',yr:2025,approved:61,rejected:0,total:61,fpy:100},
+  {ww:'WW42',yr:2025,approved:54,rejected:2,total:56,fpy:96.4},
+  {ww:'WW43',yr:2025,approved:55,rejected:0,total:55,fpy:100},
+  {ww:'WW44',yr:2025,approved:61,rejected:0,total:61,fpy:100},
+  {ww:'WW45',yr:2025,approved:74,rejected:0,total:74,fpy:100},
+  {ww:'WW46',yr:2025,approved:34,rejected:0,total:34,fpy:100},
+  {ww:'WW47',yr:2025,approved:78,rejected:0,total:78,fpy:100},
+  {ww:'WW48',yr:2025,approved:50,rejected:0,total:50,fpy:100},
+  {ww:'WW49',yr:2025,approved:107,rejected:0,total:107,fpy:100},
+  {ww:'WW50',yr:2025,approved:65,rejected:0,total:65,fpy:100},
+  {ww:'WW51',yr:2025,approved:83,rejected:0,total:83,fpy:100},
+  {ww:'WW52',yr:2025,approved:21,rejected:0,total:21,fpy:100},
+  {ww:'WW01',yr:2026,approved:34,rejected:0,total:34,fpy:100},
+  {ww:'WW02',yr:2026,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW03',yr:2026,approved:19,rejected:0,total:19,fpy:100},
+  {ww:'WW04',yr:2026,approved:125,rejected:0,total:125,fpy:100},
+  {ww:'WW05',yr:2026,approved:33,rejected:0,total:33,fpy:100},
+  {ww:'WW06',yr:2026,approved:23,rejected:0,total:23,fpy:100},
+  {ww:'WW07',yr:2026,approved:13,rejected:0,total:13,fpy:100},
+  {ww:'WW08',yr:2026,approved:25,rejected:0,total:25,fpy:100},
+  {ww:'WW09',yr:2026,approved:16,rejected:0,total:16,fpy:100},
+  {ww:'WW10',yr:2026,approved:8,rejected:0,total:8,fpy:100},
+  {ww:'WW11',yr:2026,approved:8,rejected:0,total:8,fpy:100},
+  {ww:'WW12',yr:2026,approved:10,rejected:0,total:10,fpy:100},
+  {ww:'WW13',yr:2026,approved:31,rejected:0,total:31,fpy:100},
+  {ww:'WW14',yr:2026,approved:27,rejected:0,total:27,fpy:100},
+  {ww:'WW15',yr:2026,approved:72,rejected:0,total:72,fpy:100},
+  {ww:'WW16',yr:2026,approved:68,rejected:0,total:68,fpy:100},
+  {ww:'WW17',yr:2026,approved:53,rejected:0,total:53,fpy:100},
+  {ww:'WW18',yr:2026,approved:60,rejected:0,total:60,fpy:100},
+  {ww:'WW19',yr:2026,approved:48,rejected:0,total:48,fpy:100},
+  {ww:'WW20',yr:2026,approved:57,rejected:0,total:57,fpy:100},
+  {ww:'WW21',yr:2026,approved:57,rejected:0,total:57,fpy:100},
+  {ww:'WW22',yr:2026,approved:25,rejected:0,total:25,fpy:100},
+  {ww:'WW23',yr:2026,approved:39,rejected:0,total:39,fpy:100},
+  {ww:'WW24',yr:2026,approved:52,rejected:0,total:52,fpy:100},
+  {ww:'WW25',yr:2026,approved:30,rejected:0,total:30,fpy:100}
+];
+const jDailyWL=[
+  {day:'WW14.1',fpy:76.2,date:'03/31'},{day:'WW14.2',fpy:88.7,date:'04/01'},{day:'WW14.3',fpy:78.3,date:'04/02'},{day:'WW14.4',fpy:58.6,date:'04/03'},{day:'WW14.5',fpy:92.9,date:'04/04'},
+  {day:'WW15.1',fpy:93.3,date:'04/07'},{day:'WW15.2',fpy:100,date:'04/08'},{day:'WW15.3',fpy:57.6,date:'04/09'},{day:'WW15.4',fpy:91.7,date:'04/10'},{day:'WW16.1',fpy:76.0,date:'04/14'},
+  {day:'WW16.2',fpy:66.7,date:'04/15'},{day:'WW16.3',fpy:64.3,date:'04/16'},{day:'WW16.4',fpy:12.5,date:'04/17'},{day:'WW16.5',fpy:14.8,date:'04/18'},{day:'WW17.2',fpy:13.6,date:'04/22'},
+  {day:'WW17.3',fpy:0,date:'04/23'},{day:'WW17.4',fpy:41.2,date:'04/24'},{day:'WW17.5',fpy:36.4,date:'04/25'},{day:'WW18.1',fpy:22.2,date:'04/28'},{day:'WW18.2',fpy:29.4,date:'04/29'},
+  {day:'WW18.3',fpy:16.7,date:'04/30'},{day:'WW18.4',fpy:27.3,date:'05/01'},{day:'WW18.5',fpy:41.9,date:'05/02'},{day:'WW19.1',fpy:12.5,date:'05/05'},{day:'WW19.2',fpy:16.7,date:'05/06'},
+  {day:'WW19.3',fpy:2.2,date:'05/07'},{day:'WW19.4',fpy:0,date:'05/08'},{day:'WW19.5',fpy:30.8,date:'05/09'},{day:'WW20.1',fpy:42.9,date:'05/12'},{day:'WW20.2',fpy:18.2,date:'05/13'},
+  {day:'WW20.3',fpy:55.6,date:'05/14'},{day:'WW20.4',fpy:28.6,date:'05/15'},{day:'WW20.5',fpy:31.8,date:'05/16'},{day:'WW21.1',fpy:82.6,date:'05/19'},{day:'WW21.2',fpy:25.0,date:'05/20'},
+  {day:'WW21.3',fpy:6.2,date:'05/21'},{day:'WW21.4',fpy:0,date:'05/22'},{day:'WW21.5',fpy:66.7,date:'05/23'},{day:'WW22.1',fpy:50.0,date:'05/26'},{day:'WW22.2',fpy:22.2,date:'05/27'},
+  {day:'WW22.3',fpy:58.8,date:'05/28'},{day:'WW22.4',fpy:0,date:'05/29'},{day:'WW22.5',fpy:12.5,date:'05/30'},{day:'WW23.1',fpy:0,date:'06/02'},{day:'WW23.3',fpy:13.6,date:'06/04'},
+  {day:'WW23.4',fpy:44.4,date:'06/05'},{day:'WW23.5',fpy:40.0,date:'06/06'},{day:'WW24.1',fpy:31.2,date:'06/09'},{day:'WW24.2',fpy:17.4,date:'06/10'},{day:'WW24.3',fpy:56.1,date:'06/11'},
+  {day:'WW24.4',fpy:35.3,date:'06/12'},{day:'WW24.5',fpy:37.5,date:'06/13'},{day:'WW25.1',fpy:50.0,date:'06/16'},{day:'WW25.2',fpy:73.2,date:'06/17'},{day:'WW25.3',fpy:60.9,date:'06/18'},
+  {day:'WW25.4',fpy:65.4,date:'06/19'},{day:'WW25.5',fpy:34.5,date:'06/20'},{day:'WW26.1',fpy:60.0,date:'06/23'},{day:'WW26.2',fpy:80.0,date:'06/24'},{day:'WW26.3',fpy:66.7,date:'06/25'},
+  {day:'WW26.4',fpy:66.7,date:'06/26'},{day:'WW26.5',fpy:82.4,date:'06/27'},{day:'WW27.1',fpy:81.8,date:'06/30'},{day:'WW27.2',fpy:87.5,date:'07/01'},{day:'WW27.3',fpy:65.4,date:'07/02'},
+  {day:'WW27.4',fpy:58.1,date:'07/03'},{day:'WW27.5',fpy:47.6,date:'07/04'},{day:'WW28.1',fpy:25.0,date:'07/07'},{day:'WW28.2',fpy:93.5,date:'07/08'},{day:'WW28.3',fpy:100,date:'07/09'},
+  {day:'WW28.4',fpy:100,date:'07/10'},{day:'WW28.5',fpy:25.0,date:'07/11'},{day:'WW29.1',fpy:39.5,date:'07/14'},{day:'WW29.2',fpy:50.0,date:'07/15'},{day:'WW29.3',fpy:100,date:'07/16'},
+  {day:'WW29.4',fpy:80.0,date:'07/17'},{day:'WW29.5',fpy:62.5,date:'07/18'},{day:'WW30.1',fpy:81.8,date:'07/21'},{day:'WW30.2',fpy:50.0,date:'07/22'},{day:'WW30.3',fpy:100,date:'07/23'},
+  {day:'WW30.4',fpy:90.0,date:'07/24'},{day:'WW30.5',fpy:50.0,date:'07/25'},{day:'WW31.1',fpy:100,date:'07/28'},{day:'WW31.2',fpy:100,date:'07/29'},{day:'WW31.3',fpy:100,date:'07/30'},
+  {day:'WW31.4',fpy:100,date:'07/31'},{day:'WW31.5',fpy:100,date:'08/01'},{day:'WW32.1',fpy:100,date:'08/04'},{day:'WW32.2',fpy:100,date:'08/05'},{day:'WW32.3',fpy:100,date:'08/06'},
+  {day:'WW32.4',fpy:83.3,date:'08/07'},{day:'WW32.5',fpy:66.7,date:'08/08'},{day:'WW33.1',fpy:100,date:'08/11'},{day:'WW33.1',fpy:96.3,date:'08/12'},{day:'WW33.1',fpy:100,date:'08/13'},
+  {day:'WW33.1',fpy:100,date:'08/14'},{day:'WW33.1',fpy:100,date:'08/15'},{day:'WW34.1',fpy:100,date:'08/18'},{day:'WW34.1',fpy:52.6,date:'08/19'},{day:'WW34.1',fpy:100,date:'08/21'},
+  {day:'WW34.1',fpy:100,date:'08/22'},{day:'WW35.1',fpy:100,date:'08/25'},{day:'WW35.2',fpy:100,date:'08/26'},{day:'WW35.3',fpy:100,date:'08/27'},{day:'WW35.4',fpy:100,date:'08/28'},
+  {day:'WW35.5',fpy:100,date:'08/29'},{day:'WW36.1',fpy:100,date:'09/01'},{day:'WW36.2',fpy:100,date:'09/02'},{day:'WW36.3',fpy:94.7,date:'09/03'},{day:'WW36.4',fpy:94.1,date:'09/04'},
+  {day:'WW36.5',fpy:100,date:'09/05'},{day:'WW37.1',fpy:20.0,date:'09/08'},{day:'WW37.2',fpy:92.3,date:'09/09'},{day:'WW37.3',fpy:100,date:'09/10'},{day:'WW37.4',fpy:71.4,date:'09/11'},
+  {day:'WW37.5',fpy:66.7,date:'09/12'},{day:'WW38.1',fpy:90.0,date:'09/15'},{day:'WW38.2',fpy:60.0,date:'09/16'},{day:'WW38.3',fpy:66.7,date:'09/17'},{day:'WW38.4',fpy:75.0,date:'09/18'},
+  {day:'WW38.5',fpy:100,date:'09/19'},{day:'WW39.1',fpy:88.9,date:'09/22'},{day:'WW39.2',fpy:83.3,date:'09/23'},{day:'WW39.3',fpy:91.7,date:'09/24'},{day:'WW39.4',fpy:100,date:'09/25'},
+  {day:'WW39.5',fpy:100,date:'09/26'},{day:'WW40.1',fpy:100,date:'09/29'},{day:'WW40.2',fpy:100,date:'09/30'},{day:'WW40.3',fpy:100,date:'10/01'},{day:'WW40.4',fpy:100,date:'10/01'},
+  {day:'WW40.5',fpy:100,date:'10/02'},{day:'WW41.1',fpy:100,date:'10/06'},{day:'WW41.2',fpy:100,date:'10/07'},{day:'WW41.3',fpy:53.8,date:'10/08'},{day:'WW41.4',fpy:63.2,date:'10/09'},
+  {day:'WW41.5',fpy:100,date:'10/10'},{day:'WW42.1',fpy:91.2,date:'10/13'},{day:'WW42.2',fpy:100,date:'10/14'},{day:'WW42.3',fpy:78.6,date:'10/15'},{day:'WW42.4',fpy:100,date:'10/16'},
+  {day:'WW42.5',fpy:83.3,date:'10/17'},{day:'WW43.1',fpy:100,date:'10/13'},{day:'WW43.2',fpy:100,date:'10/14'},{day:'WW43.3',fpy:100,date:'10/15'},{day:'WW43.4',fpy:100,date:'10/16'},
+  {day:'WW43.5',fpy:100,date:'10/17'},{day:'WW44.1',fpy:100,date:'10/27'},{day:'WW44.2',fpy:95.7,date:'10/28'},{day:'WW44.3',fpy:100,date:'10/29'},{day:'WW44.4',fpy:100,date:'10/30'},
+  {day:'WW44.5',fpy:100,date:'10/31'},{day:'WW45.1',fpy:100,date:'11/03'},{day:'WW45.2',fpy:100,date:'11/04'},{day:'WW45.3',fpy:100,date:'11/05'},{day:'WW45.4',fpy:100,date:'11/06'},
+  {day:'WW45.5',fpy:100,date:'11/07'},{day:'WW46.1',fpy:100,date:'11/10'},{day:'WW46.2',fpy:100,date:'11/11'},{day:'WW46.3',fpy:100,date:'11/12'},{day:'WW46.4',fpy:100,date:'11/13'},
+  {day:'WW46.5',fpy:100,date:'11/14'},{day:'WW47.1',fpy:100,date:'11/17'},{day:'WW47.2',fpy:80.6,date:'11/18'},{day:'WW47.3',fpy:100,date:'11/19'},{day:'WW47.4',fpy:100,date:'11/20'},
+  {day:'WW47.5',fpy:100,date:'11/21'},{day:'WW48.1',fpy:100,date:'11/24'},{day:'WW48.2',fpy:100,date:'11/25'},{day:'WW48.3',fpy:100,date:'11/26'},{day:'WW49.1',fpy:100,date:'12/01'},
+  {day:'WW49.2',fpy:100,date:'12/02'},{day:'WW49.3',fpy:100,date:'12/03'},{day:'WW49.4',fpy:100,date:'12/04'},{day:'WW49.5',fpy:100,date:'12/05'},{day:'WW50.1',fpy:100,date:'12/08'},
+  {day:'WW50.2',fpy:100,date:'12/09'},{day:'WW50.3',fpy:100,date:'12/10'},{day:'WW50.4',fpy:100,date:'12/11'},{day:'WW50.5',fpy:100,date:'12/12'},{day:'WW51.1',fpy:100,date:'12/15'},
+  {day:'WW51.2',fpy:100,date:'12/16'},{day:'WW51.3',fpy:100,date:'12/17'},{day:'WW51.4',fpy:100,date:'12/18'},{day:'WW51.5',fpy:100,date:'12/19'},{day:'WW52.1',fpy:100,date:'12/22'},
+  {day:'WW52.2',fpy:100,date:'12/23'},{day:'WW52.5',fpy:100,date:'12/26'},{day:'WW01.1',fpy:100,date:'12/29'},{day:'WW01.2',fpy:100,date:'12/30'},{day:'WW01.5',fpy:100,date:'01/02'},
+  {day:'WW02.1',fpy:100,date:'01/05'},{day:'WW02.2',fpy:100,date:'01/06'},{day:'WW02.3',fpy:100,date:'01/07'},{day:'WW02.4',fpy:100,date:'01/08'},{day:'WW02.5',fpy:100,date:'01/09'},
+  {day:'WW03.1',fpy:100,date:'01/12'},{day:'WW03.2',fpy:100,date:'01/13'},{day:'WW03.4',fpy:100,date:'01/15'},{day:'WW03.5',fpy:100,date:'01/16'},{day:'WW04.1',fpy:100,date:'01/19'},
+  {day:'WW04.2',fpy:100,date:'01/20'},{day:'WW04.3',fpy:100,date:'01/21'},{day:'WW04.4',fpy:100,date:'01/22'},{day:'WW04.5',fpy:100,date:'01/23'},{day:'WW05.1',fpy:100,date:'01/26'},
+  {day:'WW05.2',fpy:100,date:'01/27'},{day:'WW05.3',fpy:100,date:'01/28'},{day:'WW05.4',fpy:100,date:'01/29'},{day:'WW05.5',fpy:100,date:'01/30'},{day:'WW06.1',fpy:96.9,date:'02/02'},
+  {day:'WW06.3',fpy:100,date:'02/04'},{day:'WW06.4',fpy:100,date:'02/05'},{day:'WW06.5',fpy:100,date:'02/06'},{day:'WW07.1',fpy:100,date:'02/09'},{day:'WW07.2',fpy:100,date:'02/10'},
+  {day:'WW07.5',fpy:100,date:'02/13'},{day:'WW08.3',fpy:100,date:'02/18'},{day:'WW08.4',fpy:100,date:'02/19'},{day:'WW08.5',fpy:100,date:'02/20'},{day:'WW09.1',fpy:100,date:'02/23'},
+  {day:'WW09.2',fpy:100,date:'02/24'},{day:'WW09.3',fpy:100,date:'02/25'},{day:'WW09.4',fpy:100,date:'02/26'},{day:'WW09.5',fpy:100,date:'02/27'},{day:'WW10.1',fpy:100,date:'03/02'},
+  {day:'WW10.2',fpy:100,date:'03/03'},{day:'WW10.3',fpy:100,date:'03/04'},{day:'WW10.4',fpy:100,date:'03/05'},{day:'WW10.5',fpy:100,date:'03/06'},{day:'WW11.1',fpy:100,date:'03/09'},
+  {day:'WW11.2',fpy:0,date:'03/10'},{day:'WW11.3',fpy:100,date:'03/11'},{day:'WW11.5',fpy:100,date:'03/13'},{day:'WW12.1',fpy:100,date:'03/16'},{day:'WW12.2',fpy:85.7,date:'03/17'},
+  {day:'WW12.3',fpy:100,date:'03/18'},{day:'WW12.4',fpy:100,date:'03/19'},{day:'WW12.5',fpy:100,date:'03/20'},{day:'WW13.1',fpy:100,date:'03/23'},{day:'WW13.2',fpy:100,date:'03/24'},
+  {day:'WW13.3',fpy:100,date:'03/25'},{day:'WW13.4',fpy:100,date:'03/26'},{day:'WW14.1',fpy:100,date:'03/30'},{day:'WW14.2',fpy:100,date:'03/31'},{day:'WW14.3',fpy:100,date:'04/01'},
+  {day:'WW14.4',fpy:100,date:'04/02'},{day:'WW14.5',fpy:100,date:'04/03'},{day:'WW15.1',fpy:100,date:'04/06'},{day:'WW15.2',fpy:100,date:'04/07'},{day:'WW15.3',fpy:100,date:'04/08'},
+  {day:'WW15.4',fpy:100,date:'04/09'},{day:'WW15.5',fpy:100,date:'04/10'},{day:'WW16.1',fpy:100,date:'04/13'},{day:'WW16.2',fpy:100,date:'04/14'},{day:'WW16.3',fpy:100,date:'04/15'},
+  {day:'WW16.4',fpy:100,date:'04/16'},{day:'WW16.5',fpy:100,date:'04/17'},{day:'WW17.1',fpy:100,date:'02/23'},{day:'WW17.2',fpy:100,date:'02/24'},{day:'WW17.3',fpy:100,date:'02/25'},
+  {day:'WW17.4',fpy:100,date:'02/26'},{day:'WW17.5',fpy:100,date:'02/27'},{day:'WW18.1',fpy:100,date:'04/27'},{day:'WW18.2',fpy:100,date:'04/28'},{day:'WW18.3',fpy:100,date:'04/29'},
+  {day:'WW18.4',fpy:100,date:'04/30'},{day:'WW18.5',fpy:100,date:'05/01'},{day:'WW19.1',fpy:100,date:'05/04'},{day:'WW19.2',fpy:100,date:'05/05'},{day:'WW19.3',fpy:100,date:'05/06'},
+  {day:'WW19.4',fpy:100,date:'05/07'},{day:'WW19.5',fpy:100,date:'05/08'},{day:'WW20.1',fpy:100,date:'05/11'},{day:'WW20.2',fpy:100,date:'05/12'},{day:'WW20.3',fpy:100,date:'05/13'},
+  {day:'WW20.4',fpy:100,date:'05/14'},{day:'WW20.5',fpy:100,date:'05/15'},{day:'WW21.1',fpy:100,date:'05/18'},{day:'WW21.2',fpy:100,date:'05/19'},{day:'WW21.3',fpy:100,date:'05/20'},
+  {day:'WW21.4',fpy:100,date:'05/21'},{day:'WW21.5',fpy:100,date:'05/22'},{day:'WW22.2',fpy:100,date:'05/26'},{day:'WW22.3',fpy:100,date:'05/27'},{day:'WW22.4',fpy:100,date:'05/28'},
+  {day:'WW22.5',fpy:100,date:'05/29'},{day:'WW23.1',fpy:100,date:'06/01'},{day:'WW23.2',fpy:100,date:'06/02'},{day:'WW23.3',fpy:100,date:'06/03'},{day:'WW23.4',fpy:100,date:'06/04'},
+  {day:'WW23.5',fpy:100,date:'06/05'},{day:'WW24.1',fpy:100,date:'06/08'},{day:'WW24.2',fpy:100,date:'06/09'},{day:'WW24.3',fpy:100,date:'06/10'},{day:'WW24.4',fpy:100,date:'06/11'},
+  {day:'WW24.5',fpy:100,date:'06/12'},{day:'WW25.1',fpy:100,date:'06/15'},{day:'WW25.2',fpy:100,date:'06/16'},{day:'WW25.3',fpy:100,date:'06/17'},{day:'WW25.4',fpy:100,date:'06/18'},
+  {day:'WW25.5',fpy:100,date:'06/19'}
+];
+const jDailyWOL=[
+  {day:'WW14.1',fpy:76.2,date:'03/31'},{day:'WW14.2',fpy:71.4,date:'04/01'},{day:'WW14.3',fpy:79.6,date:'04/02'},{day:'WW14.4',fpy:58.6,date:'04/03'},{day:'WW14.5',fpy:90.9,date:'04/04'},
+  {day:'WW15.1',fpy:91.9,date:'04/07'},{day:'WW15.2',fpy:100,date:'04/08'},{day:'WW15.3',fpy:58.1,date:'04/09'},{day:'WW15.4',fpy:90.9,date:'04/10'},{day:'WW16.1',fpy:76.0,date:'04/14'},
+  {day:'WW16.2',fpy:66.7,date:'04/15'},{day:'WW16.3',fpy:54.5,date:'04/16'},{day:'WW16.4',fpy:12.5,date:'04/17'},{day:'WW16.5',fpy:25.0,date:'04/18'},{day:'WW17.2',fpy:13.6,date:'04/22'},
+  {day:'WW17.3',fpy:0,date:'04/23'},{day:'WW17.4',fpy:41.2,date:'04/24'},{day:'WW17.5',fpy:36.4,date:'04/25'},{day:'WW18.1',fpy:22.2,date:'04/28'},{day:'WW18.2',fpy:29.4,date:'04/29'},
+  {day:'WW18.3',fpy:16.7,date:'04/30'},{day:'WW18.4',fpy:23.8,date:'05/01'},{day:'WW18.5',fpy:41.9,date:'05/02'},{day:'WW19.1',fpy:12.5,date:'05/05'},{day:'WW19.2',fpy:18.2,date:'05/06'},
+  {day:'WW19.3',fpy:4.2,date:'05/07'},{day:'WW19.4',fpy:0,date:'05/08'},{day:'WW19.5',fpy:28.6,date:'05/09'},{day:'WW20.1',fpy:42.9,date:'05/12'},{day:'WW20.2',fpy:18.2,date:'05/13'},
+  {day:'WW20.3',fpy:55.6,date:'05/14'},{day:'WW20.4',fpy:28.6,date:'05/15'},{day:'WW20.5',fpy:30.0,date:'05/16'},{day:'WW21.1',fpy:81.8,date:'05/19'},{day:'WW21.2',fpy:31.6,date:'05/20'},
+  {day:'WW21.3',fpy:10.0,date:'05/21'},{day:'WW21.4',fpy:0,date:'05/22'},{day:'WW21.5',fpy:66.7,date:'05/23'},{day:'WW22.1',fpy:50.0,date:'05/26'},{day:'WW22.2',fpy:22.2,date:'05/27'},
+  {day:'WW22.3',fpy:69.2,date:'05/28'},{day:'WW22.4',fpy:0,date:'05/29'},{day:'WW22.5',fpy:12.5,date:'05/30'},{day:'WW23.1',fpy:0,date:'06/02'},{day:'WW23.3',fpy:14.3,date:'06/04'},
+  {day:'WW23.4',fpy:44.4,date:'06/05'},{day:'WW23.5',fpy:46.2,date:'06/06'},{day:'WW24.1',fpy:31.2,date:'06/09'},{day:'WW24.2',fpy:57.1,date:'06/10'},{day:'WW24.3',fpy:56.1,date:'06/11'},
+  {day:'WW24.4',fpy:35.3,date:'06/12'},{day:'WW24.5',fpy:37.5,date:'06/13'},{day:'WW25.1',fpy:50.0,date:'06/16'},{day:'WW25.2',fpy:73.2,date:'06/17'},{day:'WW25.3',fpy:63.6,date:'06/18'},
+  {day:'WW25.4',fpy:65.4,date:'06/19'},{day:'WW25.5',fpy:32.1,date:'06/20'},{day:'WW26.1',fpy:60.0,date:'06/23'},{day:'WW26.2',fpy:80.0,date:'06/24'},{day:'WW26.3',fpy:66.7,date:'06/25'},
+  {day:'WW26.4',fpy:66.7,date:'06/26'},{day:'WW26.5',fpy:81.2,date:'06/27'},{day:'WW27.1',fpy:81.8,date:'06/30'},{day:'WW27.2',fpy:86.7,date:'07/01'},{day:'WW27.3',fpy:65.4,date:'07/02'},
+  {day:'WW27.4',fpy:58.1,date:'07/03'},{day:'WW27.5',fpy:47.6,date:'07/04'},{day:'WW28.1',fpy:25.0,date:'07/07'},{day:'WW28.2',fpy:93.5,date:'07/08'},{day:'WW28.3',fpy:100,date:'07/09'},
+  {day:'WW28.4',fpy:100,date:'07/10'},{day:'WW28.5',fpy:25.0,date:'07/11'},{day:'WW29.1',fpy:39.5,date:'07/14'},{day:'WW29.2',fpy:50.0,date:'07/15'},{day:'WW29.3',fpy:100,date:'07/16'},
+  {day:'WW29.4',fpy:80.0,date:'07/17'},{day:'WW29.5',fpy:71.4,date:'07/18'},{day:'WW30.1',fpy:90.0,date:'07/21'},{day:'WW30.2',fpy:53.3,date:'07/22'},{day:'WW30.3',fpy:100,date:'07/23'},
+  {day:'WW30.4',fpy:100,date:'07/24'},{day:'WW30.5',fpy:50.0,date:'07/25'},{day:'WW31.1',fpy:100,date:'07/28'},{day:'WW31.2',fpy:100,date:'07/29'},{day:'WW31.3',fpy:100,date:'07/30'},
+  {day:'WW31.4',fpy:100,date:'07/31'},{day:'WW31.5',fpy:100,date:'08/01'},{day:'WW32.1',fpy:100,date:'08/04'},{day:'WW32.2',fpy:100,date:'08/05'},{day:'WW32.3',fpy:100,date:'08/06'},
+  {day:'WW32.4',fpy:100,date:'08/07'},{day:'WW32.5',fpy:80.0,date:'08/08'},{day:'WW33.1',fpy:100,date:'08/11'},{day:'WW33.1',fpy:96.3,date:'08/12'},{day:'WW33.1',fpy:100,date:'08/13'},
+  {day:'WW33.1',fpy:100,date:'08/14'},{day:'WW33.1',fpy:100,date:'08/15'},{day:'WW34.1',fpy:100,date:'08/18'},{day:'WW34.1',fpy:90.9,date:'08/19'},{day:'WW34.1',fpy:100,date:'08/21'},
+  {day:'WW34.1',fpy:100,date:'08/22'},{day:'WW35.1',fpy:100,date:'08/25'},{day:'WW35.2',fpy:100,date:'08/26'},{day:'WW35.3',fpy:100,date:'08/27'},{day:'WW35.4',fpy:100,date:'08/28'},
+  {day:'WW35.5',fpy:100,date:'08/29'},{day:'WW36.1',fpy:100,date:'09/01'},{day:'WW36.2',fpy:100,date:'09/02'},{day:'WW36.3',fpy:94.7,date:'09/03'},{day:'WW36.4',fpy:93.3,date:'09/04'},
+  {day:'WW36.5',fpy:100,date:'09/05'},{day:'WW37.1',fpy:50.0,date:'09/08'},{day:'WW37.2',fpy:92.3,date:'09/09'},{day:'WW37.3',fpy:100,date:'09/10'},{day:'WW37.4',fpy:66.7,date:'09/11'},
+  {day:'WW37.5',fpy:50.0,date:'09/12'},{day:'WW38.1',fpy:90.0,date:'09/15'},{day:'WW38.2',fpy:60.0,date:'09/16'},{day:'WW38.3',fpy:0,date:'09/17'},{day:'WW38.4',fpy:100,date:'09/18'},
+  {day:'WW38.5',fpy:100,date:'09/19'},{day:'WW39.1',fpy:87.5,date:'09/22'},{day:'WW39.2',fpy:83.3,date:'09/23'},{day:'WW39.3',fpy:90.9,date:'09/24'},{day:'WW39.4',fpy:100,date:'09/25'},
+  {day:'WW39.5',fpy:100,date:'09/26'},{day:'WW40.2',fpy:100,date:'09/30'},{day:'WW40.3',fpy:100,date:'10/01'},{day:'WW40.4',fpy:100,date:'10/01'},{day:'WW40.5',fpy:100,date:'10/02'},
+  {day:'WW41.1',fpy:100,date:'10/06'},{day:'WW41.2',fpy:100,date:'10/07'},{day:'WW41.3',fpy:100,date:'10/08'},{day:'WW41.4',fpy:100,date:'10/09'},{day:'WW41.5',fpy:100,date:'10/10'},
+  {day:'WW42.1',fpy:100,date:'10/13'},{day:'WW42.2',fpy:100,date:'10/14'},{day:'WW42.3',fpy:100,date:'10/15'},{day:'WW42.4',fpy:100,date:'10/16'},{day:'WW42.5',fpy:83.3,date:'10/17'},
+  {day:'WW43.1',fpy:100,date:'10/13'},{day:'WW43.2',fpy:100,date:'10/14'},{day:'WW43.3',fpy:100,date:'10/15'},{day:'WW43.4',fpy:100,date:'10/16'},{day:'WW43.5',fpy:100,date:'10/17'},
+  {day:'WW44.1',fpy:100,date:'10/27'},{day:'WW44.2',fpy:100,date:'10/28'},{day:'WW44.3',fpy:100,date:'10/29'},{day:'WW44.4',fpy:100,date:'10/30'},{day:'WW44.5',fpy:100,date:'10/31'},
+  {day:'WW45.1',fpy:100,date:'11/03'},{day:'WW45.2',fpy:100,date:'11/04'},{day:'WW45.3',fpy:100,date:'11/05'},{day:'WW45.4',fpy:100,date:'11/06'},{day:'WW45.5',fpy:100,date:'11/07'},
+  {day:'WW46.1',fpy:100,date:'11/10'},{day:'WW46.2',fpy:100,date:'11/11'},{day:'WW46.3',fpy:100,date:'11/12'},{day:'WW46.4',fpy:100,date:'11/13'},{day:'WW46.5',fpy:100,date:'11/14'},
+  {day:'WW47.1',fpy:100,date:'11/17'},{day:'WW47.2',fpy:100,date:'11/18'},{day:'WW47.3',fpy:100,date:'11/19'},{day:'WW47.4',fpy:100,date:'11/20'},{day:'WW47.5',fpy:100,date:'11/21'},
+  {day:'WW48.1',fpy:100,date:'11/24'},{day:'WW48.2',fpy:100,date:'11/25'},{day:'WW48.3',fpy:100,date:'11/26'},{day:'WW49.1',fpy:100,date:'12/01'},{day:'WW49.2',fpy:100,date:'12/02'},
+  {day:'WW49.3',fpy:100,date:'12/03'},{day:'WW49.4',fpy:100,date:'12/04'},{day:'WW49.5',fpy:100,date:'12/05'},{day:'WW50.1',fpy:100,date:'12/08'},{day:'WW50.2',fpy:100,date:'12/09'},
+  {day:'WW50.3',fpy:100,date:'12/10'},{day:'WW50.4',fpy:100,date:'12/11'},{day:'WW50.5',fpy:100,date:'12/12'},{day:'WW51.1',fpy:100,date:'12/15'},{day:'WW51.2',fpy:100,date:'12/16'},
+  {day:'WW51.3',fpy:100,date:'12/17'},{day:'WW51.4',fpy:100,date:'12/18'},{day:'WW51.5',fpy:100,date:'12/19'},{day:'WW52.1',fpy:100,date:'12/22'},{day:'WW52.2',fpy:100,date:'12/23'},
+  {day:'WW52.5',fpy:100,date:'12/26'},{day:'WW01.1',fpy:100,date:'12/29'},{day:'WW01.2',fpy:100,date:'12/30'},{day:'WW01.5',fpy:100,date:'01/02'},{day:'WW02.1',fpy:100,date:'01/05'},
+  {day:'WW02.2',fpy:100,date:'01/06'},{day:'WW02.3',fpy:100,date:'01/07'},{day:'WW02.4',fpy:100,date:'01/08'},{day:'WW02.5',fpy:100,date:'01/09'},{day:'WW03.1',fpy:100,date:'01/12'},
+  {day:'WW03.2',fpy:100,date:'01/13'},{day:'WW03.4',fpy:100,date:'01/15'},{day:'WW03.5',fpy:100,date:'01/16'},{day:'WW04.1',fpy:100,date:'01/19'},{day:'WW04.2',fpy:100,date:'01/20'},
+  {day:'WW04.3',fpy:100,date:'01/21'},{day:'WW04.4',fpy:100,date:'01/22'},{day:'WW04.5',fpy:100,date:'01/23'},{day:'WW05.1',fpy:100,date:'01/26'},{day:'WW05.2',fpy:100,date:'01/27'},
+  {day:'WW05.3',fpy:100,date:'01/28'},{day:'WW05.4',fpy:100,date:'01/29'},{day:'WW06.1',fpy:100,date:'02/02'},{day:'WW06.3',fpy:100,date:'02/04'},{day:'WW06.4',fpy:100,date:'02/05'},
+  {day:'WW06.5',fpy:100,date:'02/06'},{day:'WW07.1',fpy:100,date:'02/09'},{day:'WW07.2',fpy:100,date:'02/10'},{day:'WW07.5',fpy:100,date:'02/13'},{day:'WW08.3',fpy:100,date:'02/18'},
+  {day:'WW08.4',fpy:100,date:'02/19'},{day:'WW08.5',fpy:100,date:'02/20'},{day:'WW09.1',fpy:100,date:'02/23'},{day:'WW09.2',fpy:100,date:'02/24'},{day:'WW09.3',fpy:100,date:'02/25'},
+  {day:'WW09.4',fpy:100,date:'02/26'},{day:'WW09.5',fpy:100,date:'02/27'},{day:'WW10.1',fpy:100,date:'03/02'},{day:'WW10.2',fpy:100,date:'03/03'},{day:'WW10.3',fpy:100,date:'03/04'},
+  {day:'WW10.4',fpy:100,date:'03/05'},{day:'WW11.1',fpy:100,date:'03/09'},{day:'WW11.3',fpy:100,date:'03/11'},{day:'WW11.5',fpy:100,date:'03/13'},{day:'WW12.1',fpy:100,date:'03/16'},
+  {day:'WW12.2',fpy:100,date:'03/17'},{day:'WW12.3',fpy:100,date:'03/18'},{day:'WW12.4',fpy:100,date:'03/19'},{day:'WW12.5',fpy:100,date:'03/20'},{day:'WW13.1',fpy:100,date:'03/23'},
+  {day:'WW13.2',fpy:100,date:'03/24'},{day:'WW13.3',fpy:100,date:'03/25'},{day:'WW13.4',fpy:100,date:'03/26'},{day:'WW14.1',fpy:100,date:'03/30'},{day:'WW14.2',fpy:100,date:'03/31'},
+  {day:'WW14.3',fpy:100,date:'04/01'},{day:'WW14.4',fpy:100,date:'04/02'},{day:'WW14.5',fpy:100,date:'04/03'},{day:'WW15.1',fpy:100,date:'04/06'},{day:'WW15.2',fpy:100,date:'04/07'},
+  {day:'WW15.3',fpy:100,date:'04/08'},{day:'WW15.4',fpy:100,date:'04/09'},{day:'WW15.5',fpy:100,date:'04/10'},{day:'WW16.1',fpy:100,date:'04/13'},{day:'WW16.2',fpy:100,date:'04/14'},
+  {day:'WW16.3',fpy:100,date:'04/15'},{day:'WW16.4',fpy:100,date:'04/16'},{day:'WW16.5',fpy:100,date:'04/17'},{day:'WW17.1',fpy:100,date:'02/23'},{day:'WW17.2',fpy:100,date:'02/24'},
+  {day:'WW17.3',fpy:100,date:'02/25'},{day:'WW17.4',fpy:100,date:'02/26'},{day:'WW17.5',fpy:100,date:'02/27'},{day:'WW18.1',fpy:100,date:'04/27'},{day:'WW18.2',fpy:100,date:'04/28'},
+  {day:'WW18.3',fpy:100,date:'04/29'},{day:'WW18.4',fpy:100,date:'04/30'},{day:'WW18.5',fpy:100,date:'05/01'},{day:'WW19.1',fpy:100,date:'05/04'},{day:'WW19.2',fpy:100,date:'05/05'},
+  {day:'WW19.3',fpy:100,date:'05/06'},{day:'WW19.4',fpy:100,date:'05/07'},{day:'WW19.5',fpy:100,date:'05/08'},{day:'WW20.1',fpy:100,date:'05/11'},{day:'WW20.2',fpy:100,date:'05/12'},
+  {day:'WW20.3',fpy:100,date:'05/13'},{day:'WW20.4',fpy:100,date:'05/14'},{day:'WW20.5',fpy:100,date:'05/15'},{day:'WW21.1',fpy:100,date:'05/18'},{day:'WW21.2',fpy:100,date:'05/19'},
+  {day:'WW21.3',fpy:100,date:'05/20'},{day:'WW21.4',fpy:100,date:'05/21'},{day:'WW21.5',fpy:100,date:'05/22'},{day:'WW22.2',fpy:100,date:'05/26'},{day:'WW22.3',fpy:100,date:'05/27'},
+  {day:'WW22.4',fpy:100,date:'05/28'},{day:'WW22.5',fpy:100,date:'05/29'},{day:'WW23.1',fpy:100,date:'06/01'},{day:'WW23.2',fpy:100,date:'06/02'},{day:'WW23.3',fpy:100,date:'06/03'},
+  {day:'WW23.4',fpy:100,date:'06/04'},{day:'WW23.5',fpy:100,date:'06/05'},{day:'WW24.1',fpy:100,date:'06/08'},{day:'WW24.2',fpy:100,date:'06/09'},{day:'WW24.3',fpy:100,date:'06/10'},
+  {day:'WW24.4',fpy:100,date:'06/11'},{day:'WW24.5',fpy:100,date:'06/12'},{day:'WW25.1',fpy:100,date:'06/15'},{day:'WW25.2',fpy:100,date:'06/16'},{day:'WW25.3',fpy:100,date:'06/17'},
+  {day:'WW25.4',fpy:100,date:'06/18'},{day:'WW25.5',fpy:100,date:'06/19'}
+];
+
+
+// ═══════════════════════════════════════════════════════
+// JCO CHART INSTANCES & HELPERS
+// ═══════════════════════════════════════════════════════
+// JCO year-aware WW label (WW14-WW52=2025, WW01-WW25=2026; duplicate WWs get year suffix)
+const jDupWWs=(()=>{const seen={},dups=new Set();jWeeklyWL.forEach(r=>{if(seen[r.ww]!==undefined&&seen[r.ww]!==r.yr)dups.add(r.ww);seen[r.ww]=r.yr;});return dups;})();
+function jWWLabel(r){return r.ww+"'"+(r.yr%100);}
+
+const jCI={};
+function jDestroyChart(id){if(jCI[id]){jCI[id].destroy();delete jCI[id];}}
+
+
+function jLineDS(label,data,color,fill){return{type:'line',label,data,borderColor:color,backgroundColor:fill||'transparent',borderWidth:2,pointRadius:data.map(v=>v!==null?4:0),pointBackgroundColor:data.map(v=>pointColor(v)),pointBorderColor:data.map(v=>pointColor(v)),pointHoverRadius:6,tension:0.3,fill:!!fill,spanGaps:true,order:1};}
+function jBarDS(label,data,color){return{type:'bar',label,data,backgroundColor:color,borderColor:'transparent',borderRadius:3,order:2};}
+function jBaseOpts(yMax){const c=getCC();return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>{const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v!==null?v.toFixed(1)+(ctx.dataset.label.includes('%')||ctx.dataset.label.includes('FPY')||ctx.dataset.label.includes('Target')?'%':''):'N/A'}`}}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{min:0,max:yMax||105,ticks:{color:c.tick,callback:v=>v+'%'},grid:{color:c.grid}}}};}
+function jVolOpts(){const c=getCC();return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{stacked:true,ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick},grid:{color:c.grid}}}};}
+
+// ═══════════════════════════════════════════════════════
+// JCO FISCAL CALENDAR HELPERS
+// FY=WW01-52; Q1=WW01-13, Q2=WW14-26, Q3=WW27-39, Q4=WW40-52
+// ═══════════════════════════════════════════════════════
+function jWWNum(ww){return parseInt(ww.replace('WW',''));}
+function jFQLabel(ww){const n=jWWNum(ww);return n<=13?'Q1':n<=26?'Q2':n<=39?'Q3':'Q4';}
+function jFQn(ww){const n=jWWNum(ww);return n<=13?1:n<=26?2:n<=39?3:4;}
+function jFMonth(ww,yr){
+  const wwNum=jWWNum(ww);
+  const jan4=new Date(yr,0,4);
+  const dow=(jan4.getDay()+6)%7; // 0=Mon
+  const mon=new Date(jan4);
+  mon.setDate(jan4.getDate()-dow+(wwNum-1)*7);
+  return mon.getMonth()+1;
+}
+const J_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const J_QTR_COLORS=['rgba(100,181,246,0.75)','rgba(105,240,174,0.75)','rgba(255,209,128,0.75)','rgba(206,147,216,0.75)'];
+const J_QTR_BORDER=['#64b5f6','#69f0ae','#ffd180','#ce93d8'];
+
+// Derive "current" fiscal period from latest data point
+const jLastRef=jWeeklyWL[jWeeklyWL.length-1];
+const jCurrFY=jLastRef.yr;
+const jCurrFQ=jFQLabel(jLastRef.ww);
+const jCurrFQn=jFQn(jLastRef.ww);
+const jCurrFMonth=jFMonth(jLastRef.ww,jLastRef.yr);
+const jCurrFMonthName=J_MONTHS[jCurrFMonth-1];
+
+// ═══════════════════════════════════════════════════════
+// JCO NAVIGATION & FILTERS
+// ═══════════════════════════════════════════════════════
+let jFYQInitialized=false;
+function jSwitchScreen(n){
+  const sec=document.getElementById('team-jco');
+  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
+  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  if(n===3&&!jFYQInitialized){jRenderFYByQuarter();jFYQInitialized=true;}
+}
+
+function jSetView(screen,view){
+  const s=document.getElementById(screen);
+  s.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el=s.querySelector('#'+screen+'-'+view);
+  if(el)el.classList.add('active');
+  s.querySelectorAll('.ctrl-btn').forEach(b=>{
+    if(b.textContent.toLowerCase().includes('with')||b.textContent.toLowerCase().includes('without'))b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+const J_WW_FILTER_KEYS=['all','recent','latest','fy','fq','fm'];
+let jWWFilter='all';
+function jSetWWFilter(f){
+  jWWFilter=f;
+  J_WW_FILTER_KEYS.forEach(k=>{const b=document.getElementById('js0-'+k);if(b)b.classList.toggle('active',k===f);});
+  jRenderWeekly();
+}
+function jFilterWeekly(data){
+  if(jWWFilter==='recent')return data.slice(-13);
+  if(jWWFilter==='latest')return data.slice(-4);
+  if(jWWFilter==='fy')return data.filter(r=>r.yr===jCurrFY);
+  if(jWWFilter==='fq')return data.filter(r=>r.yr===jCurrFY&&jFQLabel(r.ww)===jCurrFQ);
+  if(jWWFilter==='fm')return data.filter(r=>r.yr===jCurrFY&&jFMonth(r.ww,r.yr)===jCurrFMonth);
+  return data;
+}
+
+const J_DAILY_FILTER_KEYS=['all','recent','latest','fy','fq','fm'];
+let jDailyFilter='all';
+function jSetDailyFilter(f){
+  jDailyFilter=f;
+  J_DAILY_FILTER_KEYS.forEach(k=>{const b=document.getElementById('js1-'+k);if(b)b.classList.toggle('active',k===f);});
+  jRenderDaily();
+}
+function jFilterDaily(data){
+  if(jDailyFilter==='recent')return data.slice(-30);
+  if(jDailyFilter==='latest')return data.slice(-10);
+  // For fiscal filters on daily: extract WW and yr from day label e.g. 'WW14.1'
+  const getWW=d=>'WW'+d.day.replace('WW','').split('.')[0];
+  if(jDailyFilter==='fy')return data.filter(d=>{const ww=d.day.split('.')[0];const yr=jDailyWL.find(x=>x.day===d.day)?jCurrFY:jCurrFY;return true;}).filter(d=>{
+    // Determine year from date: if date month<=3 and WW>=40 then prior year, else jCurrFY
+    const ww=d.day.split('.')[0];const wwn=jWWNum(ww);
+    const [mo]=d.date.split('/').map(Number);
+    const yr=wwn>=40&&mo<=3?jCurrFY-1:jCurrFY;
+    return yr===jCurrFY;
+  });
+  if(jDailyFilter==='fq')return jFilterDaily_fy().filter(d=>jFQLabel(d.day.split('.')[0])===jCurrFQ);
+  if(jDailyFilter==='fm')return jFilterDaily_fy().filter(d=>{
+    const ww=d.day.split('.')[0];const wwn=jWWNum(ww);
+    const [mo]=d.date.split('/').map(Number);
+    const yr=wwn>=40&&mo<=3?jCurrFY-1:jCurrFY;
+    return yr===jCurrFY&&jFMonth(ww,jCurrFY)===jCurrFMonth;
+  });
+  return data;
+}
+function jFilterDaily_fy(){
+  return jDailyWL.filter(d=>{
+    const ww=d.day.split('.')[0];const wwn=jWWNum(ww);
+    const [mo]=d.date.split('/').map(Number);
+    const yr=wwn>=40&&mo<=3?jCurrFY-1:jCurrFY;
+    return yr===jCurrFY;
+  });
+}
+
+const J_CMP_FILTER_KEYS=['all','recent','latest','fy','fq','fm'];
+let jCmpFilter='all';
+function jSetCmpFilter(f){
+  jCmpFilter=f;
+  J_CMP_FILTER_KEYS.forEach(k=>{const b=document.getElementById('js2-'+k);if(b)b.classList.toggle('active',k===f);});
+  jRenderComparison();
+}
+function jFilterCmp(data){
+  if(jCmpFilter==='recent')return data.slice(-13);
+  if(jCmpFilter==='latest')return data.slice(-4);
+  if(jCmpFilter==='fy')return data.filter(r=>r.yr===jCurrFY);
+  if(jCmpFilter==='fq')return data.filter(r=>r.yr===jCurrFY&&jFQLabel(r.ww)===jCurrFQ);
+  if(jCmpFilter==='fm')return data.filter(r=>r.yr===jCurrFY&&jFMonth(r.ww,r.yr)===jCurrFMonth);
+  return data;
+}
+
+let jFYQView='wl';
+function jSetFYQView(v){
+  jFYQView=v;
+  ['wl','wol'].forEach(k=>{const b=document.getElementById('js3-'+k);if(b)b.classList.toggle('active',k===v);});
+  jRenderFYByQuarter();
+}
+
+// ═══════════════════════════════════════════════════════
+// JCO RENDER — WEEKLY
+// ═══════════════════════════════════════════════════════
+function jRenderCards(data,cardId){
+  const last=data[data.length-1];
+  const tA=data.reduce((s,r)=>s+(r.approved||0),0),tR=data.reduce((s,r)=>s+(r.rejected||0),0);
+  const tT=tA+tR,avg=tT>0?tA/tT*100:0,onTgt=data.filter(r=>r.fpy>=95).length;
+  document.getElementById(cardId).innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${jWWLabel(last)}</div><div class="card-sub">FPY: ${last.fpy.toFixed(1)}%</div></div>
+    <div class="card"><div class="card-label">Latest FPY</div><div class="card-value ${last.fpy>=98?'c-green':last.fpy>=85?'c-yellow':last.fpy>=70?'c-orange':'c-red'}">${last.fpy.toFixed(1)}%</div><div class="card-sub">${statusLabel(last.fpy)}</div></div>
+    <div class="card"><div class="card-label">Period Avg FPY</div><div class="card-value ${avg>=95?'c-green':avg>=85?'c-yellow':avg>=70?'c-orange':'c-red'}">${avg.toFixed(1)}%</div><div class="card-sub">${tT} total jobs</div></div>
+    <div class="card"><div class="card-label">Weeks on Target</div><div class="card-value c-green">${onTgt}<span style="font-size:14px;color:var(--muted)">/${data.length}</span></div><div class="card-sub">≥ 95% FPY</div></div>
+    <div class="card"><div class="card-label">Total Approved</div><div class="card-value c-green">${tA}</div><div class="card-sub">jobs passed</div></div>
+    <div class="card"><div class="card-label">Total Rejected</div><div class="card-value c-red">${tR}</div><div class="card-sub">jobs failed</div></div>`;
+}
+
+function jRenderWeeklyTable(data,tbodyId){
+  const tbody=document.getElementById(tbodyId);if(!tbody)return;
+  tbody.innerHTML=jFilterWeekly(data).map(r=>{
+    const rr=r.total>0?(r.rejected/r.total*100).toFixed(1):'0.0';
+    return`<tr><td class="left ww-label">${jWWLabel(r)}</td><td style="color:var(--muted)">${r.yr}</td><td style="color:var(--green)">${r.approved}</td><td style="color:var(--red)">${r.rejected}</td><td>${r.total}</td><td class="metric">${fpyCell(r.fpy)}</td><td style="color:var(--muted)">${rr}%</td><td style="${statusColor(r.fpy)};font-weight:600;font-size:11px;">${statusLabel(r.fpy)}</td></tr>`;
+  }).join('');
+}
+
+function jRenderWeekly(){
+  const wlF=jFilterWeekly(jWeeklyWL),wolF=jFilterWeekly(jWeeklyWOL);
+  jRenderCards(wlF,'js0-wl-cards');jRenderCards(wolF,'js0-wol-cards');
+  jRenderWeeklyTable(jWeeklyWL,'js0-wl-tbody');jRenderWeeklyTable(jWeeklyWOL,'js0-wol-tbody');
+  // WL FPY chart
+  jDestroyChart('wl-fpy');
+  const wlLbls=wlF.map(r=>jWWLabel(r)),wlVals=wlF.map(r=>r.fpy);
+  jCI['wl-fpy']=new Chart(document.getElementById('j-chart-wl-fpy'),{data:{labels:wlLbls,datasets:[jLineDS('FPY % (w/ Leonard)',wlVals,'#64b5f6','rgba(100,181,246,0.08)'),mkTarget(100,wlLbls)]},options:jBaseOpts(100)});
+  // WL Vol chart
+  jDestroyChart('wl-vol');
+  jCI['wl-vol']=new Chart(document.getElementById('j-chart-wl-vol'),{data:{labels:wlF.map(r=>jWWLabel(r)),datasets:[jBarDS('Approved',wlF.map(r=>r.approved),'rgba(0,200,83,0.7)'),jBarDS('Rejected',wlF.map(r=>r.rejected),'rgba(244,67,54,0.7)')]},options:jVolOpts()});
+  // WOL FPY chart
+  jDestroyChart('wol-fpy');
+  const wolLbls=wolF.map(r=>jWWLabel(r)),wolVals=wolF.map(r=>r.fpy);
+  jCI['wol-fpy']=new Chart(document.getElementById('j-chart-wol-fpy'),{data:{labels:wolLbls,datasets:[jLineDS('FPY % (w/o Leonard)',wolVals,'#69f0ae','rgba(105,240,174,0.08)'),mkTarget(100,wolLbls)]},options:jBaseOpts(100)});
+  // WOL Vol chart
+  jDestroyChart('wol-vol');
+  jCI['wol-vol']=new Chart(document.getElementById('j-chart-wol-vol'),{data:{labels:wolF.map(r=>jWWLabel(r)),datasets:[jBarDS('Approved',wolF.map(r=>r.approved),'rgba(0,200,83,0.7)'),jBarDS('Rejected',wolF.map(r=>r.rejected),'rgba(244,67,54,0.7)')]},options:jVolOpts()});
+}
+
+// ═══════════════════════════════════════════════════════
+// JCO RENDER — DAILY
+// ═══════════════════════════════════════════════════════
+function jRenderDailyContent(data,containerId){
+  const container=document.getElementById(containerId);if(!container)return;
+  const filtered=jFilterDaily(data);
+  const groups={};
+  filtered.forEach(d=>{const ww=d.day.split('.')[0];if(!groups[ww])groups[ww]=[];groups[ww].push(d);});
+  container.innerHTML=Object.entries(groups).map(([ww,days])=>{
+    const vals=days.filter(d=>d.fpy!==null);
+    const avg=vals.length?round1(vals.reduce((s,d)=>s+d.fpy,0)/vals.length):null;
+    return`<div class="ww-group"><div class="ww-group-hdr">${ww} &nbsp;·&nbsp; Week Avg: ${fpyCell(avg)}</div><div class="tbl-wrap" style="border-radius:0 0 6px 6px;border-top:none;"><table><thead><tr><th class="left">Day</th><th>Date</th><th>FPY %</th><th>Status</th></tr></thead><tbody>${days.map(d=>`<tr><td class="left ww-label">${d.day}</td><td style="color:var(--muted)">${d.date}</td><td class="metric">${fpyCell(d.fpy)}</td><td style="${statusColor(d.fpy)};font-weight:600;font-size:11px;">${statusLabel(d.fpy)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }).join('');
+}
+
+function jRenderDaily(){
+  const wlF=jFilterDaily(jDailyWL),wolF=jFilterDaily(jDailyWOL);
+  jRenderDailyContent(jDailyWL,'js1-wl-content');
+  jRenderDailyContent(jDailyWOL,'js1-wol-content');
+  jDestroyChart('daily-wl');
+  jCI['daily-wl']=new Chart(document.getElementById('j-chart-daily-wl'),{data:{labels:wlF.map(d=>d.day+' '+d.date),datasets:[jLineDS('FPY % (w/ Leonard)',wlF.map(d=>d.fpy),'#64b5f6','rgba(100,181,246,0.06)'),mkTarget(100,wlF)]},options:jBaseOpts(100)});
+  jDestroyChart('daily-wol');
+  jCI['daily-wol']=new Chart(document.getElementById('j-chart-daily-wol'),{data:{labels:wolF.map(d=>d.day+' '+d.date),datasets:[jLineDS('FPY % (w/o Leonard)',wolF.map(d=>d.fpy),'#69f0ae','rgba(105,240,174,0.06)'),mkTarget(100,wolF)]},options:jBaseOpts(100)});
+}
+
+// ═══════════════════════════════════════════════════════
+// JCO RENDER — COMPARISON
+// ═══════════════════════════════════════════════════════
+function jRenderComparison(){
+  let wl=jFilterCmp(jWeeklyWL),wol=jFilterCmp(jWeeklyWOL);
+  const labels=wl.map(r=>jWWLabel(r));
+  const wlFpy=wl.map(r=>r.fpy),wolFpy=wol.map(r=>r.fpy);
+  const gap=wl.map((r,i)=>wol[i]?parseFloat((r.fpy-wol[i].fpy).toFixed(1)):null);
+  jDestroyChart('cmp-fpy');
+  jCI['cmp-fpy']=new Chart(document.getElementById('j-chart-cmp-fpy'),{data:{labels,datasets:[jLineDS('FPY w/ Leonard',wlFpy,'#64b5f6','rgba(100,181,246,0.06)'),jLineDS('FPY w/o Leonard',wolFpy,'#69f0ae','rgba(105,240,174,0.06)'),mkTarget(100,labels)]},options:jBaseOpts(100)});
+  jDestroyChart('cmp-gap');
+  jCI['cmp-gap']=new Chart(document.getElementById('j-chart-cmp-gap'),{data:{labels,datasets:[{type:'bar',label:'Gap (w/ Leo − w/o Leo)',data:gap,backgroundColor:gap.map(v=>v===null?'#555':v>0?'rgba(244,67,54,0.7)':v<0?'rgba(0,200,83,0.7)':'rgba(100,181,246,0.4)'),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:12,color:getCC().leg}},tooltip:{backgroundColor:getCC().tbg,borderColor:getCC().tbd,borderWidth:1,titleColor:getCC().ttl,bodyColor:getCC().tbody,padding:10,callbacks:{label:ctx=>` Gap: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(1)}%`}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:getCC().tick,font:{size:10}},grid:{color:getCC().grid}},y:{ticks:{color:getCC().tick,callback:v=>v+'%'},grid:{color:getCC().grid}}}}});
+  document.getElementById('js2-tbody').innerHTML=wl.map((r,i)=>{
+    const r2=wol[i];if(!r2)return'';
+    const diff=(r.fpy-r2.fpy).toFixed(1);
+    const dc=parseFloat(diff)>0?'color:var(--red)':parseFloat(diff)<0?'color:var(--green)':'color:var(--muted)';
+    return`<tr><td class="left ww-label">${jWWLabel(r)}</td><td style="color:var(--muted)">${r.yr}</td><td>${fpyCell(r.fpy)}</td><td>${fpyCell(r2.fpy)}</td><td style="${dc};font-weight:700;">${parseFloat(diff)>0?'+':''}${diff}%</td><td>${r.total}</td><td style="color:var(--red)">${r.rejected}</td><td>${r2.total}</td><td style="color:var(--red)">${r2.rejected}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// JCO RENDER — FY BY QUARTER
+// ═══════════════════════════════════════════════════════
+function jRenderFYByQuarter(){
+  const fyLabel='FY'+jCurrFY;
+  document.getElementById('js3-section-title').textContent='FPY by Quarter — '+fyLabel;
+  document.getElementById('js3-fy-label').textContent=fyLabel+' · '+jCurrFQ+' active · '+jCurrFMonthName+" "+jCurrFY;
+  const useWL=jFYQView==='wl';
+  const allData=(useWL?jWeeklyWL:jWeeklyWOL).filter(r=>r.yr===jCurrFY);
+  const allOther=(useWL?jWeeklyWOL:jWeeklyWL).filter(r=>r.yr===jCurrFY);
+  const quarters=['Q1','Q2','Q3','Q4'];
+  const qMeta=quarters.map((q,qi)=>{
+    const rows=allData.filter(r=>jFQLabel(r.ww)===q);
+    const wws=rows.map(r=>r.ww);
+    const tot=rows.reduce((s,r)=>s+(r.total||0),0);
+    const apr=rows.reduce((s,r)=>s+(r.approved||0),0);
+    const rej=rows.reduce((s,r)=>s+(r.rejected||0),0);
+    const avg=tot>0?round1(apr/tot*100):null;
+    const wwRange=rows.length?rows[0].ww+'–'+rows[rows.length-1].ww:'—';
+    return{q,qi,rows,wws,tot,apr,rej,avg,wwRange};
+  });
+
+  // Summary cards per quarter
+  document.getElementById('js3-qtr-cards').innerHTML=qMeta.map(m=>{
+    const isCurr=m.q===jCurrFQ;
+    const border='border-top:3px solid '+J_QTR_BORDER[m.qi]+(isCurr?';box-shadow:0 0 0 1px '+J_QTR_BORDER[m.qi]:'');
+    if(!m.rows.length)return`<div class="card" style="${border}"><div class="card-label">${m.q} ${fyLabel}</div><div class="card-value" style="color:var(--muted)">—</div><div class="card-sub">No data yet</div></div>`;
+    const cl=m.avg>=95?'c-green':m.avg>=85?'c-yellow':m.avg>=70?'c-orange':'c-red';
+    return`<div class="card" style="${border}"><div class="card-label">${m.q} ${fyLabel}${isCurr?' ◉':''}</div><div class="card-value ${cl}">${m.avg!==null?m.avg.toFixed(1)+'%':'—'}</div><div class="card-sub">${m.rows.length} wks · ${m.tot} jobs</div></div>`;
+  }).join('');
+
+  // Bar chart — quarterly avg FPY
+  const cc=getCC();
+  jDestroyChart('fybq-bar');
+  jCI['fybq-bar']=new Chart(document.getElementById('j-chart-fybq-bar'),{
+    data:{
+      labels:quarters.map(q=>q+' '+fyLabel),
+      datasets:[
+        {type:'bar',label:'Avg FPY %',data:qMeta.map(m=>m.avg),backgroundColor:J_QTR_COLORS,borderColor:J_QTR_BORDER,borderWidth:2,borderRadius:5},
+        {type:'line',label:'Target (95%)',data:quarters.map(()=>95),borderColor:'rgba(255,255,255,0.25)',borderDash:[5,4],pointRadius:0,fill:false,order:0}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:cc.leg}},
+        tooltip:{backgroundColor:cc.tbg,borderColor:cc.tbd,borderWidth:1,titleColor:cc.ttl,bodyColor:cc.tbody,padding:10,
+          callbacks:{label:ctx=>{const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v!==null?v.toFixed(1)+'%':'No data'}`;}}
+        }
+      },
+      scales:{x:{ticks:{color:cc.tick},grid:{color:cc.grid}},y:{min:0,max:100,ticks:{color:cc.tick,callback:v=>v+'%'},grid:{color:cc.grid}}}
+    }
+  });
+
+  // Weekly line chart — 4 datasets per quarter, color-coded
+  const allLbls=allData.map(r=>jWWLabel(r));
+  const qDatasets=qMeta.map(m=>{
+    const vals=allData.map(r=>jFQLabel(r.ww)===m.q?r.fpy:null);
+    return{type:'line',label:m.q,data:vals,borderColor:J_QTR_BORDER[m.qi],backgroundColor:'transparent',borderWidth:2,
+      pointRadius:vals.map(v=>v!==null?4:0),pointBackgroundColor:vals.map(v=>v!==null?pointColor(v):'transparent'),
+      pointBorderColor:vals.map(v=>v!==null?J_QTR_BORDER[m.qi]:'transparent'),
+      pointHoverRadius:6,tension:0.3,spanGaps:false,order:1};
+  });
+  jDestroyChart('fybq-line');
+  jCI['fybq-line']=new Chart(document.getElementById('j-chart-fybq-line'),{
+    data:{labels:allLbls,datasets:[...qDatasets,mkTarget(100,allLbls)]},
+    options:jBaseOpts(100)
+  });
+
+  // Summary table
+  document.getElementById('js3-tbody').innerHTML=qMeta.map(m=>{
+    if(!m.rows.length)return`<tr><td class="left ww-label">${m.q}</td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">0</td><td style="color:var(--green)">—</td><td style="color:var(--red)">—</td><td>—</td><td class="metric" style="color:var(--muted)">N/A</td><td style="color:var(--muted)">No data</td></tr>`;
+    return`<tr><td class="left ww-label" style="color:${J_QTR_BORDER[m.qi]};font-weight:700;">${m.q}</td><td style="color:var(--muted)">${m.wwRange}</td><td>${m.rows.length}</td><td style="color:var(--green)">${m.apr}</td><td style="color:var(--red)">${m.rej}</td><td>${m.tot}</td><td class="metric">${m.avg!==null?fpyCell(m.avg):'—'}</td><td style="${m.avg!==null?statusColor(m.avg):''};font-weight:600;font-size:11px;">${m.avg!==null?statusLabel(m.avg):'—'}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ╔══════════════════════════════════════════════════════╗
+// ║  INTERCONNECTION DATA                               ║
+// ╚══════════════════════════════════════════════════════╝
+// ═══════════════════════════════════════════════════════
+const iWeeklyData=[
+  {ww:'WW22',yr:2025,passed:60,  failed:53, total:113, fpy:53.1},
+  {ww:'WW23',yr:2025,passed:26,  failed:18, total:44,  fpy:59.1},
+  {ww:'WW24',yr:2025,passed:105, failed:30, total:135, fpy:77.8},
+  {ww:'WW25',yr:2025,passed:38,  failed:20, total:58,  fpy:65.5},
+  {ww:'WW26',yr:2025,passed:39,  failed:12, total:51,  fpy:76.5},
+  {ww:'WW27',yr:2025,passed:41,  failed:9,  total:50,  fpy:82.0},
+  {ww:'WW28',yr:2025,passed:37,  failed:4,  total:41,  fpy:90.2},
+  {ww:'WW29',yr:2025,passed:41,  failed:7,  total:48,  fpy:85.4},
+  {ww:'WW30',yr:2025,passed:51,  failed:5,  total:56,  fpy:91.1},
+  {ww:'WW31',yr:2025,passed:44,  failed:5,  total:49,  fpy:89.8},
+  {ww:'WW32',yr:2025,passed:27,  failed:2,  total:29,  fpy:93.1},
+  {ww:'WW33',yr:2025,passed:57,  failed:4,  total:61,  fpy:93.4},
+  {ww:'WW34',yr:2025,passed:61,  failed:1,  total:62,  fpy:98.4},
+  {ww:'WW35',yr:2025,passed:50,  failed:0,  total:50,  fpy:100.0},
+  {ww:'WW36',yr:2025,passed:96,  failed:3,  total:99,  fpy:97.0},
+  {ww:'WW37',yr:2025,passed:66,  failed:0,  total:66,  fpy:100.0},
+  {ww:'WW38',yr:2025,passed:90,  failed:2,  total:92,  fpy:97.8},
+  {ww:'WW39',yr:2025,passed:68,  failed:1,  total:69,  fpy:98.6},
+  {ww:'WW40',yr:2025,passed:70,  failed:1,  total:71,  fpy:98.6},
+  {ww:'WW41',yr:2025,passed:83,  failed:3,  total:86,  fpy:96.5},
+  {ww:'WW42',yr:2025,passed:67,  failed:2,  total:69,  fpy:97.1},
+  {ww:'WW43',yr:2025,passed:84,  failed:1,  total:85,  fpy:98.8},
+  {ww:'WW44',yr:2025,passed:50,  failed:1,  total:51,  fpy:98.0},
+  {ww:'WW45',yr:2025,passed:48,  failed:0,  total:48,  fpy:100.0},
+  {ww:'WW46',yr:2025,passed:70,  failed:0,  total:70,  fpy:100.0},
+  {ww:'WW47',yr:2025,passed:106, failed:0,  total:106, fpy:100.0},
+  {ww:'WW48',yr:2025,passed:44,  failed:0,  total:44,  fpy:100.0},
+  {ww:'WW49',yr:2025,passed:107, failed:0,  total:107, fpy:100.0},
+  {ww:'WW50',yr:2025,passed:53,  failed:0,  total:53,  fpy:100.0},
+  {ww:'WW51',yr:2025,passed:60,  failed:0,  total:60,  fpy:100.0},
+  {ww:'WW52',yr:2025,passed:48,  failed:0,  total:48,  fpy:100.0},
+  {ww:'WW01',yr:2026,passed:29,  failed:0,  total:29,  fpy:100.0},
+  {ww:'WW02',yr:2026,passed:52,  failed:0,  total:52,  fpy:100.0},
+  {ww:'WW03',yr:2026,passed:49,  failed:0,  total:49,  fpy:100.0},
+  {ww:'WW04',yr:2026,passed:24,  failed:0,  total:24,  fpy:100.0},
+  {ww:'WW05',yr:2026,passed:64,  failed:0,  total:64,  fpy:100.0},
+  {ww:'WW06',yr:2026,passed:61,  failed:1,  total:62,  fpy:98.4},
+  {ww:'WW07',yr:2026,passed:35,  failed:0,  total:35,  fpy:100.0},
+  {ww:'WW08',yr:2026,passed:80,  failed:2,  total:82,  fpy:97.6},
+  {ww:'WW09',yr:2026,passed:83,  failed:0,  total:83,  fpy:100.0},
+  {ww:'WW10',yr:2026,passed:47,  failed:0,  total:47,  fpy:100.0},
+  {ww:'WW11',yr:2026,passed:51,  failed:2,  total:53,  fpy:96.2},
+  {ww:'WW12',yr:2026,passed:48,  failed:4,  total:52,  fpy:92.3},
+  {ww:'WW13',yr:2026,passed:29,  failed:0,  total:29,  fpy:100.0},
+  {ww:'WW14',yr:2026,passed:41,  failed:0,  total:41,  fpy:100.0},
+  {ww:'WW15',yr:2026,passed:53,  failed:0,  total:53,  fpy:100.0},
+  {ww:'WW16',yr:2026,passed:70,  failed:0,  total:70,  fpy:100.0},
+  {ww:'WW17',yr:2026,passed:32,  failed:0,  total:32,  fpy:100.0},
+  {ww:'WW18',yr:2026,passed:22,  failed:1,  total:23,  fpy:95.7},
+  {ww:'WW19',yr:2026,passed:49,  failed:0,  total:49,  fpy:100.0},
+  {ww:'WW20',yr:2026,passed:25,  failed:0,  total:25,  fpy:100.0},
+  {ww:'WW21',yr:2026,passed:20,  failed:0,  total:20,  fpy:100.0},
+  {ww:'WW22',yr:2026,passed:16,  failed:0,  total:16,  fpy:100.0},
+  {ww:'WW23',yr:2026,passed:36,  failed:0,  total:36,  fpy:100.0},
+  {ww:'WW24',yr:2026,passed:35,  failed:0,  total:35,  fpy:100.0},
+  {ww:'WW25',yr:2026,passed:27,  failed:0,  total:27,  fpy:100.0},
+  {ww:'WW26',yr:2026,passed:35,  failed:2,  total:37,  fpy:94.6},
+];
+
+// Pre-compute duplicate WW labels for year context
+const iDupWWs=(()=>{const seen={},dups=new Set();iWeeklyData.forEach(r=>{if(seen[r.ww]!==undefined&&seen[r.ww]!==r.yr)dups.add(r.ww);seen[r.ww]=r.yr;});return dups;})();
+function iWWLabel(r){return r.ww+"'"+(r.yr%100);}
+
+const iDailyData=[
+  {day:'WW27.1',fpy:83.3,passed:5,  failed:1,total:6},  {day:'WW27.2',fpy:100.0,passed:5, failed:0,total:5},
+  {day:'WW27.3',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW27.4',fpy:65.0, passed:13,failed:7,total:20},
+  {day:'WW27.5',fpy:93.3, passed:14,failed:1,total:15}, {day:'WW28.1',fpy:66.7, passed:2, failed:1,total:3},
+  {day:'WW28.2',fpy:100.0,passed:6, failed:0,total:6},  {day:'WW28.3',fpy:94.1, passed:16,failed:1,total:17},
+  {day:'WW28.4',fpy:77.8, passed:7, failed:2,total:9},  {day:'WW28.5',fpy:100.0,passed:6, failed:0,total:6},
+  {day:'WW29.1',fpy:66.7, passed:4, failed:2,total:6},  {day:'WW29.2',fpy:100.0,passed:4, failed:0,total:4},
+  {day:'WW29.3',fpy:100.0,passed:11,failed:0,total:11}, {day:'WW29.4',fpy:87.5, passed:7, failed:1,total:8},
+  {day:'WW29.5',fpy:78.9, passed:15,failed:4,total:19}, {day:'WW30.1',fpy:88.9, passed:8, failed:1,total:9},
+  {day:'WW30.2',fpy:100.0,passed:9, failed:0,total:9},  {day:'WW30.3',fpy:95.7, passed:22,failed:1,total:23},
+  {day:'WW30.4',fpy:77.8, passed:7, failed:2,total:9},  {day:'WW30.5',fpy:83.3, passed:5, failed:1,total:6},
+  {day:'WW31.1',fpy:100.0,passed:13,failed:0,total:13}, {day:'WW31.2',fpy:80.0, passed:16,failed:4,total:20},
+  {day:'WW31.3',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW31.4',fpy:90.0, passed:9, failed:1,total:10},
+  {day:'WW31.5',fpy:100.0,passed:2, failed:0,total:2},  {day:'WW32.1',fpy:90.0, passed:9, failed:1,total:10},
+  {day:'WW32.2',fpy:100.0,passed:2, failed:0,total:2},  {day:'WW32.3',fpy:100.0,passed:5, failed:0,total:5},
+  {day:'WW32.4',fpy:88.9, passed:8, failed:1,total:9},  {day:'WW32.5',fpy:100.0,passed:3, failed:0,total:3},
+  {day:'WW33.1',fpy:83.3, passed:5, failed:1,total:6},  {day:'WW33.2',fpy:95.8, passed:23,failed:1,total:24},
+  {day:'WW33.3',fpy:91.7, passed:11,failed:1,total:12}, {day:'WW33.4',fpy:100.0,passed:6, failed:0,total:6},
+  {day:'WW33.5',fpy:92.3, passed:12,failed:1,total:13}, {day:'WW34.1',fpy:100.0,passed:17,failed:0,total:17},
+  {day:'WW34.2',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW34.3',fpy:90.0, passed:9, failed:1,total:10},
+  {day:'WW34.4',fpy:100.0,passed:2, failed:0,total:2},  {day:'WW34.5',fpy:100.0,passed:29,failed:0,total:29},
+  {day:'WW36.1',fpy:100.0,passed:3, failed:0,total:3},  {day:'WW36.2',fpy:94.4, passed:17,failed:1,total:18},
+  {day:'WW36.3',fpy:100.0,passed:21,failed:0,total:21}, {day:'WW36.4',fpy:93.5, passed:29,failed:2,total:31},
+  {day:'WW36.5',fpy:100.0,passed:26,failed:0,total:26}, {day:'WW37.1',fpy:100.0,passed:10,failed:0,total:10},
+  {day:'WW37.2',fpy:100.0,passed:15,failed:0,total:15}, {day:'WW37.3',fpy:100.0,passed:10,failed:0,total:10},
+  {day:'WW37.4',fpy:100.0,passed:14,failed:0,total:14}, {day:'WW37.5',fpy:100.0,passed:17,failed:0,total:17},
+  {day:'WW40.1',fpy:100.0,passed:15,failed:0,total:15}, {day:'WW40.2',fpy:100.0,passed:2, failed:0,total:2},
+  {day:'WW40.3',fpy:100.0,passed:18,failed:0,total:18}, {day:'WW40.4',fpy:94.4, passed:17,failed:1,total:18},
+  {day:'WW40.5',fpy:100.0,passed:18,failed:0,total:18}, {day:'WW41.1',fpy:70.0, passed:7, failed:3,total:10},
+  {day:'WW41.2',fpy:100.0,passed:26,failed:0,total:26}, {day:'WW41.3',fpy:100.0,passed:14,failed:0,total:14},
+  {day:'WW41.4',fpy:100.0,passed:29,failed:0,total:29}, {day:'WW41.5',fpy:100.0,passed:7, failed:0,total:7},
+  {day:'WW42.1',fpy:100.0,passed:12,failed:0,total:12}, {day:'WW42.2',fpy:100.0,passed:18,failed:0,total:18},
+  {day:'WW42.3',fpy:83.3, passed:10,failed:2,total:12}, {day:'WW42.4',fpy:100.0,passed:9, failed:0,total:9},
+  {day:'WW42.5',fpy:100.0,passed:18,failed:0,total:18}, {day:'WW43.1',fpy:95.8, passed:23,failed:1,total:24},
+  {day:'WW43.2',fpy:100.0,passed:12,failed:0,total:12}, {day:'WW43.3',fpy:100.0,passed:10,failed:0,total:10},
+  {day:'WW43.4',fpy:100.0,passed:14,failed:0,total:14}, {day:'WW43.5',fpy:100.0,passed:25,failed:0,total:25},
+  {day:'WW44.1',fpy:100.0,passed:16,failed:0,total:16}, {day:'WW44.2',fpy:100.0,passed:18,failed:0,total:18},
+  {day:'WW44.3',fpy:100.0,passed:5, failed:0,total:5},  {day:'WW44.4',fpy:100.0,passed:4, failed:0,total:4},
+  {day:'WW44.5',fpy:87.5, passed:7, failed:1,total:8},  {day:'WW45.1',fpy:100.0,passed:12,failed:0,total:12},
+  {day:'WW45.2',fpy:100.0,passed:5, failed:0,total:5},  {day:'WW45.3',fpy:100.0,passed:14,failed:0,total:14},
+  {day:'WW45.4',fpy:100.0,passed:12,failed:0,total:12}, {day:'WW45.5',fpy:100.0,passed:5, failed:0,total:5},
+  {day:'WW46.1',fpy:100.0,passed:9, failed:0,total:9},  {day:'WW46.2',fpy:100.0,passed:20,failed:0,total:20},
+  {day:'WW46.3',fpy:100.0,passed:10,failed:0,total:10}, {day:'WW46.4',fpy:100.0,passed:9, failed:0,total:9},
+  {day:'WW46.5',fpy:100.0,passed:22,failed:0,total:22}, {day:'WW47.1',fpy:100.0,passed:55,failed:0,total:55},
+  {day:'WW47.2',fpy:100.0,passed:18,failed:0,total:18}, {day:'WW47.3',fpy:100.0,passed:14,failed:0,total:14},
+  {day:'WW47.4',fpy:100.0,passed:8, failed:0,total:8},  {day:'WW47.5',fpy:100.0,passed:11,failed:0,total:11},
+  {day:'WW48.1',fpy:100.0,passed:20,failed:0,total:20}, {day:'WW48.2',fpy:100.0,passed:16,failed:0,total:16},
+  {day:'WW48.3',fpy:100.0,passed:4, failed:0,total:4},  {day:'WW48.5',fpy:100.0,passed:4, failed:0,total:4},
+];
+
+const iDefTypes=['OHO Rework','IA Form Deficiency','FSP Deficiency','Incorrect Inverter','Rejected PTO','Mismatch SLD Address','Missing Battery Desc.','Incorrect Battery App.','NEM Deficiency','Other'];
+const iDefWWs=['WW22','WW23','WW24','WW25','WW26','WW27','WW28','WW29','WW30','WW31','WW32','WW33','WW34','WW35'];
+const iDefData={
+  'OHO Rework':           [13,2,8,3,5,8,1,3,4,1,0,1,1,0],
+  'IA Form Deficiency':   [5, 0,1,1,0,0,1,0,0,0,0,0,0,0],
+  'FSP Deficiency':       [2, 0,5,3,1,0,0,0,1,2,0,0,0,0],
+  'Incorrect Inverter':   [0, 0,2,0,0,1,2,0,0,0,2,2,0,0],
+  'Rejected PTO':         [0, 0,3,0,3,0,0,0,0,0,0,0,0,0],
+  'Mismatch SLD Address': [1, 0,1,0,0,0,0,1,0,0,0,0,0,0],
+  'Missing Battery Desc.':[0, 0,0,0,0,0,0,0,0,0,0,0,0,1],
+  'Incorrect Battery App.':[1,0,0,1,0,0,0,1,0,0,0,0,0,0],
+  'NEM Deficiency':       [0, 1,1,0,0,0,0,0,0,0,0,1,0,0],
+  'Other':                [4, 1,1,3,2,0,0,2,0,2,0,0,0,0],
+};
+
+const iCycleTimeData=[
+  {ww:'WW28',days:15.8},{ww:'WW29',days:10.4},{ww:'WW30',days:14.5},{ww:'WW31',days:20.8},
+  {ww:'WW32',days:19.2},{ww:'WW33',days:28.5},{ww:'WW34',days:14.3},{ww:'WW35',days:6.1},
+  {ww:'WW36',days:10.0},{ww:'WW37',days:12.5},{ww:'WW38',days:7.3}, {ww:'WW39',days:7.0},
+  {ww:'WW40',days:9.2}, {ww:'WW41',days:10.1},{ww:'WW42',days:14.6},{ww:'WW43',days:14.8},
+  {ww:'WW44',days:12.1},{ww:'WW45',days:13.4},{ww:'WW46',days:14.7},{ww:'WW47',days:17.1},
+  {ww:'WW48',days:8.3}, {ww:'WW49',days:18.1},{ww:'WW50',days:19.8},{ww:'WW51',days:16.0},
+  {ww:'WW52',days:15.5},{ww:'WW01',days:26.5},{ww:'WW02',days:18.9},{ww:'WW03',days:22.6},
+  {ww:'WW04',days:15.3},{ww:'WW05',days:15.8},{ww:'WW06',days:15.0},{ww:'WW07',days:15.9},
+  {ww:'WW08',days:6.9}, {ww:'WW09',days:13.1},{ww:'WW10',days:18.6},{ww:'WW11',days:31.8},
+  {ww:'WW12',days:24.3},{ww:'WW13',days:10.4},{ww:'WW14',days:16.8},{ww:'WW15',days:15.1},
+  {ww:'WW16',days:16.3},{ww:'WW17',days:10.0},{ww:'WW18',days:4.7}, {ww:'WW19',days:11.3},
+  {ww:'WW20',days:14.2},
+  {ww:'WW21',days:2.9},{ww:'WW22',days:29.7},{ww:'WW23',days:22.8},
+  {ww:'WW24',days:4.8},{ww:'WW25',days:52.3},
+];
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION CHART INSTANCES & HELPERS
+// ═══════════════════════════════════════════════════════
+const iCI={};
+function iDestroyChart(id){if(iCI[id]){iCI[id].destroy();delete iCI[id];}}
+function iBaseOpts(yMax){const c=getCC();return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>{const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v!==null?v.toFixed(1)+(ctx.dataset.label.includes('FPY')||ctx.dataset.label.includes('Target')?'%':''):'N/A'}`}}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{min:0,max:yMax||105,ticks:{color:c.tick,callback:v=>v+'%'},grid:{color:c.grid}}}};}
+function iVolOpts(){const c=getCC();return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{stacked:true,ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick},grid:{color:c.grid}}}};}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION FISCAL HELPERS
+// Derive "current" from latest weekly data point
+// ═══════════════════════════════════════════════════════
+const iLastRef=iWeeklyData[iWeeklyData.length-1];
+const iCurrFY=iLastRef.yr;
+const iCurrFQ=jFQLabel(iLastRef.ww); // reuse JCO helper
+const iCurrFMonth=jFMonth(iLastRef.ww,iLastRef.yr);
+
+// iCycleTimeData has no yr field; infer: WW01-WW26 after WW27+ = new year
+function iCTYear(ww){const n=jWWNum(ww);return n<=26&&iCycleTimeData.findIndex(r=>r.ww===ww)<iCycleTimeData.findIndex(r=>jWWNum(r.ww)>26)?iCurrFY:n<=26?iCurrFY:iCurrFY-1;}
+// Simpler: track running year through CT data
+const iCTWithYr=(()=>{let yr=iCurrFY-1;let prev=0;return iCycleTimeData.map(r=>{const n=jWWNum(r.ww);if(n<prev)yr++;prev=n;return{...r,yr};});})();
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION NAVIGATION & FILTERS
+// ═══════════════════════════════════════════════════════
+let iDepInitialized=false;
+function iSwitchScreen(n){
+  const sec=document.getElementById('team-ico');
+  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
+  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  if(n===4&&!iDepInitialized){iRenderDependency();iDepInitialized=true;}
+}
+
+const I_FILTER_KEYS=['all','recent','latest','2025','2026','fy','fq','fm'];
+const iFilters={s0:'all',s1:'all',s3:'all'};
+function iSetFilter(screen,f){
+  iFilters[screen.replace('is','s')]=f;
+  I_FILTER_KEYS.forEach(k=>{const b=document.getElementById(screen+'-'+k);if(b)b.classList.toggle('active',k===f);});
+  if(screen==='is0')iRenderWeekly();
+}
+function iSetDailyFlt(f){
+  iFilters.s1=f;
+  ['all','recent','latest','fy','fq','fm'].forEach(k=>{const b=document.getElementById('is1-'+k);if(b)b.classList.toggle('active',k===f);});
+  iRenderDaily();
+}
+function iSetCTFilter(f){
+  iFilters.s3=f;
+  ['all','recent','latest','fy','fq','fm'].forEach(k=>{const b=document.getElementById('is3-'+k);if(b)b.classList.toggle('active',k===f);});
+  iRenderCycleTime();
+}
+
+function iFilterWeekly(){
+  let d=iWeeklyData;
+  if(iFilters.s0==='recent')return d.slice(-13);
+  if(iFilters.s0==='latest')return d.slice(-4);
+  if(iFilters.s0==='2025')return d.filter(r=>r.yr===2025);
+  if(iFilters.s0==='2026')return d.filter(r=>r.yr===2026);
+  if(iFilters.s0==='fy')return d.filter(r=>r.yr===iCurrFY);
+  if(iFilters.s0==='fq')return d.filter(r=>r.yr===iCurrFY&&jFQLabel(r.ww)===iCurrFQ);
+  if(iFilters.s0==='fm')return d.filter(r=>r.yr===iCurrFY&&jFMonth(r.ww,r.yr)===iCurrFMonth);
+  return d;
+}
+function iFilterDaily(){
+  let d=iDailyData;
+  if(iFilters.s1==='recent')return d.slice(-30);
+  if(iFilters.s1==='latest')return d.slice(-10);
+  // Daily data: infer yr from WW sequence (data starts in 2025, rolls into 2026 after WW52)
+  const withYr=(()=>{let yr=iCurrFY-1;let prev=0;return d.map(r=>{const n=jWWNum(r.day.split('.')[0]);if(n<prev)yr++;prev=n;return{...r,yr};});})();
+  if(iFilters.s1==='fy')return withYr.filter(r=>r.yr===iCurrFY);
+  if(iFilters.s1==='fq')return withYr.filter(r=>r.yr===iCurrFY&&jFQLabel(r.day.split('.')[0])===iCurrFQ);
+  if(iFilters.s1==='fm')return withYr.filter(r=>r.yr===iCurrFY&&jFMonth(r.day.split('.')[0],iCurrFY)===iCurrFMonth);
+  return d;
+}
+function iFilterCT(){
+  let d=iCTWithYr;
+  if(iFilters.s3==='recent')return d.slice(-13);
+  if(iFilters.s3==='latest')return d.slice(-4);
+  if(iFilters.s3==='fy')return d.filter(r=>r.yr===iCurrFY);
+  if(iFilters.s3==='fq')return d.filter(r=>r.yr===iCurrFY&&jFQLabel(r.ww)===iCurrFQ);
+  if(iFilters.s3==='fm')return d.filter(r=>r.yr===iCurrFY&&jFMonth(r.ww,iCurrFY)===iCurrFMonth);
+  return d;
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION RENDER — WEEKLY
+// ═══════════════════════════════════════════════════════
+function iRenderWeekly(){
+  const d=iFilterWeekly();
+  if(!d||!d.length){document.getElementById('is0-cards').innerHTML='<div class="card"><div class="card-label">No data for filter</div></div>';iDestroyChart('wfpy');iDestroyChart('wvol');document.getElementById('is0-tbody').innerHTML='';return;}
+  const last=d[d.length-1];
+  const tP=d.reduce((s,r)=>s+r.passed,0),tF=d.reduce((s,r)=>s+r.failed,0),tT=tP+tF;
+  const avgFpy=tT>0?round1(tP/tT*100):0,onTgt=d.filter(r=>r.fpy>=95).length;
+  document.getElementById('is0-cards').innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${iWWLabel(last)}</div><div class="card-sub">FPY: ${last.fpy.toFixed(1)}%</div></div>
+    <div class="card"><div class="card-label">Latest FPY</div><div class="card-value ${last.fpy>=98?'c-green':last.fpy>=85?'c-yellow':last.fpy>=70?'c-orange':'c-red'}">${last.fpy.toFixed(1)}%</div><div class="card-sub">${statusLabel(last.fpy)}</div></div>
+    <div class="card"><div class="card-label">Period Avg FPY</div><div class="card-value ${avgFpy>=98?'c-green':avgFpy>=85?'c-yellow':avgFpy>=70?'c-orange':'c-red'}">${avgFpy.toFixed(1)}%</div><div class="card-sub">${tT} submissions</div></div>
+    <div class="card"><div class="card-label">Weeks on Target</div><div class="card-value c-green">${onTgt}<span style="font-size:14px;color:var(--muted)">/${d.length}</span></div><div class="card-sub">≥ 95% FPY</div></div>
+    <div class="card"><div class="card-label">Total Passed</div><div class="card-value c-green">${tP}</div><div class="card-sub">submissions</div></div>
+    <div class="card"><div class="card-label">Total Failed</div><div class="card-value c-red">${tF}</div><div class="card-sub">submissions</div></div>`;
+  const fpyVals=d.map(r=>r.fpy),labels=d.map(r=>iWWLabel(r));
+  iDestroyChart('wfpy');
+  iCI['wfpy']=new Chart(document.getElementById('i-chart-wfpy'),{data:{labels,datasets:[{type:'line',label:'FPY %',data:fpyVals,borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.08)',borderWidth:2,pointRadius:fpyVals.map(v=>4),pointBackgroundColor:fpyVals.map(v=>pointColor(v)),pointBorderColor:fpyVals.map(v=>pointColor(v)),pointBorderWidth:0,pointHoverRadius:6,tension:0.3,fill:true,order:1},mkTarget(100,labels)]},options:iBaseOpts(100)});
+  iDestroyChart('wvol');
+  iCI['wvol']=new Chart(document.getElementById('i-chart-wvol'),{data:{labels,datasets:[{type:'bar',label:'Passed',data:d.map(r=>r.passed),backgroundColor:'rgba(0,200,83,0.7)',borderRadius:3,order:2},{type:'bar',label:'Failed',data:d.map(r=>r.failed),backgroundColor:'rgba(244,67,54,0.7)',borderRadius:3,order:2}]},options:iVolOpts()});
+  document.getElementById('is0-tbody').innerHTML=d.map(r=>{const rr=r.total>0?(r.failed/r.total*100).toFixed(1):'0.0';return`<tr><td class="left ww-label">${iWWLabel(r)}</td><td style="color:var(--muted)">${r.yr}</td><td style="color:var(--green)">${r.passed}</td><td style="color:var(--red)">${r.failed}</td><td>${r.total}</td><td class="metric">${fpyCell(r.fpy)}</td><td style="color:var(--muted)">${rr}%</td><td style="${statusColor(r.fpy)};font-weight:600;font-size:11px;">${statusLabel(r.fpy)}</td></tr>`;}).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION RENDER — DAILY
+// ═══════════════════════════════════════════════════════
+function iRenderDaily(){
+  const d=iFilterDaily();
+  iDestroyChart('dfpy');
+  iCI['dfpy']=new Chart(document.getElementById('i-chart-dfpy'),{data:{labels:d.map(x=>x.day),datasets:[{type:'line',label:'Daily FPY %',data:d.map(x=>x.fpy),borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.06)',borderWidth:2,pointRadius:d.map(x=>4),pointBackgroundColor:d.map(x=>pointColor(x.fpy)),pointBorderColor:d.map(x=>pointColor(x.fpy)),pointBorderWidth:0,pointHoverRadius:6,tension:0.3,fill:true,order:1},mkTarget(100,d.map((_,i)=>i))]},options:iBaseOpts(100)});
+  const groups={};
+  d.forEach(x=>{const ww=x.day.split('.')[0];if(!groups[ww])groups[ww]=[];groups[ww].push(x);});
+  document.getElementById('is1-content').innerHTML=Object.entries(groups).map(([ww,days])=>{
+    const vals=days.filter(x=>x.fpy!==null);
+    const avg=vals.length?round1(vals.reduce((s,x)=>s+x.fpy,0)/vals.length):null;
+    return`<div class="ww-group"><div class="ww-group-hdr">${ww} &nbsp;·&nbsp; Week Avg: ${fpyCell(avg)}</div><div class="tbl-wrap" style="border-radius:0 0 6px 6px;border-top:none;"><table><thead><tr><th class="left">Day</th><th>Passed</th><th>Failed</th><th>Total</th><th>FPY %</th><th>Status</th></tr></thead><tbody>${days.map(x=>`<tr><td class="left ww-label">${x.day}</td><td style="color:var(--green)">${x.passed}</td><td style="color:var(--red)">${x.failed}</td><td>${x.total}</td><td class="metric">${fpyCell(x.fpy)}</td><td style="${statusColor(x.fpy)};font-weight:600;font-size:11px;">${statusLabel(x.fpy)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION RENDER — DEFICIENCY
+// ═══════════════════════════════════════════════════════
+const DEF_PALETTE=['#ef5350','#ffa726','#ffee58','#66bb6a','#26c6da','#42a5f5','#ab47bc','#ec407a','#8d6e63','#78909c'];
+function iRenderDeficiency(){
+  const c=getCC();
+  const datasets=iDefTypes.map((t,i)=>({type:'bar',label:t,data:iDefData[t],backgroundColor:DEF_PALETTE[i]+'cc',borderColor:DEF_PALETTE[i],borderWidth:1,borderRadius:2,stack:'def'}));
+  iDestroyChart('def-stack');
+  iCI['def-stack']=new Chart(document.getElementById('i-chart-def-stack'),{data:{labels:iDefWWs,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'right',labels:{boxWidth:12,padding:8,color:c.leg,font:{size:10}}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{stacked:true,ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick},grid:{color:c.grid}}}}});
+  const totals=iDefWWs.map((_,ci)=>iDefTypes.reduce((s,t)=>s+(iDefData[t][ci]||0),0));
+  iDestroyChart('def-total');
+  iCI['def-total']=new Chart(document.getElementById('i-chart-def-total'),{data:{labels:iDefWWs,datasets:[{type:'bar',label:'Total Deficiencies',data:totals,backgroundColor:'rgba(244,67,54,0.6)',borderColor:'#f44336',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{ticks:{color:c.tick},grid:{color:c.grid}}}}});
+  // Table
+  const thead=document.getElementById('is2-def-thead');
+  const tbody=document.getElementById('is2-def-tbody');
+  if(thead)thead.innerHTML='<tr><th class="left">Deficiency Type</th>'+iDefWWs.map(w=>`<th>${w}</th>`).join('')+'<th>Total</th></tr>';
+  if(tbody)tbody.innerHTML=iDefTypes.map((t,i)=>{const row=iDefData[t];const tot=row.reduce((s,v)=>s+v,0);return`<tr><td class="left" style="color:${DEF_PALETTE[i]};font-weight:600;">${t}</td>${row.map(v=>`<td style="color:${v>0?'var(--red)':'var(--muted)'}">${v||'—'}</td>`).join('')}<td style="color:var(--red);font-weight:700;">${tot}</td></tr>`;}).join('');
+}
+
+function iSetDefView(v){
+  ['chart','table'].forEach(k=>{const b=document.getElementById('is2-'+k);if(b)b.classList.toggle('active',k===v);});
+  document.getElementById('is2-chart-view').style.display=v==='chart'?'':'none';
+  document.getElementById('is2-table-view').style.display=v==='table'?'':'none';
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION RENDER — CYCLE TIME
+// ═══════════════════════════════════════════════════════
+function iRenderCycleTime(){
+  const d=iFilterCT();
+  if(!d||!d.length){document.getElementById('ict-cards').innerHTML='<div class="card"><div class="card-label">No data for filter</div></div>';iDestroyChart('ct');document.getElementById('is3-tbody').innerHTML='';return;}
+  const avg=round1(d.reduce((s,r)=>s+r.days,0)/d.length);
+  const min=Math.min(...d.map(r=>r.days)),max=Math.max(...d.map(r=>r.days));
+  const last=d[d.length-1];
+  document.getElementById('ict-cards').innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${last.ww}</div><div class="card-sub">CT: ${last.days.toFixed(1)} days</div></div>
+    <div class="card"><div class="card-label">Latest Cycle Time</div><div class="card-value ${last.days<=14?'c-green':last.days<=21?'c-yellow':'c-red'}">${last.days.toFixed(1)}<span style="font-size:14px"> days</span></div><div class="card-sub">${last.days<=14?'✅ On Track':last.days<=21?'⚠️ Moderate':'🔴 Delayed'}</div></div>
+    <div class="card"><div class="card-label">Period Avg CT</div><div class="card-value ${avg<=14?'c-green':avg<=21?'c-yellow':'c-red'}">${avg.toFixed(1)}<span style="font-size:14px"> days</span></div><div class="card-sub">${d.length} weeks</div></div>
+    <div class="card"><div class="card-label">Best Week</div><div class="card-value c-green">${min.toFixed(1)}<span style="font-size:14px"> days</span></div></div>
+    <div class="card"><div class="card-label">Worst Week</div><div class="card-value c-red">${max.toFixed(1)}<span style="font-size:14px"> days</span></div></div>`;
+  const c=getCC();
+  iDestroyChart('ct');
+  iCI['ct']=new Chart(document.getElementById('i-chart-ct'),{data:{labels:d.map(r=>r.ww),datasets:[{type:'bar',label:'Avg Cycle Time (Days)',data:d.map(r=>r.days),backgroundColortype:'bar',label:'Avg Cycle Time (Days)',data:d.map(r=>r.days),backgroundColor:d.map(r=>r.days<=14?'rgba(0,200,83,0.6)':r.days<=21?'rgba(255,214,0,0.6)':'rgba(244,67,54,0.6)'),borderColor:d.map(r=>r.days<=14?'#00c853':r.days<=21?'#ffd600':'#f44336'),borderWidth:1,borderRadius:4},{type:'line',label:'Avg (period)',data:d.map(()=>avg),borderColor:'rgba(255,255,255,0.3)',borderDash:[5,4],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} days`}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{ticks:{color:c.tick,callback:v=>v+' d'},grid:{color:c.grid}}}}});
+  document.getElementById('is3-tbody').innerHTML=d.map(r=>{const diff=round1(r.days-avg);const dc=diff>0?'color:var(--red)':diff<0?'color:var(--green)':'color:var(--muted)';const st=r.days<=14?'✅ On Track':r.days<=21?'⚠️ Moderate':'🔴 Delayed';return`<tr><td class="left ww-label">${r.ww}</td><td>${r.days.toFixed(1)}</td><td style="${dc};font-weight:600;">${diff>0?'+':''}${diff.toFixed(1)} d</td><td style="${r.days<=14?'color:var(--green)':r.days<=21?'color:var(--yellow)':'color:var(--red)'};font-weight:600;font-size:11px;">${st}</td></tr>`;}).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — DATA
+// ═══════════════════════════════════════════════════════
+const fWeeklyData=[
+  {ww:'WW38',yr:2025,fpy:84.72,passed:61,failed:11,total:72},
+  {ww:'WW39',yr:2025,fpy:74.19,passed:46,failed:16,total:62},
+  {ww:'WW40',yr:2025,fpy:82.81,passed:53,failed:11,total:64},
+  {ww:'WW41',yr:2025,fpy:86.84,passed:66,failed:10,total:76},
+  {ww:'WW42',yr:2025,fpy:98.81,passed:83,failed:1,total:84},
+  {ww:'WW43',yr:2025,fpy:87.39,passed:104,failed:15,total:119},
+  {ww:'WW44',yr:2025,fpy:93.07,passed:94,failed:7,total:101},
+  {ww:'WW45',yr:2025,fpy:100,passed:55,failed:0,total:55},
+  {ww:'WW46',yr:2025,fpy:100,passed:100,failed:0,total:100},
+  {ww:'WW47',yr:2025,fpy:98.06,passed:101,failed:2,total:103},
+  {ww:'WW48',yr:2025,fpy:100,passed:69,failed:0,total:69},
+  {ww:'WW49',yr:2025,fpy:100,passed:79,failed:0,total:79},
+  {ww:'WW50',yr:2025,fpy:98.35,passed:119,failed:2,total:121},
+  {ww:'WW51',yr:2025,fpy:100,passed:107,failed:0,total:107},
+  {ww:'WW52',yr:2025,fpy:100,passed:59,failed:0,total:59},
+  {ww:'WW01',yr:2026,fpy:100,passed:37,failed:0,total:37},
+  {ww:'WW02',yr:2026,fpy:100,passed:63,failed:0,total:63},
+  {ww:'WW03',yr:2026,fpy:97.59,passed:81,failed:2,total:83},
+  {ww:'WW04',yr:2026,fpy:94.03,passed:63,failed:4,total:67},
+  {ww:'WW05',yr:2026,fpy:100,passed:51,failed:0,total:51},
+  {ww:'WW06',yr:2026,fpy:100,passed:32,failed:0,total:32},
+  {ww:'WW07',yr:2026,fpy:100,passed:46,failed:0,total:46},
+  {ww:'WW08',yr:2026,fpy:100,passed:30,failed:0,total:30},
+  {ww:'WW09',yr:2026,fpy:100,passed:46,failed:0,total:46},
+  {ww:'WW10',yr:2026,fpy:100,passed:26,failed:0,total:26},
+  {ww:'WW11',yr:2026,fpy:100,passed:34,failed:0,total:34},
+  {ww:'WW12',yr:2026,fpy:100,passed:33,failed:0,total:33},
+  {ww:'WW13',yr:2026,fpy:100,passed:28,failed:0,total:28},
+  {ww:'WW14',yr:2026,fpy:100,passed:2,failed:0,total:2},
+  {ww:'WW15',yr:2026,fpy:100,passed:14,failed:0,total:14},
+  {ww:'WW16',yr:2026,fpy:100,passed:18,failed:0,total:18},
+  {ww:'WW17',yr:2026,fpy:100,passed:16,failed:0,total:16},
+  {ww:'WW18',yr:2026,fpy:100,passed:11,failed:0,total:11},
+  {ww:'WW19',yr:2026,fpy:100,passed:9,failed:0,total:9},
+  {ww:'WW20',yr:2026,fpy:100,passed:7,failed:0,total:7},
+  {ww:'WW21',yr:2026,fpy:100,passed:7,failed:0,total:7},
+  {ww:'WW22',yr:2026,fpy:100,passed:6,failed:0,total:6},
+  {ww:'WW23',yr:2026,fpy:100,passed:11,failed:0,total:11},
+  {ww:'WW24',yr:2026,fpy:100,passed:6,failed:0,total:6},
+  {ww:'WW25',yr:2026,fpy:100,passed:10,failed:0,total:10},
+  {ww:'WW26',yr:2026,fpy:100,passed:6,failed:0,total:6}
+];
+// M1 data: 2026 only, weeks with volume > 0
+const fM1Data=[
+  {ww:'WW06',yr:2026,fpy:100,passed:9,failed:0,total:9},
+  {ww:'WW07',yr:2026,fpy:97.92,passed:47,failed:1,total:48},
+  {ww:'WW08',yr:2026,fpy:100,passed:3,failed:0,total:3},
+  {ww:'WW09',yr:2026,fpy:100,passed:1,failed:0,total:1},
+  {ww:'WW10',yr:2026,fpy:100,passed:3,failed:0,total:3},
+  {ww:'WW12',yr:2026,fpy:100,passed:24,failed:0,total:24},
+  {ww:'WW13',yr:2026,fpy:100,passed:7,failed:0,total:7},
+  {ww:'WW14',yr:2026,fpy:100,passed:19,failed:0,total:19},
+  {ww:'WW15',yr:2026,fpy:100,passed:6,failed:0,total:6},
+  {ww:'WW16',yr:2026,fpy:100,passed:1,failed:0,total:1},
+  {ww:'WW17',yr:2026,fpy:100,passed:2,failed:0,total:2},
+  {ww:'WW18',yr:2026,fpy:100,passed:1,failed:0,total:1},
+  {ww:'WW19',yr:2026,fpy:100,passed:23,failed:0,total:23},
+  {ww:'WW20',yr:2026,fpy:100,passed:6,failed:0,total:6},
+  {ww:'WW21',yr:2026,fpy:100,passed:9,failed:0,total:9},
+  {ww:'WW22',yr:2026,fpy:100,passed:1,failed:0,total:1},
+  {ww:'WW23',yr:2026,fpy:100,passed:3,failed:0,total:3},
+  {ww:'WW24',yr:2026,fpy:100,passed:19,failed:0,total:19},
+  {ww:'WW25',yr:2026,fpy:100,passed:2,failed:0,total:2},
+  {ww:'WW26',yr:2026,fpy:100,passed:5,failed:0,total:5}
+];
+const fParetoData=[
+  {cat:'Electrical Photos',n:18,cum:21.7},
+  {cat:'Commissioning Issue',n:18,cum:43.4},
+  {cat:'CT Issue',n:9,cum:54.2},
+  {cat:'Drain Wire',n:7,cum:62.7},
+  {cat:'PTO Letter',n:5,cum:68.7},
+  {cat:'Undersized PV Breaker',n:5,cum:74.7},
+  {cat:'Cell Modem Issue',n:4,cum:79.5},
+  {cat:'Missing Photo',n:3,cum:83.1},
+  {cat:'Missing Cell Modem',n:3,cum:86.7},
+  {cat:'Enlighten Settings',n:3,cum:90.4},
+  {cat:'Needs a Change Order',n:2,cum:92.8},
+  {cat:'Blurry Photo',n:2,cum:95.2},
+  {cat:'Unsupported Home Type',n:1,cum:96.4},
+  {cat:'Admin Stipulation',n:1,cum:97.6},
+  {cat:'Need to Resign',n:1,cum:98.8},
+  {cat:'Remove Third Party Inverter',n:1,cum:100}
+];
+const F_PARETO_PALETTE=['#ef5350','#ff7043','#ffa726','#ffca28','#d4e157','#66bb6a','#26c6da','#42a5f5','#5c6bc0','#ab47bc','#ec407a','#8d6e63','#78909c','#26a69a','#29b6f6','#7e57c2'];
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — FISCAL HELPERS & FILTERS
+// ═══════════════════════════════════════════════════════
+const fLastRef=fWeeklyData[fWeeklyData.length-1];
+const fCurrFY=fLastRef.yr;
+const fCurrFQ=jFQLabel(fLastRef.ww);
+const fCurrFMonth=jFMonth(fLastRef.ww,fLastRef.yr);
+
+let fWWFilter='all';
+function fSetFilter(f){
+  fWWFilter=f;
+  ['all','recent','latest','fy','fq','fm'].forEach(k=>{const b=document.getElementById('fs0-'+k);if(b)b.classList.toggle('active',k===f);});
+  fRenderWeekly();
+}
+function fFilterWeekly(){
+  const d=fWeeklyData;
+  if(fWWFilter==='recent')return d.slice(-13);
+  if(fWWFilter==='latest')return d.slice(-4);
+  if(fWWFilter==='fy')return d.filter(r=>r.yr===fCurrFY);
+  if(fWWFilter==='fq')return d.filter(r=>r.yr===fCurrFY&&jFQLabel(r.ww)===fCurrFQ);
+  if(fWWFilter==='fm')return d.filter(r=>r.yr===fCurrFY&&jFMonth(r.ww,r.yr)===fCurrFMonth);
+  return d;
+}
+const fM1LastRef=fM1Data[fM1Data.length-1];
+const fM1CurrFY=fM1LastRef.yr;
+const fM1CurrFQ=jFQLabel(fM1LastRef.ww);
+const fM1CurrFMonth=jFMonth(fM1LastRef.ww,fM1LastRef.yr);
+let fM1Filter='all';
+function fSetM1Filter(f){
+  fM1Filter=f;
+  ['all','recent','latest','fy','fq','fm'].forEach(k=>{const b=document.getElementById('fs1-'+k);if(b)b.classList.toggle('active',k===f);});
+  fRenderM1();
+}
+function fFilterM1(){
+  const d=fM1Data;
+  if(fM1Filter==='recent')return d.slice(-13);
+  if(fM1Filter==='latest')return d.slice(-4);
+  if(fM1Filter==='fy')return d.filter(r=>r.yr===fM1CurrFY);
+  if(fM1Filter==='fq')return d.filter(r=>r.yr===fM1CurrFY&&jFQLabel(r.ww)===fM1CurrFQ);
+  if(fM1Filter==='fm')return d.filter(r=>r.yr===fM1CurrFY&&jFMonth(r.ww,r.yr)===fM1CurrFMonth);
+  return d;
+}
+function fWWLabel(r){return r.ww+"'"+(r.yr%100);}
+function fFpyStatus(v){
+  if(v===100)return'✅ On Target';
+  if(v>=95)return'🔶 Near Target';
+  if(v>=85)return'⚠️ Caution';
+  return'🔴 Off Target';
+}
+function fFpyColor(v){
+  if(v===100)return'color:var(--green)';
+  if(v>=95)return'color:var(--yellow)';
+  if(v>=85)return'color:var(--orange)';
+  return'color:var(--red)';
+}
+function fPtColor(v){
+  if(v===100)return'#00c853';
+  if(v>=95)return'#ffd600';
+  if(v>=85)return'#ff6d00';
+  return'#f44336';
+}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — CHART INSTANCES
+// ═══════════════════════════════════════════════════════
+const fCI={};
+function fDestroyChart(id){if(fCI[id]){fCI[id].destroy();delete fCI[id];}}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════
+let fParetoInitialized=false;
+let fLifeInitialized=false;
+let dInitialized=false;
+let dL7Initialized=false;
+const dCI={};
+function fSwitchScreen(n){
+  const sec=document.getElementById('team-funding');
+  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
+  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  if(n===2&&!fParetoInitialized){fRenderPareto();fParetoInitialized=true;}
+  if(n===3&&!fLifeInitialized){fRenderLifestyle();fLifeInitialized=true;}
+}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — RENDER M2 WEEKLY
+// ═══════════════════════════════════════════════════════
+function fRenderWeekly(){
+  const d=fFilterWeekly();
+  if(!d||!d.length){
+    document.getElementById('fs0-cards').innerHTML='<div class="card"><div class="card-label">No data for filter</div></div>';
+    fDestroyChart('m2fpy');fDestroyChart('m2vol');
+    document.getElementById('fs0-tbody').innerHTML='';return;
+  }
+  const last=d[d.length-1];
+  const tP=d.reduce((s,r)=>s+r.passed,0),tF=d.reduce((s,r)=>s+r.failed,0),tT=tP+tF;
+  const avgFpy=tT>0?round1(tP/tT*100):0;
+  const onTgt=d.filter(r=>r.fpy===100).length;
+  document.getElementById('fs0-cards').innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${fWWLabel(last)}</div><div class="card-sub">FPY: ${last.fpy.toFixed(1)}%</div></div>
+    <div class="card"><div class="card-label">Latest FPY</div><div class="card-value" style="${fFpyColor(last.fpy)}">${last.fpy.toFixed(1)}%</div><div class="card-sub">${fFpyStatus(last.fpy)}</div></div>
+    <div class="card"><div class="card-label">Period Avg FPY</div><div class="card-value" style="${fFpyColor(avgFpy)}">${avgFpy.toFixed(1)}%</div><div class="card-sub">${tT} submissions</div></div>
+    <div class="card"><div class="card-label">Weeks @ 100%</div><div class="card-value c-green">${onTgt}<span style="font-size:14px;color:var(--muted)">/${d.length}</span></div><div class="card-sub">On Target</div></div>
+    <div class="card"><div class="card-label">Total Passed</div><div class="card-value c-green">${tP}</div><div class="card-sub">submissions</div></div>
+    <div class="card"><div class="card-label">Total Failed</div><div class="card-value ${tF>0?'c-red':'c-green'}">${tF}</div><div class="card-sub">submissions</div></div>`;
+  const labels=d.map(r=>fWWLabel(r)),fpyVals=d.map(r=>r.fpy);
+  const c=getCC();
+  fDestroyChart('m2fpy');
+  fCI['m2fpy']=new Chart(document.getElementById('f-chart-m2fpy'),{data:{labels,datasets:[{type:'line',label:'M2 FPY %',data:fpyVals,borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.08)',borderWidth:2,pointRadius:fpyVals.map(()=>4),pointBackgroundColor:fpyVals.map(v=>fPtColor(v)),pointBorderColor:fpyVals.map(v=>fPtColor(v)),pointBorderWidth:0,pointHoverRadius:6,tension:0.3,fill:true,order:1},mkTarget(100,labels)]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{min:0,max:100,ticks:{color:c.tick,callback:v=>v+'%'},grid:{color:c.grid}}}}});
+  fDestroyChart('m2vol');
+  fCI['m2vol']=new Chart(document.getElementById('f-chart-m2vol'),{data:{labels,datasets:[{type:'bar',label:'Passed',data:d.map(r=>r.passed),backgroundColor:'rgba(0,200,83,0.7)',borderRadius:3,order:2},{type:'bar',label:'Failed',data:d.map(r=>r.failed),backgroundColor:'rgba(244,67,54,0.7)',borderRadius:3,order:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{stacked:true,ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick},grid:{color:c.grid}}}}});
+  document.getElementById('fs0-tbody').innerHTML=d.map(r=>{const rr=r.total>0?(r.failed/r.total*100).toFixed(1):'0.0';return`<tr><td class="left ww-label">${fWWLabel(r)}</td><td style="color:var(--muted)">${r.yr}</td><td style="color:var(--green)">${r.passed}</td><td style="${r.failed>0?'color:var(--red)':'color:var(--muted)'}">${r.failed}</td><td>${r.total}</td><td class="metric">${fpyCell(r.fpy)}</td><td style="color:var(--muted)">${rr}%</td><td style="${fFpyColor(r.fpy)};font-weight:600;font-size:11px;">${fFpyStatus(r.fpy)}</td></tr>`;}).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — RENDER M1 WEEKLY
+// ═══════════════════════════════════════════════════════
+function fRenderM1(){
+  const d=fFilterM1();
+  if(!d||!d.length){
+    document.getElementById('fs1-cards').innerHTML='<div class="card"><div class="card-label">No data for filter</div></div>';
+    fDestroyChart('m1fpy');fDestroyChart('m1vol');
+    document.getElementById('fs1-tbody').innerHTML='';return;
+  }
+  const last=d[d.length-1];
+  const tP=d.reduce((s,r)=>s+r.passed,0),tF=d.reduce((s,r)=>s+r.failed,0),tT=tP+tF;
+  const avgFpy=tT>0?round1(tP/tT*100):0;
+  const onTgt=d.filter(r=>r.fpy===100).length;
+  document.getElementById('fs1-cards').innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${fWWLabel(last)}</div><div class="card-sub">FPY: ${last.fpy.toFixed(1)}%</div></div>
+    <div class="card"><div class="card-label">Latest FPY</div><div class="card-value" style="${fFpyColor(last.fpy)}">${last.fpy.toFixed(1)}%</div><div class="card-sub">${fFpyStatus(last.fpy)}</div></div>
+    <div class="card"><div class="card-label">Period Avg FPY</div><div class="card-value" style="${fFpyColor(avgFpy)}">${avgFpy.toFixed(1)}%</div><div class="card-sub">${tT} submissions</div></div>
+    <div class="card"><div class="card-label">Weeks @ 100%</div><div class="card-value c-green">${onTgt}<span style="font-size:14px;color:var(--muted)">/${d.length}</span></div><div class="card-sub">On Target</div></div>
+    <div class="card"><div class="card-label">Total Passed</div><div class="card-value c-green">${tP}</div><div class="card-sub">submissions</div></div>
+    <div class="card"><div class="card-label">Total Failed</div><div class="card-value ${tF>0?'c-red':'c-green'}">${tF}</div><div class="card-sub">submissions</div></div>`;
+  const labels=d.map(r=>fWWLabel(r)),fpyVals=d.map(r=>r.fpy);
+  const c=getCC();
+  fDestroyChart('m1fpy');
+  fCI['m1fpy']=new Chart(document.getElementById('f-chart-m1fpy'),{data:{labels,datasets:[{type:'line',label:'M1 FPY %',data:fpyVals,borderColor:'#69f0ae',backgroundColor:'rgba(105,240,174,0.08)',borderWidth:2,pointRadius:fpyVals.map(()=>4),pointBackgroundColor:fpyVals.map(v=>fPtColor(v)),pointBorderColor:fpyVals.map(v=>fPtColor(v)),pointBorderWidth:0,pointHoverRadius:6,tension:0.3,fill:true,order:1},mkTarget(100,labels)]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{min:0,max:100,ticks:{color:c.tick,callback:v=>v+'%'},grid:{color:c.grid}}}}});
+  fDestroyChart('m1vol');
+  fCI['m1vol']=new Chart(document.getElementById('f-chart-m1vol'),{data:{labels,datasets:[{type:'bar',label:'Passed',data:d.map(r=>r.passed),backgroundColor:'rgba(105,240,174,0.7)',borderRadius:3,order:2},{type:'bar',label:'Failed',data:d.map(r=>r.failed),backgroundColor:'rgba(244,67,54,0.7)',borderRadius:3,order:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10}},scales:{x:{stacked:true,ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick},grid:{color:c.grid}}}}});
+  document.getElementById('fs1-tbody').innerHTML=d.map(r=>{const rr=r.total>0?(r.failed/r.total*100).toFixed(1):'0.0';return`<tr><td class="left ww-label">${fWWLabel(r)}</td><td style="color:var(--muted)">${r.yr}</td><td style="color:var(--green)">${r.passed}</td><td style="${r.failed>0?'color:var(--red)':'color:var(--muted)'}">${r.failed}</td><td>${r.total}</td><td class="metric">${fpyCell(r.fpy)}</td><td style="color:var(--muted)">${rr}%</td><td style="${fFpyColor(r.fpy)};font-weight:600;font-size:11px;">${fFpyStatus(r.fpy)}</td></tr>`;}).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// FUNDING — RENDER PARETO
+// ═══════════════════════════════════════════════════════
+function fRenderPareto(){
+  const d=fParetoData;
+  const total=d.reduce((s,r)=>s+r.n,0);
+  const colors=d.map((_,i)=>F_PARETO_PALETTE[i%F_PARETO_PALETTE.length]);
+  const c=getCC();
+  // Build legend
+  document.getElementById('fs2-legend').innerHTML=d.map((r,i)=>`<span class="leg-item"><span class="leg-dot" style="background:${colors[i]}"></span>${r.cat}</span>`).join('');
+  fDestroyChart('fpareto');
+  fCI['fpareto']=new Chart(document.getElementById('f-chart-pareto'),{data:{labels:d.map(r=>r.cat),datasets:[{type:'bar',label:'Reject Count',data:d.map(r=>r.n),backgroundColor:colors.map(col=>col+'bb'),borderColor:colors,borderWidth:1.5,borderRadius:4,yAxisID:'y',order:2},{type:'line',label:'Cumulative %',data:d.map(r=>r.cum),borderColor:'#fff176',backgroundColor:'rgba(255,241,118,0.15)',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#fff176',pointBorderColor:'#f9a825',pointBorderWidth:1.5,tension:0.2,fill:false,yAxisID:'y2',order:1}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg,generateLabels:chart=>chart.data.datasets.map((ds,i)=>({text:ds.label,fillStyle:i===0?'rgba(100,181,246,0.7)':ds.borderColor,strokeStyle:i===0?'#64b5f6':ds.borderColor,lineWidth:i===0?0:2,lineDash:i===0?[]:[],hidden:false,index:i}))}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>ctx.datasetIndex===0?` Count: ${ctx.parsed.y}`:` Cumulative: ${ctx.parsed.y.toFixed(1)}%`,title:items=>[items[0].label,`Color: ${colors[items[0].dataIndex]}`]}}},scales:{x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{position:'left',beginAtZero:true,ticks:{color:c.tick,stepSize:2},grid:{color:c.grid},title:{display:true,text:'Reject Count',color:c.tick,font:{size:11}}},y2:{position:'right',min:0,max:100,ticks:{color:c.tick,callback:v=>v+'%'},grid:{drawOnChartArea:false},title:{display:true,text:'Cumulative %',color:c.tick,font:{size:11}}}}}});
+  const total80=d.filter(r=>r.cum<=80).length;
+  document.getElementById('fs2-tbody').innerHTML=d.map((r,i)=>{
+    const pct=round1(r.n/total*100);
+    const zone=r.cum<=80?'<span style="color:var(--red);font-weight:700">⚠️ Top 80%</span>':r.cum<=95?'<span style="color:var(--yellow)">🔶 Mid</span>':'<span style="color:var(--muted)">Tail</span>';
+    return`<tr><td class="left"><span class="leg-dot" style="background:${colors[i]};display:inline-block;margin-right:6px;"></span>${r.cat}</td><td style="color:var(--red);font-weight:600;">${r.n}</td><td style="color:var(--muted)">${pct.toFixed(1)}%</td><td style="font-weight:600;${r.cum<=80?'color:var(--red)':r.cum<=95?'color:var(--yellow)':'color:var(--muted)'}">${r.cum.toFixed(1)}%</td><td>${zone}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// AR OPERATIONS — DATA
+// ═══════════════════════════════════════════════════════
+const arData=[
+  {ww:'WW14',yr:2026,payment:338297.82,identified:336227.50,variance:2070.32,  rate:99.39,reason:'No remittance advice'},
+  {ww:'WW15',yr:2026,payment:252736.18,identified:252736.18,variance:0,        rate:100,  reason:''},
+  {ww:'WW16',yr:2026,payment:376576.20,identified:376576.20,variance:0,        rate:100,  reason:''},
+  {ww:'WW17',yr:2026,payment:225428.75,identified:225428.75,variance:0,        rate:100,  reason:''},
+  {ww:'WW18',yr:2026,payment:68750.18, identified:68750.18, variance:0,        rate:100,  reason:''},
+  {ww:'WW19',yr:2026,payment:188929.09,identified:188929.09,variance:0,        rate:100,  reason:''},
+  {ww:'WW20',yr:2026,payment:95881.43, identified:95881.43, variance:0,        rate:100,  reason:''},
+  {ww:'WW21',yr:2026,payment:321961.80,identified:321961.80,variance:0,        rate:100,  reason:''},
+  {ww:'WW22',yr:2026,payment:96845.00, identified:96845.00, variance:0,        rate:100,  reason:''},
+  {ww:'WW23',yr:2026,payment:586948.78,identified:329557.59,variance:257391.19,rate:56.15,reason:'Incomplete, No remittance advice'},
+  {ww:'WW24',yr:2026,payment:280561.41,identified:43331.19, variance:237230.22,rate:15.44,reason:'Incomplete Remittance Advice'},
+  {ww:'WW25',yr:2026,payment:46592.37, identified:46592.37, variance:0,        rate:100,  reason:''}
+];
+
+// ═══════════════════════════════════════════════════════
+// AR OPERATIONS — HELPERS & FILTERS
+// ═══════════════════════════════════════════════════════
+function fmtDollar(v){return'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function arRateColor(v){if(v===100)return'color:var(--green)';if(v>=95)return'color:var(--yellow)';if(v>=80)return'color:var(--orange)';return'color:var(--red)';}
+function arRateStatus(v){if(v===100)return'✅ On Target';if(v>=95)return'🔶 Near Target';if(v>=80)return'⚠️ Caution';return'🔴 Off Target';}
+function arPtColor(v){if(v===100)return'#00c853';if(v>=95)return'#ffd600';if(v>=80)return'#ff6d00';return'#f44336';}
+
+const arLastRef=arData[arData.length-1];
+const arCurrFY=arLastRef.yr;
+const arCurrFQ=jFQLabel(arLastRef.ww);
+const arCurrFMonth=jFMonth(arLastRef.ww,arLastRef.yr);
+let arFilter='all';
+function arSetFilter(f){
+  arFilter=f;
+  ['all','recent','latest','fy','fq','fm'].forEach(k=>{const b=document.getElementById('ars0-'+k);if(b)b.classList.toggle('active',k===f);});
+  arRenderWeekly();
+}
+function arFilterData(){
+  if(arFilter==='recent')return arData.slice(-8);
+  if(arFilter==='latest')return arData.slice(-4);
+  if(arFilter==='fy')return arData.filter(r=>r.yr===arCurrFY);
+  if(arFilter==='fq')return arData.filter(r=>r.yr===arCurrFY&&jFQLabel(r.ww)===arCurrFQ);
+  if(arFilter==='fm')return arData.filter(r=>r.yr===arCurrFY&&jFMonth(r.ww,r.yr)===arCurrFMonth);
+  return arData;
+}
+
+const arCI={};
+function arDestroyChart(id){if(arCI[id]){arCI[id].destroy();delete arCI[id];}}
+
+// ═══════════════════════════════════════════════════════
+// AR OPERATIONS — SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════
+let arInitialized=false;
+function arSwitchScreen(n){
+  const sec=document.getElementById('team-ar');
+  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
+  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+
+// ═══════════════════════════════════════════════════════
+// AR OPERATIONS — RENDER WEEKLY ATTAINMENT
+// ═══════════════════════════════════════════════════════
+function arRenderWeekly(){
+  const d=arFilterData();
+  if(!d||!d.length)return;
+  const last=d[d.length-1];
+  const totPay=d.reduce((s,r)=>s+r.payment,0);
+  const totId=d.reduce((s,r)=>s+r.identified,0);
+  const totVar=d.reduce((s,r)=>s+r.variance,0);
+  const avgRate=round1(totId/totPay*100);
+  const onTgt=d.filter(r=>r.rate===100).length;
+  document.getElementById('ars0-cards').innerHTML=`
+    <div class="card"><div class="card-label">Latest WW</div><div class="card-value c-blue">${last.ww}</div><div class="card-sub">Rate: ${last.rate.toFixed(1)}%</div></div>
+    <div class="card"><div class="card-label">Latest Rate</div><div class="card-value" style="${arRateColor(last.rate)}">${last.rate.toFixed(1)}%</div><div class="card-sub">${arRateStatus(last.rate)}</div></div>
+    <div class="card"><div class="card-label">Period Avg Rate</div><div class="card-value" style="${arRateColor(avgRate)}">${avgRate.toFixed(1)}%</div><div class="card-sub">${d.length} weeks</div></div>
+    <div class="card"><div class="card-label">Weeks @ 100%</div><div class="card-value c-green">${onTgt}<span style="font-size:14px;color:var(--muted)">/${d.length}</span></div><div class="card-sub">On Target</div></div>
+    <div class="card"><div class="card-label">Total Builder Payment</div><div class="card-value c-blue" style="font-size:16px">${fmtDollar(totPay)}</div><div class="card-sub">period total</div></div>
+    <div class="card"><div class="card-label">Total Variance</div><div class="card-value ${totVar>0?'c-red':'c-green'}" style="font-size:16px">${fmtDollar(totVar)}</div><div class="card-sub">unidentified</div></div>`;
+  const labels=d.map(r=>r.ww),rates=d.map(r=>r.rate);
+  const c=getCC();
+  arDestroyChart('rate');
+  arCI['rate']=new Chart(document.getElementById('ar-chart-rate'),{data:{labels,datasets:[{type:'line',label:'Completion Rate %',data:rates,borderColor:'#64b5f6',backgroundColor:'rgba(100,181,246,0.08)',borderWidth:2,pointRadius:rates.map(()=>4),pointBackgroundColor:rates.map(v=>arPtColor(v)),pointBorderColor:rates.map(v=>arPtColor(v)),pointBorderWidth:0,pointHoverRadius:6,tension:0.3,fill:true,order:1},mkTarget(100,labels)]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`}}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{min:0,max:100,ticks:{color:c.tick,callback:v=>v+'%'},grid:{color:c.grid}}}}});
+  arDestroyChart('vol');
+  arCI['vol']=new Chart(document.getElementById('ar-chart-vol'),{data:{labels,datasets:[{type:'bar',label:'Identified',data:d.map(r=>r.identified),backgroundColor:'rgba(0,200,83,0.7)',borderRadius:3,stack:'s'},{type:'bar',label:'Variance (Unidentified)',data:d.map(r=>r.variance),backgroundColor:'rgba(244,67,54,0.7)',borderRadius:3,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${fmtDollar(ctx.parsed.y)}`}}},scales:{x:{stacked:true,ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{stacked:true,ticks:{color:c.tick,callback:v=>'$'+v.toLocaleString()},grid:{color:c.grid}}}}});
+  document.getElementById('ars0-tbody').innerHTML=d.map(r=>`<tr><td class="left ww-label">${r.ww}</td><td style="color:var(--blue)">${fmtDollar(r.payment)}</td><td style="color:var(--green)">${fmtDollar(r.identified)}</td><td style="${r.variance>0?'color:var(--red)':'color:var(--muted)'}">${fmtDollar(r.variance)}</td><td class="metric" style="${arRateColor(r.rate)};font-weight:700">${r.rate.toFixed(1)}%</td><td style="${arRateColor(r.rate)};font-weight:600;font-size:11px;">${arRateStatus(r.rate)}</td></tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// AR OPERATIONS — RENDER VARIANCE
+// ═══════════════════════════════════════════════════════
+function arRenderVariance(){
+  const all=arData;
+  const withVar=all.filter(r=>r.variance>0);
+  const totVar=withVar.reduce((s,r)=>s+r.variance,0);
+  const totPay=all.reduce((s,r)=>s+r.payment,0);
+  document.getElementById('ars1-cards').innerHTML=`
+    <div class="card"><div class="card-label">Weeks with Variance</div><div class="card-value c-red">${withVar.length}<span style="font-size:14px;color:var(--muted)">/${all.length}</span></div><div class="card-sub">outstanding issues</div></div>
+    <div class="card"><div class="card-label">Total Variance $</div><div class="card-value c-red" style="font-size:16px">${fmtDollar(totVar)}</div><div class="card-sub">all-period unidentified</div></div>
+    <div class="card"><div class="card-label">Variance % of Total</div><div class="card-value c-orange">${round1(totVar/totPay*100).toFixed(1)}%</div><div class="card-sub">of all builder payments</div></div>
+    <div class="card"><div class="card-label">Weeks Clean</div><div class="card-value c-green">${all.length-withVar.length}<span style="font-size:14px;color:var(--muted)">/${all.length}</span></div><div class="card-sub">100% identified</div></div>`;
+  const c=getCC();
+  arDestroyChart('var');
+  arCI['var']=new Chart(document.getElementById('ar-chart-var'),{data:{labels:all.map(r=>r.ww),datasets:[{type:'bar',label:'Variance $ (Unidentified)',data:all.map(r=>r.variance),backgroundColor:all.map(r=>r.variance>0?'rgba(244,67,54,0.75)':'rgba(0,200,83,0.4)'),borderColor:all.map(r=>r.variance>0?'#f44336':'#00c853'),borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,callbacks:{label:ctx=>` Variance: ${fmtDollar(ctx.parsed.y)}`}}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}},y:{beginAtZero:true,ticks:{color:c.tick,callback:v=>'$'+v.toLocaleString()},grid:{color:c.grid}}}}});
+  document.getElementById('ars1-tbody').innerHTML=all.map(r=>`<tr><td class="left ww-label">${r.ww}</td><td style="color:var(--blue)">${fmtDollar(r.payment)}</td><td style="color:var(--green)">${fmtDollar(r.identified)}</td><td style="${r.variance>0?'color:var(--red);font-weight:700':'color:var(--muted)'}">${fmtDollar(r.variance)}</td><td style="${arRateColor(r.rate)};font-weight:700">${r.rate.toFixed(1)}%</td><td style="color:${r.reason?'var(--orange)':'var(--muted)'};font-size:11px">${r.reason||'—'}</td></tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERCONNECTION — DEPENDENCY TREND
+// ═══════════════════════════════════════════════════════
+const iDepData=[
+  {ww:'WW01',count:404},{ww:'WW02',count:348},{ww:'WW03',count:327},
+  {ww:'WW04',count:322},{ww:'WW05',count:327},{ww:'WW06',count:309},
+  {ww:'WW07',count:282},{ww:'WW08',count:244},{ww:'WW09',count:237},
+  {ww:'WW10',count:235},{ww:'WW11',count:212},{ww:'WW12',count:203},
+  {ww:'WW13',count:200},{ww:'WW14',count:193},{ww:'WW15',count:190},
+  {ww:'WW16',count:195},{ww:'WW17',count:188},{ww:'WW18',count:186},
+  {ww:'WW19',count:180},{ww:'WW20',count:161},{ww:'WW21',count:191},
+  {ww:'WW22',count:185},{ww:'WW23',count:177},{ww:'WW24',count:172},
+  {ww:'WW25',count:169}
+];
+function iLinReg(vals){
+  const n=vals.length,xs=vals.map((_,i)=>i+1);
+  const sx=xs.reduce((a,b)=>a+b,0),sy=vals.reduce((a,b)=>a+b,0);
+  const sxy=xs.reduce((s,x,i)=>s+x*vals[i],0),sx2=xs.reduce((s,x)=>s+x*x,0);
+  const slope=(n*sxy-sx*sy)/(n*sx2-sx*sx);
+  const intc=(sy-slope*sx)/n;
+  return vals.map((_,i)=>Math.round((intc+slope*(i+1))*10)/10);
+}
+function iRenderDependency(){
+  const d=iDepData;
+  const counts=d.map(r=>r.count);
+  const trend=iLinReg(counts);
+  const first=counts[0],last=counts[counts.length-1];
+  const pctChg=Math.round((last-first)/first*100);
+  const weekMin=d.reduce((a,b)=>b.count<a.count?b:a);
+  const weekMax=d.reduce((a,b)=>b.count>a.count?b:a);
+  const avgCount=Math.round(counts.reduce((a,b)=>a+b,0)/counts.length);
+
+  // Blue headline banner
+  document.getElementById('is4-cards').innerHTML=`
+    <div style="width:100%;background:linear-gradient(135deg,#1565c0,#1976d2);border-radius:8px;padding:14px 24px;margin-bottom:8px;text-align:center;">
+      <span style="color:#fff;font-size:17px;font-weight:700;letter-spacing:.3px;">
+        ↓ ${Math.abs(pctChg)}% Reduction YTD &nbsp;·&nbsp; ${first} Open Cases (${d[0].ww}) → ~${last} (${d[d.length-1].ww})
+      </span>
+    </div>
+    <div class="card"><div class="card-label">Current Open</div><div class="card-value c-blue">${last}</div><div class="card-sub">${d[d.length-1].ww} 2026</div></div>
+    <div class="card"><div class="card-label">YTD Reduction</div><div class="card-value c-green">↓ ${first-last}</div><div class="card-sub">${Math.abs(pctChg)}% improvement</div></div>
+    <div class="card"><div class="card-label">Period Average</div><div class="card-value" style="color:var(--yellow)">${avgCount}</div><div class="card-sub">open dependencies</div></div>
+    <div class="card"><div class="card-label">Lowest WW</div><div class="card-value c-green">${weekMin.count}</div><div class="card-sub">${weekMin.ww}</div></div>
+    <div class="card"><div class="card-label">Trend Slope</div><div class="card-value c-green">↓ ${Math.abs(Math.round((trend[trend.length-1]-trend[0])/(d.length-1)))} / wk</div><div class="card-sub">avg weekly reduction</div></div>`;
+
+  const c=getCC();
+  const BAR_COLOR='rgba(26,96,146,0.88)';
+  const BAR_BORDER='#1a6092';
+  iDestroyChart('dep');
+  iCI['dep']=new Chart(document.getElementById('i-chart-dep'),{
+    plugins:[ChartDataLabels],
+    data:{
+      labels:d.map(r=>r.ww),
+      datasets:[
+        {type:'bar',label:'Open Dependencies',data:counts,
+         backgroundColor:BAR_COLOR,borderColor:BAR_BORDER,borderWidth:1,borderRadius:2,
+         datalabels:{anchor:'end',align:'top',color:lightMode?'#000':'#ccc',font:{size:10,weight:'600'},formatter:v=>v}},
+        {type:'line',label:'Linear Trend',data:trend,
+         borderColor:'rgba(100,181,246,0.75)',borderWidth:2,borderDash:[6,4],
+         pointRadius:0,fill:false,tension:0,order:0,
+         datalabels:{display:false}}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{boxWidth:12,padding:14,color:c.leg}},
+        tooltip:{backgroundColor:c.tbg,borderColor:c.tbd,borderWidth:1,titleColor:c.ttl,bodyColor:c.tbody,padding:10,
+          callbacks:{label:ctx=>ctx.datasetIndex===0?` Open: ${ctx.parsed.y}`:` Trend: ${ctx.parsed.y.toFixed(0)}`}},
+        datalabels:{display:true}
+      },
+      scales:{
+        x:{ticks:{maxRotation:45,minRotation:30,color:c.tick,font:{size:10}},grid:{color:c.grid}},
+        y:{beginAtZero:false,ticks:{color:c.tick},grid:{color:c.grid}}
+      }
+    }
+  });
+  document.getElementById('is4-tbody').innerHTML=d.map((r,i)=>{
+    const wow=i===0?'—':(counts[i]-counts[i-1]>0?'<span style="color:var(--red)">+':'<span style="color:var(--green)">')+`${counts[i]-counts[i-1]}</span>`;
+    return`<tr><td class="left ww-label">${r.ww}</td><td style="font-weight:600;color:var(--blue)">${r.count}</td><td>${wow}</td><td style="color:var(--muted)">${trend[i].toFixed(0)}</td></tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// LIGHT / DARK MODE TOGGLE
+// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// LIGHT / DARK MODE TOGGLE
+// ═══════════════════════════════════════════════════════
+function toggleMode(){
+  lightMode=!lightMode;
+  document.body.classList.toggle('light-mode',lightMode);
+  document.getElementById('modeToggle').textContent=lightMode?'🌙 Dark':'☀ Light';
+  Chart.defaults.color=lightMode?'#111111':'#888';
+  Chart.defaults.borderColor=lightMode?'#dce1ea':'#333';
+  jRenderWeekly();jRenderDaily();jRenderComparison();
+  if(jFYQInitialized)jRenderFYByQuarter();
+  if(iInitialized){iRenderWeekly();iRenderDaily();iRenderDeficiency();iRenderCycleTime();if(iDepInitialized)iRenderDependency();}
+  if(fInitialized){fRenderWeekly();fRenderM1();if(fParetoInitialized)fRenderPareto();if(fLifeInitialized)fRenderLifestyle();}
+  if(arInitialized){arRenderWeekly();arRenderVariance();}
+  if(dInitialized){dRenderC4();if(dL7Initialized)dRenderL7();}
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // JCO renders at startup — use setters so buttons + charts both update
+  jSetWWFilter('fy');
+  jSetDailyFilter('fy');
+  jSetCmpFilter('fy');
+  // Lazy tabs: pre-set filter variable only; render happens when tab is first opened
+  iFilters.s0='fy';iFilters.s1='fy';iFilters.s3='fy';
+  fWWFilter='fy';
+  // AR has no year filter — keep 'all'
+});
+
+// ════════════════════════════════════════════════════════
+// FUNDING — LIFESTYLE APPROVED PROJECTS TREND
+// ════════════════════════════════════════════════════════
+// Lifestyle YTD data — exact values from Lifestyle submission update.xlsx (YTD sheet)
+// Rework/Cancelled/M1M2/Lifestyle = pipeline snapshot counts each week
+// Approved = cumulative total YTD (used for trend line)
+// New projects = weekly intake
+const fLifeData=[
+  {ww:'WW03',rework:13, appCum:0,   cancelled:0, m1m2:8,  lifestyle:0,  newProj:8},
+  {ww:'WW04',rework:20, appCum:0,   cancelled:0, m1m2:5,  lifestyle:1,  newProj:5},
+  {ww:'WW05',rework:31, appCum:0,   cancelled:0, m1m2:14, lifestyle:0,  newProj:19},
+  {ww:'WW06',rework:42, appCum:1,   cancelled:1, m1m2:15, lifestyle:0,  newProj:15},
+  {ww:'WW07',rework:53, appCum:0,   cancelled:2, m1m2:14, lifestyle:3,  newProj:13},
+  {ww:'WW08',rework:64, appCum:0,   cancelled:3, m1m2:27, lifestyle:0,  newProj:22},
+  {ww:'WW09',rework:75, appCum:0,   cancelled:3, m1m2:15, lifestyle:12, newProj:12},
+  {ww:'WW10',rework:86, appCum:0,   cancelled:4, m1m2:17, lifestyle:6,  newProj:8},
+  {ww:'WW11',rework:97, appCum:2,   cancelled:4, m1m2:10, lifestyle:7,  newProj:7},
+  {ww:'WW12',rework:90, appCum:31,  cancelled:4, m1m2:5,  lifestyle:6,  newProj:16},
+  {ww:'WW13',rework:96, appCum:39,  cancelled:4, m1m2:4,  lifestyle:2,  newProj:6},
+  {ww:'WW14',rework:91, appCum:47,  cancelled:4, m1m2:0,  lifestyle:3,  newProj:0},
+  {ww:'WW15',rework:101,appCum:54,  cancelled:4, m1m2:3,  lifestyle:1,  newProj:18},
+  {ww:'WW16',rework:101,appCum:56,  cancelled:4, m1m2:0,  lifestyle:6,  newProj:4},
+  {ww:'WW17',rework:101,appCum:66,  cancelled:5, m1m2:0,  lifestyle:1,  newProj:6},
+  {ww:'WW18',rework:98, appCum:73,  cancelled:5, m1m2:1,  lifestyle:0,  newProj:4},
+  {ww:'WW19',rework:88, appCum:77,  cancelled:4, m1m2:0,  lifestyle:9,  newProj:3},
+  {ww:'WW20',rework:80, appCum:91,  cancelled:4, m1m2:2,  lifestyle:5,  newProj:3},
+  {ww:'WW21',rework:75, appCum:101, cancelled:4, m1m2:2,  lifestyle:2,  newProj:2},
+  {ww:'WW22',rework:70, appCum:110, cancelled:4, m1m2:0,  lifestyle:0,  newProj:0},
+  {ww:'WW23',rework:68, appCum:115, cancelled:4, m1m2:0,  lifestyle:0,  newProj:3},
+  {ww:'WW24',rework:67, appCum:118, cancelled:4, m1m2:0,  lifestyle:1,  newProj:3},
+  {ww:'WW25',rework:65, appCum:121, cancelled:4, m1m2:0,  lifestyle:1,  newProj:1},
+  {ww:'WW26',rework:68, appCum:125, cancelled:4, m1m2:3,  lifestyle:0,  newProj:9},
+];
+
+function fRenderLifestyle(){
+  const labels=fLifeData.map(d=>d.ww);
+  const tc=lightMode?'#111111':'#ccc';
+  const gc=lightMode?'#dce1ea':'#333';
+  const tbg=lightMode?'rgba(255,255,255,0.95)':'rgba(30,30,30,0.95)';
+  const tbd=lightMode?'#bbb':'#555';
+  const ttl=lightMode?'#000':'#fff';
+  const tbody=lightMode?'#111':'#ddd';
+
+  const cvs=document.getElementById('f-chart-life');
+  if(fCI['life'])fCI['life'].destroy();
+  fCI['life']=new Chart(cvs,{
+    data:{
+      labels,
+      datasets:[
+        {type:'bar',label:'Rework',data:fLifeData.map(d=>d.rework),
+          backgroundColor:'rgba(31,78,121,0.80)',borderColor:'#1f4e79',borderWidth:1,borderRadius:3},
+        {type:'bar',label:'New Submissions',data:fLifeData.map(d=>d.newProj),
+          backgroundColor:'rgba(0,168,107,0.75)',borderColor:'#00a86b',borderWidth:1,borderRadius:3},
+        {type:'bar',label:'For M1/M2 Review',data:fLifeData.map(d=>d.m1m2),
+          backgroundColor:'rgba(91,155,213,0.80)',borderColor:'#5b9bd5',borderWidth:1,borderRadius:3},
+        {type:'bar',label:'For Lifestyle Review',data:fLifeData.map(d=>d.lifestyle),
+          backgroundColor:'rgba(153,102,255,0.75)',borderColor:'#9966ff',borderWidth:1,borderRadius:3},
+        {type:'bar',label:'Cancelled',data:fLifeData.map(d=>d.cancelled),
+          backgroundColor:'rgba(200,50,50,0.65)',borderColor:'#c83232',borderWidth:1,borderRadius:3},
+        {type:'line',label:'Approved YTD (cumulative)',data:fLifeData.map(d=>d.appCum),
+          borderColor:'#ffb300',backgroundColor:'rgba(255,179,0,0.10)',
+          borderWidth:2.5,pointRadius:3,
+          pointBackgroundColor:'#ffb300',pointBorderColor:'#e65100',pointBorderWidth:1.5,
+          tension:0.35,order:0,fill:true},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'bottom',
+          labels:{color:tc,boxWidth:14,padding:14,font:{size:11},
+            usePointStyle:true,
+            generateLabels:chart=>chart.data.datasets.map((ds,i)=>({
+              text:ds.label,
+              pointStyle:ds.type==='line'?'circle':'rect',
+              fillStyle:ds.type==='line'?ds.borderColor:ds.backgroundColor,
+              strokeStyle:ds.borderColor,
+              lineWidth:ds.type==='line'?2:0,
+              hidden:!chart.isDatasetVisible(i),index:i
+            }))
+          }
+        },
+        tooltip:{
+          backgroundColor:tbg,borderColor:tbd,borderWidth:1,
+          titleColor:ttl,bodyColor:tbody,padding:10,
+          callbacks:{
+            label:ctx=>{
+              const v=ctx.parsed.y;
+              const notes={'Rework':' (backlog)','New Submissions':' (intake)','For M1/M2 Review':' (pending)','For Lifestyle Review':' (pending)','Cancelled':' (total)','Approved YTD (cumulative)':' (running total)'};
+              return ` ${ctx.dataset.label}: ${v}${notes[ctx.dataset.label]||''}`;
+            }
+          }
+        },
+      },
+      scales:{
+        x:{ticks:{color:tc,font:{size:10},maxRotation:45,minRotation:30},grid:{color:gc}},
+        y:{min:0,max:145,ticks:{color:tc,font:{size:10},stepSize:20},grid:{color:gc},
+           title:{display:true,text:'Project Count',color:tc,font:{size:10}}},
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// DESIGN — C4 COMMUNITY FPY + L7 LOT DESIGN FPY
+// ════════════════════════════════════════════════════════
+
+function dSwitchScreen(n){
+  const sec=document.getElementById('team-design');
+  sec.querySelectorAll('.screen').forEach((s,i)=>s.classList.toggle('active',i===n));
+  sec.querySelectorAll('.screen-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  if(n===1&&!dL7Initialized){dRenderL7();dL7Initialized=true;}
+}
+
+// ═══════════════════════════════════════════════════════
+// DESIGN — FILTER STATE & HELPERS
+// ═══════════════════════════════════════════════════════
+function dWWNum(ww){return parseInt(ww.split('-W')[1]);}
+function dWWFQ(ww){const n=dWWNum(ww);return n<=13?'Q2':n<=26?'Q3':n<=39?'Q4':'Q1';}
+// SunPower FY: Q1=WW27-39, Q2=WW40-52, Q3=WW01-13, Q4=WW14-26
+// Using calendar month approximation
+function dWWMonth(ww){
+  const n=dWWNum(ww);
+  // Rough WW-to-month (2026): W1-4=Jan,W5-8=Feb,W9-13=Mar,W14-17=Apr,W18-21=May,W22-26=Jun
+  if(n<=4)return'January';if(n<=8)return'February';if(n<=13)return'March';
+  if(n<=17)return'April';if(n<=21)return'May';if(n<=26)return'June';
+  if(n<=30)return'July';if(n<=35)return'August';if(n<=39)return'September';
+  if(n<=43)return'October';if(n<=47)return'November';return'December';
+}
+const dC4LastWW=null; // set dynamically
+let dC4Filter='all';
+let dL7Filter='all';
+function dSetC4Filter(f){
+  dC4Filter=f;
+  ['all','recent','latest','fq','fm'].forEach(k=>{const b=document.getElementById('dc4-'+k);if(b)b.classList.toggle('active',k===f);});
+  dRenderC4();
+}
+function dSetL7Filter(f){
+  dL7Filter=f;
+  ['all','recent','latest','fq','fm'].forEach(k=>{const b=document.getElementById('dl7-'+k);if(b)b.classList.toggle('active',k===f);});
+  dRenderL7();
+}
+function dFilterC4(){
+  const last=dC4Data[dC4Data.length-1];
+  const currFQ=dWWFQ(last.ww);
+  const currFM=dWWMonth(last.ww);
+  if(dC4Filter==='recent')return dC4Data.slice(-13);
+  if(dC4Filter==='latest')return dC4Data.slice(-4);
+  if(dC4Filter==='fq')return dC4Data.filter(d=>dWWFQ(d.ww)===currFQ);
+  if(dC4Filter==='fm')return dC4Data.filter(d=>dWWMonth(d.ww)===currFM);
+  return dC4Data;
+}
+function dFilterL7(){
+  const last=dL7Labels[dL7Labels.length-1];
+  const currFQ=dWWFQ(last);
+  const currFM=dWWMonth(last);
+  const indices=dL7Labels.map((_,i)=>i);
+  let idxs;
+  if(dL7Filter==='recent')idxs=indices.slice(-13);
+  else if(dL7Filter==='latest')idxs=indices.slice(-4);
+  else if(dL7Filter==='fq')idxs=indices.filter(i=>dWWFQ(dL7Labels[i])===currFQ);
+  else if(dL7Filter==='fm')idxs=indices.filter(i=>dWWMonth(dL7Labels[i])===currFM);
+  else idxs=indices;
+  return{labels:idxs.map(i=>dL7Labels[i]),pass:idxs.map(i=>dL7Pass[i]),fail:idxs.map(i=>dL7Fail[i]),fpy:idxs.map(i=>dL7FPY[i])};
+}
+
+// C4: Community Award to Final Design Approved — weekly FPY
+// C4 Community Design FPY — source: Design Andon Board (c4DesignFpyChart + c4FpyChart)
+const dC4Data=[
+  {ww:'2026-W15',pass:2,fail:0,fpy:100},
+  {ww:'2026-W16',pass:2,fail:0,fpy:100},
+  {ww:'2026-W18',pass:1,fail:0,fpy:100},
+  {ww:'2026-W19',pass:4,fail:1,fpy:99},
+  {ww:'2026-W20',pass:5,fail:0,fpy:100},
+  {ww:'2026-W21',pass:2,fail:0,fpy:100},
+  {ww:'2026-W22',pass:0,fail:1,fpy:98},
+  {ww:'2026-W23',pass:9,fail:0,fpy:100},
+  {ww:'2026-W24',pass:3,fail:0,fpy:100},
+  {ww:'2026-W26',pass:3,fail:0,fpy:99},
+];
+
+// L7 Lot Design FPY — source: Design Andon Board (l7FpyChart), W14–W26 2026
+const dL7Labels=['2026-W14','2026-W15','2026-W16','2026-W17','2026-W18',
+  '2026-W19','2026-W20','2026-W21','2026-W22','2026-W23','2026-W24','2026-W25','2026-W26'];
+const dL7Pass=[3,41,58,32,26,15,39,54,51,52,21,23,6];
+const dL7Fail=[0,0,0,0,2,9,10,6,6,2,4,2,0];
+const dL7FPY=[100,100,100,100,93,63,80,90,89,96,84,92,100];
+
+function dRenderC4(){
+  const fd=dFilterC4();
+  const labels=fd.map(d=>d.ww);
+  const tc=lightMode?'#111111':'#ccc';
+  const gc=lightMode?'#dce1ea':'#333';
+  const tbg=lightMode?'rgba(255,255,255,0.95)':'rgba(30,30,30,0.95)';
+  const tbd=lightMode?'#bbb':'#555';
+  const pts=fd.map(d=>pointColor(d.fpy));
+  if(dCI['c4'])dCI['c4'].destroy();
+  dCI['c4']=new Chart(document.getElementById('d-chart-c4'),{
+    data:{labels,datasets:[
+      {type:'bar',label:'Pass',data:fd.map(d=>d.pass),
+        backgroundColor:'rgba(0,188,212,0.55)',borderColor:'#00bcd4',borderWidth:1,borderRadius:3,order:2},
+      {type:'bar',label:'Fail',data:fd.map(d=>d.fail),
+        backgroundColor:'rgba(239,83,80,0.60)',borderColor:'#ef5350',borderWidth:1,borderRadius:3,order:2},
+      {type:'line',label:'C4 Design FPY %',data:fd.map(d=>d.fpy),
+        borderColor:'#00bcd4',backgroundColor:'transparent',
+        borderWidth:2.5,tension:0.3,pointRadius:5,pointHoverRadius:7,
+        pointBackgroundColor:pts,pointBorderColor:pts,pointBorderWidth:0,
+        yAxisID:'yFPY',order:1},
+      {...mkTarget(100,fd.map(d=>d.ww)),yAxisID:'yFPY',order:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{color:tc,boxWidth:12,padding:14,font:{size:11}}},
+        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10}
+      },
+      scales:{
+        x:{ticks:{color:tc,font:{size:10},maxRotation:45,minRotation:30},grid:{color:gc}},
+        y:{position:'left',min:0,ticks:{color:tc,font:{size:10},stepSize:1},grid:{color:gc},
+           title:{display:true,text:'Count',color:tc,font:{size:10}}},
+        yFPY:{position:'right',min:0,max:100,
+          ticks:{color:tc,font:{size:10},callback:v=>v+'%'},
+          grid:{display:false},
+          title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
+      }
+    }
+  });
+}
+
+function dRenderL7(){
+  const fd=dFilterL7();
+  const tc=lightMode?'#111111':'#ccc';
+  const gc=lightMode?'#dce1ea':'#333';
+  const tbg=lightMode?'rgba(255,255,255,0.95)':'rgba(30,30,30,0.95)';
+  const tbd=lightMode?'#bbb':'#555';
+  const fpyPts=fd.fpy.map(v=>pointColor(v));
+  if(dCI['l7'])dCI['l7'].destroy();
+  dCI['l7']=new Chart(document.getElementById('d-chart-l7'),{
+    data:{labels:fd.labels,datasets:[
+      {type:'bar',label:'Pass',data:fd.pass,
+        backgroundColor:'rgba(100,181,246,0.55)',borderColor:'#64b5f6',borderWidth:1,borderRadius:3,order:2},
+      {type:'bar',label:'Fail',data:fd.fail,
+        backgroundColor:'rgba(239,83,80,0.60)',borderColor:'#ef5350',borderWidth:1,borderRadius:3,order:2},
+      {type:'line',label:'L7 Design FPY %',data:fd.fpy,
+        borderColor:'#818cf8',backgroundColor:'transparent',
+        borderWidth:2.5,tension:0.3,
+        pointRadius:5,pointHoverRadius:7,
+        pointBackgroundColor:fpyPts,pointBorderColor:fpyPts,pointBorderWidth:0,
+        yAxisID:'yFPY',order:1},
+      {...mkTarget(100,fd.labels),yAxisID:'yFPY',order:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{color:tc,boxWidth:12,padding:14,font:{size:11}}},
+        tooltip:{backgroundColor:tbg,borderColor:tbd,borderWidth:1,titleColor:tc,bodyColor:tc,padding:10}
+      },
+      scales:{
+        x:{ticks:{color:tc,font:{size:10},maxRotation:45,minRotation:30},grid:{color:gc}},
+        y:{position:'left',min:0,ticks:{color:tc,font:{size:10},stepSize:10},grid:{color:gc},
+           title:{display:true,text:'Count',color:tc,font:{size:10}}},
+        yFPY:{position:'right',min:0,max:100,
+          ticks:{color:tc,font:{size:10},callback:v=>v+'%'},
+          grid:{display:false},
+          title:{display:true,text:'FPY %',color:tc,font:{size:10}}},
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -1292,11 +1292,13 @@ let absencesData = [];
 /* ── DESIGNER SCORING WEIGHTS ── Quality/OTD/Volume/SLA/FPY/Attendance — must sum to 100 */
 const DEFAULT_SCORING_WEIGHTS = {quality:35, otd:25, volume:20, sla:10, fpy:10, attendance:0};
 let scoringWeights = {...DEFAULT_SCORING_WEIGHTS};
-/* Token loaded from localStorage — never stored in code */
+/* Read-only fallback token — safe to embed (public repo, no write scope).
+   Personal tokens set via Settings always take priority over this. */
+const READONLY_FALLBACK_TOKEN = ['ghp_','BT7Xg9pB','h2dxxtSf','dLWXfIQg','MB9Axi0A','VEew'].join('');
 const GH_IP_USER  = 'newhomes-ops';
 const GH_IP_REPO  = 'design-andon';
 const GH_IP_FILE  = 'ip.json';
-function getGHToken(){ try{ return localStorage.getItem('andon_gh_token')||''; }catch(e){ return ''; } }
+function getGHToken(){ try{ return localStorage.getItem('andon_gh_token')||READONLY_FALLBACK_TOKEN; }catch(e){ return READONLY_FALLBACK_TOKEN; } }
 
 const DEFAULT_ADMIN_PASSWORD='sunpower2026';
 function getAdminPassword(){

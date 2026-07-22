@@ -1,30 +1,30 @@
 ﻿Configuration ID,SLA,Created Date,Design Completed Date,Designer: Full Name,Community Sunpower ID,Design Type,Design Due Date,Tickets Name,Owner: Full Name,Design QA Result,Design QA Score,Design QA Date,Request Type
-a3VUS000000YWa9,5.00,5/28/2026,6/1/2026,Jonna Joy Calabia,011911,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/2/2026,Initial Request
-a3VUS000000YWbl,6.00,5/28/2026,6/3/2026,Jecko Gevaña,011911,Master Permit Package,6/5/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/3/2026,Initial Request
-a3VUS000000YXHh,1.00,5/28/2026,5/29/2026,Jecko Gevaña,011912,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Fail,98,5/29/2026,Initial Request
-a3VUS000000YXJJ,4.00,5/28/2026,6/1/2026,Jecko Gevaña,011912,Master Permit Package,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
-a3VUS000000YXMX,4.00,5/28/2026,6/1/2026,Jecko Gevaña,011913,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
-a3VUS000000YXO9,7.00,5/28/2026,6/4/2026,Jecko Gevaña,011913,Master Permit Package,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
-a3VUS000000YfAP,0.00,6/1/2026,6/1/2026,Mary Genevieve Mendoza,012082,Master Permit Package,6/4/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Revision
-a3VUS000000YfyP,3.00,6/1/2026,6/4/2026,Jecko Gevaña,012352,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
-a3VUS000000YyeT,1.00,6/4/2026,6/5/2026,Jecko Gevaña,013516,Master Plan,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
-a3VUS000000Yyhh,1.00,6/4/2026,6/5/2026,Jecko Gevaña,013516,Master Permit Package,6/16/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
-a3VUS000000Z5o1,4.00,6/6/2026,6/10/2026,Ronnel Gozon,013448,Master Plan,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/10/2026,Initial Request
-a3VUS000000Z5pd,5.00,6/6/2026,6/11/2026,Jecko Gevaña,013448,Master Permit Package,6/15/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/11/2026,Initial Request
-a3VUS000000Z5rF,3.00,6/6/2026,6/9/2026,Jonna Joy Calabia,014112,Future Solar Exhibit,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/9/2026,Initial Request
-a3VUS000000ZeH7,9.00,6/15/2026,6/24/2026,Jonna Joy Calabia,007218,Master Plan,6/23/2026,QA-001,Mary Genevieve Mendoza,Pass,98,6/24/2026,Initial Request
-a3VUS000000ZzTd,3.00,6/22/2026,6/25/2026,Brent Mara,007218,Master Plan,6/29/2026,QA-001,Mary Genevieve Mendoza,Pass,98,6/25/2026,Revision
-a3VUS000000a7vp,1.00,6/23/2026,6/24/2026,Jecko Gevaña,011761,Master Permit Package,6/29/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/24/2026,Revision
-a3VUS000000aA2T,7.00,6/24/2026,7/1/2026,Jonna Joy Calabia,007218,Master Plan,6/30/2026,QA-001,Mary Genevieve Mendoza,Pass,98,7/1/2026,Revision
-a3VUS000000aUlx,0.00,6/29/2026,6/29/2026,Mary Genevieve Mendoza,007218,-,6/30/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/29/2026,Initial Request
-a3VUS000000aY81,20.00,6/30/2026,7/20/2026,Minh Truong,013448,Master Plan,7/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
-a3VUS000000awof,3.00,7/7/2026,7/10/2026,Jecko Gevaña,014113,Future Solar Exhibit,7/10/2026,QA-001,Jecko Gevaña,Pass,100,7/10/2026,Initial Request
-a3VUS000000axPl,3.00,7/7/2026,7/10/2026,Jonna Joy Calabia,014114,Future Solar Exhibit,7/10/2026,QA-001,Jecko Gevaña,Pass,100,7/10/2026,Initial Request
-a3VUS000000axZR,3.00,7/7/2026,7/10/2026,John Patrick Salazar,014115,Future Solar Exhibit,7/13/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/10/2026,Initial Request
-a3VUS000000axkj,3.00,7/7/2026,7/9/2026,John Patrick Salazar,014116,Future Solar Exhibit,7/13/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/10/2026,Initial Request
-a3VUS000000b6Kz,4.00,7/9/2026,7/13/2026,John Mars Venus,007218,Solar Site Plan,7/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/13/2026,Initial Request
-a3VUS000000bKHV,2.00,7/13/2026,7/15/2026,John Patrick Salazar,014117,Future Solar Exhibit,7/15/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/15/2026,Initial Request
-a3VUS000000bSmv,2.00,7/15/2026,7/17/2026,Jonna Joy Calabia,013192,Master Plan,7/21/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/17/2026,Initial Request
-a3VUS000000bXwH,4.00,7/16/2026,7/20/2026,John Patrick Salazar,012215,Master Plan,7/31/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
-a3VUS000000bXxt,4.00,7/16/2026,7/20/2026,Mary Genevieve Mendoza,012215,Master Permit Package,8/7/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
-a3VUS000000bfFV,0.00,7/20/2026,7/20/2026,Mary Genevieve Mendoza,013448,Master Permit Package,7/20/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Revision
+a3VUS000000YWa9,5,5/28/2026,6/1/2026,Jonna Joy Calabia,11911,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/2/2026,Initial Request
+a3VUS000000YWbl,6,5/28/2026,6/3/2026,Jecko Gevaña,11911,Master Permit Package,6/5/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/3/2026,Initial Request
+a3VUS000000YXHh,1,5/28/2026,5/29/2026,Jecko Gevaña,11912,Master Plan,6/2/2026,QA-001,Mary Genevieve Mendoza,Fail,98,5/29/2026,Initial Request
+a3VUS000000YXJJ,4,5/28/2026,6/1/2026,Jecko Gevaña,11912,Master Permit Package,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
+a3VUS000000YXMX,4,5/28/2026,6/1/2026,Jecko Gevaña,11913,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Initial Request
+a3VUS000000YXO9,7,5/28/2026,6/4/2026,Jecko Gevaña,11913,Master Permit Package,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
+a3VUS000000YfAP,0,6/1/2026,6/1/2026,Mary Genevieve Mendoza,12082,Master Permit Package,6/4/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/1/2026,Revision
+a3VUS000000YfyP,3,6/1/2026,6/4/2026,Jecko Gevaña,12352,Master Plan,6/3/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/4/2026,Initial Request
+a3VUS000000YyeT,1,6/4/2026,6/5/2026,Jecko Gevaña,13516,Master Plan,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
+a3VUS000000Yyhh,1,6/4/2026,6/5/2026,Jecko Gevaña,13516,Master Permit Package,6/16/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/5/2026,Initial Request
+a3VUS000000Z5o1,4,6/6/2026,6/10/2026,Ronnel Gozon,13448,Master Plan,6/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/10/2026,Initial Request
+a3VUS000000Z5pd,5,6/6/2026,6/11/2026,Jecko Gevaña,13448,Master Permit Package,6/15/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/11/2026,Initial Request
+a3VUS000000Z5rF,3,6/6/2026,6/9/2026,Jonna Joy Calabia,14112,Future Solar Exhibit,6/9/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/9/2026,Initial Request
+a3VUS000000ZeH7,9,6/15/2026,6/24/2026,Jonna Joy Calabia,7218,Master Plan,6/23/2026,QA-001,Mary Genevieve Mendoza,Pass,98,6/24/2026,Initial Request
+a3VUS000000ZzTd,3,6/22/2026,6/25/2026,Brent Kliford Mara,7218,Master Plan,6/29/2026,QA-001,Mary Genevieve Mendoza,Pass,98,6/25/2026,Revision
+a3VUS000000a7vp,1,6/23/2026,6/24/2026,Jecko Gevaña,11761,Master Permit Package,6/29/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/24/2026,Revision
+a3VUS000000aA2T,7,6/24/2026,7/1/2026,Jonna Joy Calabia,7218,Master Plan,6/30/2026,QA-001,Mary Genevieve Mendoza,Pass,98,7/1/2026,Revision
+a3VUS000000aUlx,0,6/29/2026,6/29/2026,Mary Genevieve Mendoza,7218,-,6/30/2026,QA-001,Mary Genevieve Mendoza,Pass,100,6/29/2026,Initial Request
+a3VUS000000aY81,20,6/30/2026,7/20/2026,Minh Truong,13448,Master Plan,7/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
+a3VUS000000awof,3,7/7/2026,7/10/2026,Jecko Gevaña,14113,Future Solar Exhibit,7/10/2026,QA-001,Jecko Gevaña,Pass,100,7/10/2026,Initial Request
+a3VUS000000axPl,3,7/7/2026,7/10/2026,Jonna Joy Calabia,14114,Future Solar Exhibit,7/10/2026,QA-001,Jecko Gevaña,Pass,100,7/10/2026,Initial Request
+a3VUS000000axZR,3,7/7/2026,7/10/2026,John Patrick Salazar,14115,Future Solar Exhibit,7/13/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/10/2026,Initial Request
+a3VUS000000axkj,3,7/7/2026,7/9/2026,John Patrick Salazar,14116,Future Solar Exhibit,7/13/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/10/2026,Initial Request
+a3VUS000000b6Kz,4,7/9/2026,7/13/2026,John Mars Venus,7218,Solar Site Plan,7/10/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/13/2026,Initial Request
+a3VUS000000bKHV,2,7/13/2026,7/15/2026,John Patrick Salazar,14117,Future Solar Exhibit,7/15/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/15/2026,Initial Request
+a3VUS000000bSmv,2,7/15/2026,7/17/2026,Jonna Joy Calabia,13192,Master Plan,7/21/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/17/2026,Initial Request
+a3VUS000000bXwH,4,7/16/2026,7/20/2026,John Patrick Salazar,12215,Master Plan,7/31/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
+a3VUS000000bXxt,4,7/16/2026,7/20/2026,Mary Genevieve Mendoza,12215,Master Permit Package,8/7/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Initial Request
+a3VUS000000bfFV,0,7/20/2026,7/20/2026,Mary Genevieve Mendoza,13448,Master Permit Package,7/20/2026,QA-001,Mary Genevieve Mendoza,Pass,100,7/20/2026,Revision

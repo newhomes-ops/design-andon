@@ -435,6 +435,8 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
 /* ── screen-9 compact layout ── */
 #screen-9 { padding: .7rem 1.4rem !important; }
+.slicer-select{font-family:'DM Sans',sans-serif;font-size:.7rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.18rem .45rem;cursor:pointer;letter-spacing:.03em;max-width:165px;}
+.slicer-select:focus{outline:none;border-color:var(--accent);}
 #screen-9 .panel { padding: .55rem .9rem; }
 #screen-9 .panel-header { margin-bottom: .3rem; }
 #screen-9 .trend-legend { gap: .4rem; }
@@ -790,6 +792,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
             <button class="slicer-btn" id="s6-ytd-btn" onclick="s6SelectYTD()">YTD</button>
           </div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
+            <select id="s6-designer-select" class="slicer-select" onchange="s6SetDesigner(this.value)"><option value="all">All</option></select>
+          </div>
         </div>
       </div>
 
@@ -852,6 +858,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <div id="fpy-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
           </div>
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button></div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
+            <select id="s7-designer-select" class="slicer-select" onchange="s7SetDesigner(this.value)"><option value="all">All</option></select>
+          </div>
         </div>
       </div>
 
@@ -925,6 +935,10 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
             <button id="s9-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
+            <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
+            <select id="s9-designer-select" class="slicer-select" onchange="s7SetDesigner(this.value)"><option value="all">All</option></select>
           </div>
         </div>
       </div>
@@ -1357,6 +1371,8 @@ let trSelYear=null, trSelQ=null, trSelMonth=null, trSelYTD=false;
 let sfFrom='', sfTo='';
 let s5SelYear=null, s5SelQ=null, s5SelMonth=null, s5SelYTD=false;
 let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false;
+let s6DesignerFilter='all'; /* SLA screen designer filter */
+let s7DesignerFilter='all'; /* FPY + Design Pass Rate designer filter */
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
 let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0 };
 let initialFilterSet=false; // set to true after first mergeAndApply so auto-reloads don't reset filter
@@ -1409,9 +1425,9 @@ function calcDesignerFPY(dRows){
 
 /**
  * Attendance % for a designer.
- * Working days = weekdays (Mon–Fri) between min and max completed-date in rows.
+ * Working days = weekdays (Mon–Fri) within the active date filter (sfFrom→sfTo).
  * Absent days  = entries in absencesData for this designer within that range.
- * Returns null if no absences are logged for the designer.
+ * Returns null if rows is empty; 100 if no absences logged.
  */
 function countWeekdays(start, end){
   let count=0; const d=new Date(start); d.setHours(0,0,0,0);
@@ -1420,14 +1436,15 @@ function countWeekdays(start, end){
   return count;
 }
 function calcAttendance(designer, rows){
-  const dates=rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d));
-  if(!dates.length) return null;
+  if(!rows.length) return null;
 
   const myAbs=absencesData.filter(a=>a.designer===designer);
   if(!myAbs.length) return 100; // no absences logged = perfect attendance
 
-  const minD=new Date(Math.min(...dates)); minD.setHours(0,0,0,0);
-  const maxD=new Date(Math.max(...dates)); maxD.setHours(0,0,0,0);
+  /* Use the active date filter window as the attendance denominator */
+  const minD=sfFrom?new Date(sfFrom):new Date(Math.min(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d))));
+  const maxD=sfTo  ?new Date(sfTo)  :new Date(Math.max(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d))));
+  minD.setHours(0,0,0,0); maxD.setHours(0,0,0,0);
   const workdays=countWeekdays(minD,maxD);
   if(!workdays) return 100;
 
@@ -3017,10 +3034,17 @@ function renderScreen6(){
   }
   document.getElementById('sla-quarter-label').textContent=rangeLabel;
 
-  /* Filter rows to range */
+  /* Populate designer dropdown */
+  const s6DesEl=document.getElementById('s6-designer-select');
+  if(s6DesEl){
+    const allDes=[...new Set(allRows.map(r=>colI(r)).filter(Boolean))].sort();
+    s6DesEl.innerHTML='<option value="all">All</option>'+allDes.map(d=>`<option value="${d}"${d===s6DesignerFilter?' selected':''}>${engr(d)}</option>`).join('');
+  }
+  /* Filter rows to range + designer */
   const rows=allRows.filter(r=>{
     const d=parseDate(colJ(r));
-    return d&&d>=rangeStart&&d<=rangeEnd;
+    if(!d||d<rangeStart||d>rangeEnd) return false;
+    return s6DesignerFilter==='all'||colI(r)===s6DesignerFilter;
   });
 
   /* Compute SLA stats per level */
@@ -3243,6 +3267,13 @@ function renderScreen7(){
   const s9ytdBtn=document.getElementById('s9-ytd-btn');
   if(s9ytdBtn) s9ytdBtn.classList.toggle('active', s7SelYTD);
 
+  /* Populate designer dropdowns (screens 8 & 9 share same filter) */
+  const allDes7=[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].sort();
+  ['s7-designer-select','s9-designer-select'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML='<option value="all">All</option>'+allDes7.map(d=>`<option value="${d}"${d===s7DesignerFilter?' selected':''}>${engr(d)}</option>`).join('');
+  });
+
   /* ── PERMIT FPY (≤WW21) ── */
   const wmPermit={};
   fpyRawRows.forEach(r=>{
@@ -3269,6 +3300,7 @@ function renderScreen7(){
   // Count lot design completions per week (denominator for PE pass rates)
   rawRows.forEach(r=>{
     if(getLevel(colG(r))!=='Lot-Level Design') return;
+    if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return;
     const d=parseDate(colJ(r));
     if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
@@ -3601,6 +3633,7 @@ function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
   // struc fail = col V (idx 21) not blank
   rawRows.forEach(r=>{
     if(getLevel(colG(r))!=='Community-Level Design') return;
+    if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return;
     const d=parseDate(colJ(r));
     if(!d||isNaN(d)||d>WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
@@ -3615,6 +3648,7 @@ function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
   // WW22+: new community design rows
   rawRows.forEach(r=>{
     if(getLevel(colG(r))!=='Community-Level Design') return;
+    if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return;
     const d=parseDate(colJ(r));
     if(!d||isNaN(d)||d<=WW22_CUTOFF||d<rangeStart||d>rangeEnd) return;
     const wk=isoWeek(d);
@@ -3752,6 +3786,8 @@ function s7SelectYTD(){
   s7SelMonth=null;
   renderScreen7();
 }
+function s6SetDesigner(v){ s6DesignerFilter=v; renderScreen6(); }
+function s7SetDesigner(v){ s7DesignerFilter=v; renderScreen7(); }
 
 /* ── C4 COMMUNITY DESIGN FPY (from design CSV col AD) ── */
 function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
@@ -3763,6 +3799,7 @@ function renderC4FpyChart(rangeStart, rangeEnd, rangeLabel){
   /* Filter to Community-Level Design rows within date range */
   const rows=rawRows.filter(r=>{
     if(getLevel(colG(r))!=='Community-Level Design') return false;
+    if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return false;
     const d=parseDate(colJ(r));
     return d&&!isNaN(d)&&d>=rangeStart&&d<=rangeEnd;
   });
@@ -3851,6 +3888,7 @@ function renderL7FpyChart(rangeStart, rangeEnd, rangeLabel){
   /* Filter to Lot-Level Design rows within date range */
   const rows=rawRows.filter(r=>{
     if(getLevel(colG(r))!=='Lot-Level Design') return false;
+    if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return false;
     const d=parseDate(colJ(r));
     return d&&!isNaN(d)&&d>=rangeStart&&d<=rangeEnd;
   });

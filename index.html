@@ -942,6 +942,9 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
         </div>
       </div>
+      <!-- Pass Rate Summary Banner -->
+      <div id="s9-banner" style="margin-bottom:.4rem;"></div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:.55rem;flex:1;min-height:0;">
 
         <!-- C4 Community Design Pass Rate -->
@@ -3505,6 +3508,53 @@ function renderScreen7(){
       }
     }]
   });
+
+  /* ── Screen-9 Pass Rate Summary Banner ── */
+  (function(){
+    const banner=document.getElementById('s9-banner');
+    if(!banner) return;
+    const dName=s7DesignerFilter==='all'?'All Designers':engr(s7DesignerFilter);
+    let c4p=0,c4f=0,l7p=0,l7f=0;
+    rawRows.forEach(r=>{
+      if(s7DesignerFilter!=='all'&&colI(r)!==s7DesignerFilter) return;
+      const d=parseDate(colJ(r));
+      if(!d||d<rangeStart||d>rangeEnd) return;
+      const val=(colAD(r)||'').toLowerCase();
+      if(val!=='pass'&&val!=='fail') return;
+      const lv=getLevel(colG(r));
+      if(lv==='Community-Level Design'){ if(val==='pass') c4p++; else c4f++; }
+      else if(lv==='Lot-Level Design'){ if(val==='pass') l7p++; else l7f++; }
+    });
+    const c4T=c4p+c4f, l7T=l7p+l7f, allT=c4T+l7T;
+    const c4Pct=c4T>0?Math.round(c4p/c4T*100):null;
+    const l7Pct=l7T>0?Math.round(l7p/l7T*100):null;
+    const allPct=allT>0?Math.round((c4p+l7p)/allT*100):null;
+    const lm=document.body.classList.contains('light-mode');
+    function pc(v){ return v===null?'var(--muted)':v>=95?(lm?'#006b28':'#69F0AE'):v>=85?(lm?'#7a5200':'#FFB74D'):(lm?'#9a0000':'#FF8A65'); }
+    function stat(label,pct,total){
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:.3rem .9rem;border-right:1px solid var(--border);">
+        <div style="font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);">${label}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.55rem;line-height:1;color:${pc(pct)}">${pct!==null?pct+'%':'—'}</div>
+        <div style="font-size:.48rem;color:var(--muted);">${total>0?total+' reviewed':''}</div>
+      </div>`;
+    }
+    const statusTxt=allPct===null?'No QA data in range':allPct>=95?'✓ On target':allPct>=85?'⚠ Near target':'✗ Below target';
+    const statusClr=allPct===null?'var(--muted)':allPct>=95?(lm?'#006b28':'#69F0AE'):allPct>=85?(lm?'#7a5200':'#FFB74D'):(lm?'#9a0000':'#FF8A65');
+    banner.innerHTML=`<div style="display:flex;align-items:center;background:var(--surface2);border-radius:8px;border:1px solid var(--border);overflow:hidden;">
+      <div style="display:flex;flex-direction:column;justify-content:center;padding:.3rem .9rem;border-right:1px solid var(--border);min-width:140px;">
+        <div style="font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);">Pass Rate Summary</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.05em;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px;">${dName}</div>
+        <div style="font-size:.48rem;color:var(--muted);margin-top:1px;">${rangeLabel}</div>
+      </div>
+      ${stat('Overall',allPct,allT)}
+      ${stat('C4 Community',c4Pct,c4T)}
+      ${stat('L7 Lot Design',l7Pct,l7T)}
+      <div style="flex:1;display:flex;align-items:center;padding:.3rem 1rem;">
+        <span style="font-size:.65rem;color:${statusClr};font-weight:600;">${statusTxt}</span>
+        ${allT>0?`<span style="font-size:.6rem;color:var(--dim);margin-left:.5rem;">· ${allT} total reviews, ${c4p+l7p} passed, ${c4f+l7f} failed</span>`:''}
+      </div>
+    </div>`;
+  })();
 
   /* Render the two design-CSV FPY sub-charts */
   renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel);

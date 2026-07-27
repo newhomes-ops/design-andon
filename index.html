@@ -1405,18 +1405,32 @@ function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==nu
 
 /* ── DESIGNER SCORING HELPERS ── */
 
-/** SLA pass rate for a designer: % of rows where actual days ≤ SLA P50 target */
+/**
+ * SLA score for a designer.
+ * Computes the P50 (median) of all actual SLA days across completed jobs,
+ * then compares to the weighted-average P50 target for the designer's job mix.
+ *   P50 actual ≤ target  →  100
+ *   P50 actual > target  →  round(target / actual_P50 × 100)  [ratio scoring]
+ * Returns null if no rows have SLA data.
+ */
 function calcDesignerSLAPct(dRows){
-  let pass=0, total=0;
+  const slaVals=[];
+  let targetSum=0, targetCnt=0;
   dRows.forEach(r=>{
     const sla=getSLA(r);
     if(sla===null) return;
     const target=slaTargets.p50[colG(r)];
     if(target===undefined) return;
-    total++;
-    if(sla<=target) pass++;
+    slaVals.push(sla);
+    targetSum+=target;
+    targetCnt++;
   });
-  return total>0 ? Math.round(pass/total*100) : null;
+  if(!slaVals.length) return null;
+  const sorted=[...slaVals].sort((a,b)=>a-b);
+  const actualP50=percentile(sorted,50);
+  const avgTarget=targetSum/targetCnt;
+  if(actualP50<=avgTarget) return 100;
+  return Math.max(0, Math.round(avgTarget/actualP50*100));
 }
 
 /** FPY (First Pass Yield / Pass Rate) for a designer */

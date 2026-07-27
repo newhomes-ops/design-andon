@@ -1956,10 +1956,13 @@ function buildScreenQuarterSlicers(){
   const availQSet=new Set();
   rawRows.forEach(r=>{
     const d=parseDate(colJ(r));
-    if(d&&!isNaN(d)) availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`);
+    if(d&&!isNaN(d)) availQSet.add(qtrKey(d));
   });
   const availQs=[...availQSet].sort();
-  const html=availQs.map(yq=>`<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${yq}</button>`).join('');
+  const html=availQs.map(yq=>{
+    const [yr,q]=yq.split('-Q');
+    return `<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
+  }).join('');
   [0,1,2,3].forEach(i=>{
     const el=document.getElementById('screen-q-slicer-'+i);
     if(el) el.innerHTML=html;
@@ -1977,8 +1980,7 @@ function syncScreenQuarterSlicers(){
       const yq=btn.dataset.qtr;
       if(!yq) return;
       const [yr,q]=yq.split('-Q');
-      const qStart=new Date(parseInt(yr),(parseInt(q)-1)*3,1);
-      const qEnd  =new Date(parseInt(yr),parseInt(q)*3,0);
+      const {start:qStart,end:qEnd}=fiscalQtrDates(parseInt(yr),parseInt(q));
       btn.classList.toggle('active', sfFrom===toYMD(qStart)&&sfTo===toYMD(qEnd));
     });
   });
@@ -1998,10 +2000,9 @@ function isLast7WorkDays(){
 
 function applyQuarterFilter(yq){
   const [yr,q]=yq.split('-Q');
-  const qStart=new Date(parseInt(yr),(parseInt(q)-1)*3,1);
-  const qEnd  =new Date(parseInt(yr),parseInt(q)*3,0);
-  sfFrom=toYMD(qStart);
-  sfTo  =toYMD(qEnd);
+  const {start,end}=fiscalQtrDates(parseInt(yr),parseInt(q));
+  sfFrom=toYMD(start);
+  sfTo  =toYMD(end);
   syncScreenFilters();
   applyFilters();
 }
@@ -2329,9 +2330,54 @@ function isoWeek(date){
   const week=Math.ceil((((d-yearStart)/86400000)+1)/7);
   return `${d.getUTCFullYear()}-W${String(week).padStart(2,'0')}`;
 }
-function getQuarter(date){ return Math.floor(date.getMonth()/3)+1; }
 const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const Q_MONTHS={1:[0,1,2],2:[3,4,5],3:[6,7,8],4:[9,10,11]};
+
+/* ── FISCAL QUARTER SYSTEM ────────────────────────────────────────────
+ * Q1 = Dec 29 – Mar 29 · Q2 = Mar 30 – Jun 28
+ * Q3 = Jun 29 – Sep 27 · Q4 = Sep 28 – Dec 27
+ * 13 weeks (91 days) per quarter · 52 weeks (364 days) per fiscal year
+ * FQ_REF = Dec 29 2025 = day 0 = start of FY2026 Q1
+ * ──────────────────────────────────────────────────────────────────── */
+const FQ_REF   = new Date(2025,11,29); // Dec 29 2025
+const FQ_QDAYS = 91;
+const FQ_YDAYS = 364;
+
+function fiscalInfo(dt){
+  const d0=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate());
+  const diff=Math.round((d0-FQ_REF)/86400000);
+  const fyOff=Math.floor(diff/FQ_YDAYS);
+  const dayInFY=diff-fyOff*FQ_YDAYS;
+  return {fy:2026+fyOff, q:Math.min(4,Math.floor(dayInFY/FQ_QDAYS)+1)};
+}
+function getQuarter(dt){ return fiscalInfo(dt).q; }
+function getFiscalYear(dt){ return fiscalInfo(dt).fy; }
+/** Sortable quarter key "YYYY-QN" using FISCAL year */
+function qtrKey(dt){ const fi=fiscalInfo(dt); return `${fi.fy}-Q${fi.q}`; }
+/** Display label "Q1'26" */
+function qtrLabel(fy,q){ return `Q${q}’${String(fy).slice(2)}`; }
+/** Start/end Date objects for a fiscal year+quarter */
+function fiscalQtrDates(fy,q){
+  const off=fy-2026;
+  const ds=off*FQ_YDAYS+(q-1)*FQ_QDAYS;
+  const de=ds+FQ_QDAYS-1;
+  return {start:new Date(FQ_REF.getTime()+ds*86400000),
+          end:  new Date(FQ_REF.getTime()+de*86400000+86399999)};
+}
+/** Start of a fiscal year (= Q1 start) */
+function fiscalYearStart(fy){ return fiscalQtrDates(fy,1).start; }
+/** Calendar year to use when filtering month m within a fiscal quarter */
+function monthYrInFQ(fy,q,m){
+  const {start,end}=fiscalQtrDates(fy,q);
+  const s=new Date(start.getFullYear(),m,1), e=new Date(start.getFullYear(),m+1,0);
+  return (e>=start&&s<=end)?start.getFullYear():end.getFullYear();
+}
+/** Months (0-based) inside a fiscal quarter, in order */
+function fiscalQtrMonths(fy,q){
+  const {start,end}=fiscalQtrDates(fy,q);
+  const ms=[]; const c=new Date(start.getFullYear(),start.getMonth(),1);
+  while(c<=end){ ms.push(c.getMonth()); c.setMonth(c.getMonth()+1); }
+  return ms;
+}
 
 function renderScreen4(){
   const allLotRows=rawRows.filter(r=>getLevel(colG(r))==='Lot-Level Design');
@@ -2347,31 +2393,30 @@ function renderScreen4(){
 
   /* Detect available quarters from data */
   const latestDate=new Date(Math.max(...allDates));
-  const latestYear=latestDate.getFullYear();
-  const latestQ=getQuarter(latestDate);
+  const latestFI=fiscalInfo(latestDate);
 
   /* Init slicer state on first load */
-  if(!s4SelYear) s4SelYear=latestYear;
-  if(!s4SelQ)   s4SelQ=latestQ;
+  if(!s4SelYear) s4SelYear=latestFI.fy;
+  if(!s4SelQ)   s4SelQ=latestFI.q;
   /* s4SelMonth stays null = show full quarter */
 
-  /* Find all available year+quarters in data */
+  /* Find all available fiscal year+quarters in data */
   const availQSet=new Set();
-  allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
+  allDates.forEach(d=>availQSet.add(qtrKey(d)));
   const availQs=[...availQSet].sort();
 
-  /* Build quarter slicer — show available quarters */
+  /* Build quarter slicer */
   const qSlicer=document.getElementById('q-slicer');
   qSlicer.innerHTML=availQs.map(yq=>{
     const [yr,q]=yq.split('-Q');
     const active=(parseInt(yr)===s4SelYear&&parseInt(q)===s4SelQ)?'active':'';
-    return `<button class="slicer-btn ${active}" onclick="s4SelectQ(${yr},${q})">${yq}</button>`;
+    return `<button class="slicer-btn ${active}" onclick="s4SelectQ(${yr},${q})">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
   }).join('');
 
-  /* Build month slicer — only months in selected quarter that have data */
-  const qMonths=Q_MONTHS[s4SelQ]||[];
+  /* Build month slicer — only months in selected fiscal quarter that have data */
+  const qMonths=fiscalQtrMonths(s4SelYear,s4SelQ);
   const availMonths=new Set(
-    allDates.filter(d=>d.getFullYear()===s4SelYear&&getQuarter(d)===s4SelQ)
+    allDates.filter(d=>getFiscalYear(d)===s4SelYear&&getQuarter(d)===s4SelQ)
             .map(d=>d.getMonth())
   );
   const mSlicer=document.getElementById('m-slicer');
@@ -2379,7 +2424,6 @@ function renderScreen4(){
     const active=(s4SelMonth===m)?'active':'';
     return `<button class="slicer-btn ${active}" onclick="s4SelectMonth(${m})">${MONTH_NAMES[m]}</button>`;
   });
-  /* Add "All" button */
   mSlicer.innerHTML=`<button class="slicer-btn ${s4SelMonth===null?'active':''}" onclick="s4SelectMonth(null)">All</button>`+monthBtns.join('');
 
   /* Determine date range for chart */
@@ -2387,17 +2431,18 @@ function renderScreen4(){
   const s4ytdBtn=document.getElementById('s4-ytd-btn');
   if(s4ytdBtn) s4ytdBtn.classList.toggle('active',s4SelYTD);
   if(s4SelYTD){
-    rangeStart=new Date(s4SelYear,0,1);
+    rangeStart=fiscalYearStart(s4SelYear);
     rangeEnd  =new Date(s4SelYear,11,31,23,59,59);
-    rangeLabel=`YTD ${s4SelYear}`;
+    rangeLabel=`FY${String(s4SelYear).slice(2)} YTD`;
   } else if(s4SelMonth!==null){
-    rangeStart=new Date(s4SelYear, s4SelMonth, 1);
-    rangeEnd  =new Date(s4SelYear, s4SelMonth+1, 0, 23, 59, 59);
-    rangeLabel=`${MONTH_NAMES[s4SelMonth]} ${s4SelYear}`;
+    const mYr=monthYrInFQ(s4SelYear,s4SelQ,s4SelMonth);
+    rangeStart=new Date(mYr, s4SelMonth, 1);
+    rangeEnd  =new Date(mYr, s4SelMonth+1, 0, 23, 59, 59);
+    rangeLabel=`${MONTH_NAMES[s4SelMonth]} ${mYr}`;
   } else {
-    rangeStart=new Date(s4SelYear, (s4SelQ-1)*3, 1);
-    rangeEnd  =new Date(s4SelYear, s4SelQ*3, 0, 23, 59, 59);
-    rangeLabel=`Q${s4SelQ} ${s4SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    const fqd=fiscalQtrDates(s4SelYear,s4SelQ);
+    rangeStart=fqd.start; rangeEnd=fqd.end;
+    rangeLabel=`${qtrLabel(s4SelYear,s4SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('weekly-quarter-label').textContent=rangeLabel;
 
@@ -2531,26 +2576,25 @@ function renderScreen5(){
   }
 
   const latestDate=new Date(Math.max(...allDates));
-  const latestYear=latestDate.getFullYear();
-  const latestQ=getQuarter(latestDate);
+  const latestFI=fiscalInfo(latestDate);
 
-  if(!s5SelYear) s5SelYear=latestYear;
-  if(!s5SelQ)   s5SelQ=latestQ;
+  if(!s5SelYear) s5SelYear=latestFI.fy;
+  if(!s5SelQ)   s5SelQ=latestFI.q;
 
   /* Quarter slicer */
   const availQSet=new Set();
-  allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
+  allDates.forEach(d=>availQSet.add(qtrKey(d)));
   const availQs=[...availQSet].sort();
   document.getElementById('cq-slicer').innerHTML=availQs.map(yq=>{
     const [yr,q]=yq.split('-Q');
     const active=(parseInt(yr)===s5SelYear&&parseInt(q)===s5SelQ)?'active':'';
-    return `<button class="slicer-btn ${active}" onclick="s5SelectQ(${yr},${q})">${yq}</button>`;
+    return `<button class="slicer-btn ${active}" onclick="s5SelectQ(${yr},${q})">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
   }).join('');
 
   /* Month slicer */
-  const qMonths=Q_MONTHS[s5SelQ]||[];
+  const qMonths=fiscalQtrMonths(s5SelYear,s5SelQ);
   const availMonths=new Set(
-    allDates.filter(d=>d.getFullYear()===s5SelYear&&getQuarter(d)===s5SelQ).map(d=>d.getMonth())
+    allDates.filter(d=>getFiscalYear(d)===s5SelYear&&getQuarter(d)===s5SelQ).map(d=>d.getMonth())
   );
   document.getElementById('cm-slicer').innerHTML=
     `<button class="slicer-btn ${s5SelMonth===null?'active':''}" onclick="s5SelectMonth(null)">All</button>`+
@@ -2564,17 +2608,18 @@ function renderScreen5(){
   const s5ytdBtn=document.getElementById('s5-ytd-btn');
   if(s5ytdBtn) s5ytdBtn.classList.toggle('active',s5SelYTD);
   if(s5SelYTD){
-    rangeStart=new Date(s5SelYear,0,1);
+    rangeStart=fiscalYearStart(s5SelYear);
     rangeEnd  =new Date(s5SelYear,11,31,23,59,59);
-    rangeLabel=`YTD ${s5SelYear}`;
+    rangeLabel=`FY${String(s5SelYear).slice(2)} YTD`;
   } else if(s5SelMonth!==null){
-    rangeStart=new Date(s5SelYear,s5SelMonth,1);
-    rangeEnd  =new Date(s5SelYear,s5SelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[s5SelMonth]} ${s5SelYear}`;
+    const mYr=monthYrInFQ(s5SelYear,s5SelQ,s5SelMonth);
+    rangeStart=new Date(mYr,s5SelMonth,1);
+    rangeEnd  =new Date(mYr,s5SelMonth+1,0,23,59,59);
+    rangeLabel=`${MONTH_NAMES[s5SelMonth]} ${mYr}`;
   } else {
-    rangeStart=new Date(s5SelYear,(s5SelQ-1)*3,1);
-    rangeEnd  =new Date(s5SelYear,s5SelQ*3,0,23,59,59);
-    rangeLabel=`Q${s5SelQ} ${s5SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    const fqd=fiscalQtrDates(s5SelYear,s5SelQ);
+    rangeStart=fqd.start; rangeEnd=fqd.end;
+    rangeLabel=`${qtrLabel(s5SelYear,s5SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('comm-quarter-label').textContent=rangeLabel;
 
@@ -2792,25 +2837,24 @@ function renderTeamReports(){
     return;
   }
   const latestDate=new Date(Math.max(...allDates));
-  const latestYear=latestDate.getFullYear();
-  const latestQ   =getQuarter(latestDate);
-  if(!trSelYear) trSelYear=latestYear;
-  if(!trSelQ)   trSelQ=latestQ;
+  const latestFI=fiscalInfo(latestDate);
+  if(!trSelYear) trSelYear=latestFI.fy;
+  if(!trSelQ)   trSelQ=latestFI.q;
 
   /* Quarter slicer */
   const availQSet=new Set();
-  allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
+  allDates.forEach(d=>availQSet.add(qtrKey(d)));
   const availQs=[...availQSet].sort();
   document.getElementById('tr-q-slicer').innerHTML=availQs.map(yq=>{
     const [yr,q]=yq.split('-Q');
     const active=(parseInt(yr)===trSelYear&&parseInt(q)===trSelQ)?'active':'';
-    return `<button class="slicer-btn ${active}" onclick="trSelectQ(${yr},${q})">${yq}</button>`;
+    return `<button class="slicer-btn ${active}" onclick="trSelectQ(${yr},${q})">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
   }).join('');
 
   /* Month slicer */
-  const qMonths=Q_MONTHS[trSelQ]||[];
+  const qMonths=fiscalQtrMonths(trSelYear,trSelQ);
   const availMonths=new Set(
-    allDates.filter(d=>d.getFullYear()===trSelYear&&getQuarter(d)===trSelQ).map(d=>d.getMonth())
+    allDates.filter(d=>getFiscalYear(d)===trSelYear&&getQuarter(d)===trSelQ).map(d=>d.getMonth())
   );
   document.getElementById('tr-m-slicer').innerHTML=
     `<button class="slicer-btn ${trSelMonth===null?'active':''}" onclick="trSelectMonth(null)">All</button>`+
@@ -2824,17 +2868,18 @@ function renderTeamReports(){
   const ytdBtn=document.getElementById('tr-ytd-btn');
   if(ytdBtn) ytdBtn.classList.toggle('active',trSelYTD);
   if(trSelYTD){
-    rangeStart=new Date(trSelYear,0,1);
+    rangeStart=fiscalYearStart(trSelYear);
     rangeEnd  =new Date(trSelYear,11,31,23,59,59);
-    rangeLabel=`YTD ${trSelYear}`;
+    rangeLabel=`FY${String(trSelYear).slice(2)} YTD`;
   } else if(trSelMonth!==null){
-    rangeStart=new Date(trSelYear,trSelMonth,1);
-    rangeEnd  =new Date(trSelYear,trSelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[trSelMonth]} ${trSelYear}`;
+    const mYr=monthYrInFQ(trSelYear,trSelQ,trSelMonth);
+    rangeStart=new Date(mYr,trSelMonth,1);
+    rangeEnd  =new Date(mYr,trSelMonth+1,0,23,59,59);
+    rangeLabel=`${MONTH_NAMES[trSelMonth]} ${mYr}`;
   } else {
-    rangeStart=new Date(trSelYear,(trSelQ-1)*3,1);
-    rangeEnd  =new Date(trSelYear,trSelQ*3,0,23,59,59);
-    rangeLabel=`Q${trSelQ} ${trSelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    const fqd=fiscalQtrDates(trSelYear,trSelQ);
+    rangeStart=fqd.start; rangeEnd=fqd.end;
+    rangeLabel=`${qtrLabel(trSelYear,trSelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('tr-range-label').textContent=rangeLabel;
 
@@ -3012,26 +3057,25 @@ function renderScreen6(){
   }
 
   const latestDate=new Date(Math.max(...allDates));
-  const latestYear=latestDate.getFullYear();
-  const latestQ=getQuarter(latestDate);
+  const latestFI=fiscalInfo(latestDate);
 
-  if(!s6SelYear) s6SelYear=latestYear;
-  if(!s6SelQ)   s6SelQ=latestQ;
+  if(!s6SelYear) s6SelYear=latestFI.fy;
+  if(!s6SelQ)   s6SelQ=latestFI.q;
 
   /* Quarter slicer */
   const availQSet=new Set();
-  allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
+  allDates.forEach(d=>availQSet.add(qtrKey(d)));
   const availQs=[...availQSet].sort();
   document.getElementById('sla-q-slicer').innerHTML=availQs.map(yq=>{
     const [yr,q]=yq.split('-Q');
     const active=(parseInt(yr)===s6SelYear&&parseInt(q)===s6SelQ)?'active':'';
-    return `<button class="slicer-btn ${active}" onclick="s6SelectQ(${yr},${q})">${yq}</button>`;
+    return `<button class="slicer-btn ${active}" onclick="s6SelectQ(${yr},${q})">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
   }).join('');
 
   /* Month slicer */
-  const qMonths=Q_MONTHS[s6SelQ]||[];
+  const qMonths=fiscalQtrMonths(s6SelYear,s6SelQ);
   const availMonths=new Set(
-    allDates.filter(d=>d.getFullYear()===s6SelYear&&getQuarter(d)===s6SelQ).map(d=>d.getMonth())
+    allDates.filter(d=>getFiscalYear(d)===s6SelYear&&getQuarter(d)===s6SelQ).map(d=>d.getMonth())
   );
   document.getElementById('sla-m-slicer').innerHTML=
     `<button class="slicer-btn ${s6SelMonth===null?'active':''}" onclick="s6SelectMonth(null)">All</button>`+
@@ -3045,17 +3089,18 @@ function renderScreen6(){
   const s6ytdBtn=document.getElementById('s6-ytd-btn');
   if(s6ytdBtn) s6ytdBtn.classList.toggle('active',s6SelYTD);
   if(s6SelYTD){
-    rangeStart=new Date(s6SelYear,0,1);
+    rangeStart=fiscalYearStart(s6SelYear);
     rangeEnd  =new Date(s6SelYear,11,31,23,59,59);
-    rangeLabel=`YTD ${s6SelYear}`;
+    rangeLabel=`FY${String(s6SelYear).slice(2)} YTD`;
   } else if(s6SelMonth!==null){
-    rangeStart=new Date(s6SelYear,s6SelMonth,1);
-    rangeEnd  =new Date(s6SelYear,s6SelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[s6SelMonth]} ${s6SelYear}`;
+    const mYr=monthYrInFQ(s6SelYear,s6SelQ,s6SelMonth);
+    rangeStart=new Date(mYr,s6SelMonth,1);
+    rangeEnd  =new Date(mYr,s6SelMonth+1,0,23,59,59);
+    rangeLabel=`${MONTH_NAMES[s6SelMonth]} ${mYr}`;
   } else {
-    rangeStart=new Date(s6SelYear,(s6SelQ-1)*3,1);
-    rangeEnd  =new Date(s6SelYear,s6SelQ*3,0,23,59,59);
-    rangeLabel=`Q${s6SelQ} ${s6SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    const fqd=fiscalQtrDates(s6SelYear,s6SelQ);
+    rangeStart=fqd.start; rangeEnd=fqd.end;
+    rangeLabel=`${qtrLabel(s6SelYear,s6SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('sla-quarter-label').textContent=rangeLabel;
 
@@ -3239,26 +3284,25 @@ function renderScreen7(){
   if(!allDates.length){ if(noData) noData.style.display='flex'; if(content) content.style.display='none'; return; }
 
   const latestDate=new Date(Math.max(...allDates));
-  const latestYear=latestDate.getFullYear();
-  const latestQ=getQuarter(latestDate);
+  const latestFI=fiscalInfo(latestDate);
 
-  if(!s7SelYear) s7SelYear=latestYear;
-  if(!s7SelQ)   s7SelQ=latestQ;
+  if(!s7SelYear) s7SelYear=latestFI.fy;
+  if(!s7SelQ)   s7SelQ=latestFI.q;
 
   /* Quarter slicer */
   const availQSet=new Set();
-  allDates.forEach(d=>availQSet.add(`${d.getFullYear()}-Q${getQuarter(d)}`));
+  allDates.forEach(d=>availQSet.add(qtrKey(d)));
   const availQs=[...availQSet].sort();
   document.getElementById('fpy-q-slicer').innerHTML=availQs.map(yq=>{
     const [yr,q]=yq.split('-Q');
     const active=(parseInt(yr)===s7SelYear&&parseInt(q)===s7SelQ)?'active':'';
-    return `<button class="slicer-btn ${active}" onclick="s7SelectQ(${yr},${q})">${yq}</button>`;
+    return `<button class="slicer-btn ${active}" onclick="s7SelectQ(${yr},${q})">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;
   }).join('');
 
   /* Month slicer */
-  const qMonths=Q_MONTHS[s7SelQ]||[];
+  const qMonths=fiscalQtrMonths(s7SelYear,s7SelQ);
   const availMonths=new Set(
-    allDates.filter(d=>d.getFullYear()===s7SelYear&&getQuarter(d)===s7SelQ).map(d=>d.getMonth())
+    allDates.filter(d=>getFiscalYear(d)===s7SelYear&&getQuarter(d)===s7SelQ).map(d=>d.getMonth())
   );
   document.getElementById('fpy-m-slicer').innerHTML=
     `<button class="slicer-btn ${s7SelMonth===null?'active':''}" onclick="s7SelectMonth(null)">All</button>`+
@@ -3270,17 +3314,18 @@ function renderScreen7(){
   /* Date range */
   let rangeStart, rangeEnd, rangeLabel;
   if(s7SelYTD){
-    rangeStart=new Date(s7SelYear,0,1);
+    rangeStart=fiscalYearStart(s7SelYear);
     rangeEnd  =new Date(s7SelYear,11,31,23,59,59);
-    rangeLabel=`YTD ${s7SelYear}`;
+    rangeLabel=`FY${String(s7SelYear).slice(2)} YTD`;
   } else if(s7SelMonth!==null){
-    rangeStart=new Date(s7SelYear,s7SelMonth,1);
-    rangeEnd  =new Date(s7SelYear,s7SelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[s7SelMonth]} ${s7SelYear}`;
+    const mYr=monthYrInFQ(s7SelYear,s7SelQ,s7SelMonth);
+    rangeStart=new Date(mYr,s7SelMonth,1);
+    rangeEnd  =new Date(mYr,s7SelMonth+1,0,23,59,59);
+    rangeLabel=`${MONTH_NAMES[s7SelMonth]} ${mYr}`;
   } else {
-    rangeStart=new Date(s7SelYear,(s7SelQ-1)*3,1);
-    rangeEnd  =new Date(s7SelYear,s7SelQ*3,0,23,59,59);
-    rangeLabel=`Q${s7SelQ} ${s7SelYear} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    const fqd=fiscalQtrDates(s7SelYear,s7SelQ);
+    rangeStart=fqd.start; rangeEnd=fqd.end;
+    rangeLabel=`${qtrLabel(s7SelYear,s7SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
   }
   document.getElementById('fpy-quarter-label').textContent=rangeLabel;
   const ytdBtn=document.getElementById('fpy-ytd-btn');
@@ -4052,8 +4097,8 @@ function renderScreen8(designers,rows){
   const qSlicer=document.getElementById('peq-q-slicer-0');
   if(qSlicer&&!qSlicer.children.length){
     const availQSet=new Set();
-    rawRows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))availQSet.add(d.getFullYear()+'-Q'+getQuarter(d));});
-    qSlicer.innerHTML=[...availQSet].sort().map(yq=>`<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${yq}</button>`).join('');
+    rawRows.forEach(r=>{const d=parseDate(colJ(r));if(d&&!isNaN(d))availQSet.add(qtrKey(d));});
+    qSlicer.innerHTML=[...availQSet].sort().map(yq=>{const [yr,q]=yq.split('-Q');return `<button class="slicer-btn" data-qtr="${yq}" onclick="applyQuarterFilter('${yq}')">${qtrLabel(parseInt(yr),parseInt(q))}</button>`;}).join('');
     syncScreenQuarterSlicers();
   }
 
@@ -4194,11 +4239,11 @@ function renderScreen8(designers,rows){
     designers.forEach(d=>{qMap[d]={};});
     rows.forEach(r=>{
       const dt=parseDate(colJ(r)); if(!dt||isNaN(dt)) return;
-      const qk=dt.getFullYear()+'-Q'+getQuarter(dt); const des=colI(r);
+      const qk=qtrKey(dt); const des=colI(r);
       if(!qMap[des]) qMap[des]={};
       qMap[des][qk]=(qMap[des][qk]||0)+getEquiv(colG(r));
     });
-    const quarters=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?dt.getFullYear()+'-Q'+getQuarter(dt):null;}).filter(Boolean))].sort();
+    const quarters=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?qtrKey(dt):null;}).filter(Boolean))].sort();
     const sortedDes=designerData.map(d=>d.name);
     const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`<table class="peq-table">

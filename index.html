@@ -1405,13 +1405,13 @@ function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==nu
 
 /* ── DESIGNER SCORING HELPERS ── */
 
-/** SLA pass rate for a designer: % of rows where actual days ≤ SLA avg target */
+/** SLA pass rate for a designer: % of rows where actual days ≤ SLA P50 target */
 function calcDesignerSLAPct(dRows){
   let pass=0, total=0;
   dRows.forEach(r=>{
     const sla=getSLA(r);
     if(sla===null) return;
-    const target=slaTargets.avg[colG(r)];
+    const target=slaTargets.p50[colG(r)];
     if(target===undefined) return;
     total++;
     if(sla<=target) pass++;
@@ -4371,7 +4371,7 @@ function generatePerformanceMemo(){
   const qualRows=dRows.filter(r=>parseQual(colAF(r))!==null);
   const otdRows=dRows.filter(r=>parseDate(colJ(r))&&parseDate(colDue(r)));
   const fpyRows=dRows.filter(r=>colAD(r));
-  const slaRowsRaw=dRows.filter(r=>{ const s=getSLA(r); return s!==null && slaTargets.avg[colG(r)]!==undefined; });
+  const slaRowsRaw=dRows.filter(r=>{ const s=getSLA(r); return s!==null && slaTargets.p50[colG(r)]!==undefined; });
   const memoAbsences=absencesData.filter(a=>{
     if(a.designer!==designer) return false;
     const parts=a.date.split('-'); if(parts.length!==3) return false;
@@ -4496,7 +4496,7 @@ async function buildAndDownloadMemo(d){
   ];
   function otdColor(r){ const comp=parseDate(colJ(r)),due=parseDate(colDue(r)); if(!comp||!due) return '888888'; return comp<=due?'1A7C3E':'CC2222'; }
   function fpyColor(r){ const v=(colAD(r)||'').toLowerCase(); return v==='pass'?'1A7C3E':v?'CC2222':'888888'; }
-  function slaColor(r){ const s=getSLA(r),t=slaTargets.avg[colG(r)]; if(s===null||t===undefined) return '888888'; return s<=t?'1A7C3E':'CC2222'; }
+  function slaColor(r){ const s=getSLA(r),t=slaTargets.p50[colG(r)]; if(s===null||t===undefined) return '888888'; return s<=t?'1A7C3E':'CC2222'; }
   let body='<w:body>';
   body+=mSpacer();
   body+=mHdrPara('Date:',d.date);

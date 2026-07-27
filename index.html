@@ -4189,7 +4189,7 @@ function renderScreen8(designers,rows){
           return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg!==null?avg:''}</td></tr>`;
         }).join('')}
       </tbody></table>`;
-  } else {
+  } else if(peqView==='quarterly'){
     const qMap={};
     designers.forEach(d=>{qMap[d]={};});
     rows.forEach(r=>{

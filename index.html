@@ -712,6 +712,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <button class="slicer-btn active" id="peq-view-daily" onclick="setPEQView('daily')">Daily</button>
             <button class="slicer-btn" id="peq-view-weekly" onclick="setPEQView('weekly')">Weekly</button>
             <button class="slicer-btn" id="peq-view-quarterly" onclick="setPEQView('quarterly')">Quarterly</button>
+            <button class="slicer-btn" id="peq-view-matrix" onclick="setPEQView('matrix')">Reference</button>
           </div>
         </div>
         <div id="peq-daily-table" style="flex:1;overflow:auto;min-height:0;"></div>
@@ -1348,6 +1349,13 @@ const DEFAULT_NEW_HIRES = [
 ];
 let newHires = [...DEFAULT_NEW_HIRES]; /* mutable — editable via UI */
 const SLA_TYPES = ['Master Plan','Individual Plot Plan','Individual Permit Package','NH Commercial Design - Maxfit','NH Commercial Project - Estimate','Tier 0 Helioscope','PVbid Project Estimate','Master Permit Package','Future Solar Exhibit','Solar Site Plan'];
+
+/** Complexity-adjusted volume: uses peqWeights (same system as PEQ screen).
+ *  Edit weights via ✎ Edit weights on the PEQ screen — changes apply to both
+ *  the PEQ table AND the Volume score on Designer Performance. */
+function weightedVolume(rows){
+  return rows.reduce((sum,r)=>sum+getEquiv(colG(r)),0);
+}
 const DEFAULT_SLA_TARGETS = {
   avg: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
   p50: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
@@ -2116,7 +2124,7 @@ function renderScreen0(designers,rows){
     const fpy        =calcDesignerFPY(dR);
     const sla        =calcDesignerSLAPct(dR);
     const attendance =calcAttendance(d, dR);
-    return {d, dR, q, otd, fpy, sla, attendance, vol:dR.length};
+    return {d, dR, q, otd, fpy, sla, attendance, vol:weightedVolume(dR)};
   });
   const maxVol=Math.max(1,...metrics.map(m=>m.vol));
 
@@ -4099,9 +4107,11 @@ function renderScreen8(designers,rows){
   const db=document.getElementById('peq-view-daily');
   const wb=document.getElementById('peq-view-weekly');
   const qb=document.getElementById('peq-view-quarterly');
+  const mb=document.getElementById('peq-view-matrix');
   if(db) db.classList.toggle('active',peqView==='daily');
   if(wb) wb.classList.toggle('active',peqView==='weekly');
   if(qb) qb.classList.toggle('active',peqView==='quarterly');
+  if(mb) mb.classList.toggle('active',peqView==='matrix');
 
   function cellColor(pct){
     if(pct===null||pct===undefined) return 'transparent';
@@ -4200,6 +4210,46 @@ function renderScreen8(designers,rows){
           return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col">${total||''}</td></tr>`;
         }).join('')}
       </tbody></table>`;
+  } else if(peqView==='matrix'){
+    /* ── Reference Matrix: design type → processing time → daily target → weight ── */
+    const refTypes = Object.keys(DEFAULT_PEQ_WEIGHTS);
+    const el=document.getElementById('peq-daily-table');
+    if(el) el.innerHTML=`
+      <div style="font-size:.62rem;color:var(--dim);margin-bottom:.6rem;">
+        Weights shown are the <em>current</em> values (editable via ✎ Edit weights). These weights drive both the PEQ table above and the <strong>Volume</strong> score on Designer Performance.
+      </div>
+      <table class="peq-table" style="width:100%;table-layout:auto;">
+        <thead><tr>
+          <th style="text-align:left;">Design Type</th>
+          <th>Proc. Time</th>
+          <th>Daily Target</th>
+          <th>Weight</th>
+          <th>Volume Impact</th>
+        </tr></thead>
+        <tbody>
+        ${refTypes.map(type=>{
+          const hrs=DEFAULT_PEQ_WEIGHTS[type];
+          const daily=Math.round((DAILY_HOURS/hrs)*10)/10;
+          const w=getEquiv(type);
+          const edited=peqWeights[type]!==DEFAULT_PEQ_WEIGHTS[type];
+          const barW=Math.round(w*100);
+          return `<tr>
+            <td style="text-align:left;font-size:.72rem;color:var(--text);">${type}${edited?' <span style="font-size:.5rem;color:#FFB74D;vertical-align:middle;">[edited]</span>':''}</td>
+            <td style="text-align:center;font-size:.72rem;color:var(--dim);">${hrs} hr${hrs!==1?'s':''}</td>
+            <td style="text-align:center;font-size:.72rem;color:var(--dim);">${daily}/day</td>
+            <td style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:${w>=1?'var(--pass)':w>=0.4?'#FFB74D':'var(--dim)'};">${w.toFixed(3)}</td>
+            <td style="padding-right:.8rem;">
+              <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:${barW}%;background:${w>=1?'var(--pass)':w>=0.4?'#FFB74D':'#80DEEA'};border-radius:3px;"></div>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:.8rem;font-size:.6rem;color:var(--muted);">
+        Weight = Processing Time ÷ ${DAILY_HOURS} daily hours. Default weights reflect the Productivity Target table. Unmapped types default to 1.000.
+      </div>`;
   }
 }
 
@@ -4363,9 +4413,9 @@ function generatePerformanceMemo(){
   });
   if(!dRows.length){ alert('No completed designs found for this designer in the selected date range.'); return; }
   const maxVol=Math.max(1,...[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].map(d2=>{
-    return rawRows.filter(r=>colI(r)===d2&&(()=>{const dt=parseDate(colJ(r));return dt&&dt>=fromD&&dt<=toD;})()).length;
+    return weightedVolume(rawRows.filter(r=>colI(r)===d2&&(()=>{const dt=parseDate(colJ(r));return dt&&dt>=fromD&&dt<=toD;})()));
   }));
-  const vol        =dRows.length;
+  const vol        =weightedVolume(dRows);
   const volNorm    =Math.round(vol/maxVol*100);
   const q          =avgQual(dRows);
   const otdObj     =calcOTD(dRows);

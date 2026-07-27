@@ -4771,6 +4771,11 @@ function fetchIPFromGitHub(){
       if(data&&data.content){ try{ parsed=JSON.parse(atob(data.content.replace(/\n/g,''))); }catch(e){ return; } }
       if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)){
         LEVELS.forEach(lv=>{ if(typeof parsed[lv]==='number') inProgress[lv]=parsed[lv]; });
+        /* Load absences from ip.json (shared across all devices) */
+        if(Array.isArray(parsed.absences)){
+          absencesData=parsed.absences;
+          try{ localStorage.setItem('andon_absences',JSON.stringify(absencesData)); }catch(e){}
+        }
         /* Save timestamp */
         try{ localStorage.setItem('andon_ip_ts', new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})); }catch(e){}
         try{ localStorage.setItem('andon_ip',JSON.stringify(inProgress)); }catch(e){}
@@ -4831,8 +4836,9 @@ function pushIPToGitHub(){
   const apiUrl='https://api.github.com/repos/'+GH_IP_USER+'/'+GH_IP_REPO+'/contents/'+GH_IP_FILE;
   const headers={'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json',
                   'Content-Type':'application/json','User-Agent':'andon-board'};
-  // Encode JSON safely (handle any Unicode)
-  const json=JSON.stringify(inProgress,null,2);
+  // Encode JSON safely (handle any Unicode) — include absences so all devices share the log
+  const payload=Object.assign({},inProgress,{absences:absencesData});
+  const json=JSON.stringify(payload,null,2);
   const encoded=btoa(unescape(encodeURIComponent(json)));
   fetch(apiUrl,{headers})
     .then(r=>r.ok?r.json():(r.status===404?null:r.json().then(e=>{throw new Error(r.status+': '+(e.message||''));})))

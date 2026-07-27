@@ -1,5 +1,147 @@
 {
   "Lot-Level Design": 18,
   "Community-Level Design": 1,
-  "Commercial Design": 1
+  "Commercial Design": 1,
+  "absences": [
+    {
+      "designer": "Jonna Joy Calabia",
+      "date": "2026-04-08"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2025-12-29"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-02-12"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-02-13"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-02-16"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-05-19"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-05-28"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-06-08"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-06-09"
+    },
+    {
+      "designer": "Jecko Gevaña",
+      "date": "2026-07-03"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2025-12-29"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-01-02"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-01-28"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-02-05"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-02-13"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-03-23"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-04-10"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-05-07"
+    },
+    {
+      "designer": "Ronnel Gozon",
+      "date": "2026-06-02"
+    },
+    {
+      "designer": "Mary Genevieve Mendoza",
+      "date": "2026-02-02"
+    },
+    {
+      "designer": "Mary Genevieve Mendoza",
+      "date": "2026-02-25"
+    },
+    {
+      "designer": "Mary Genevieve Mendoza",
+      "date": "2026-03-27"
+    },
+    {
+      "designer": "Mary Genevieve Mendoza",
+      "date": "2026-04-15"
+    },
+    {
+      "designer": "Mary Genevieve Mendoza",
+      "date": "2026-04-28"
+    },
+    {
+      "designer": "John Patrick Salazar",
+      "date": "2026-02-10"
+    },
+    {
+      "designer": "John Patrick Salazar",
+      "date": "2026-03-03"
+    },
+    {
+      "designer": "John Patrick Salazar",
+      "date": "2026-05-05"
+    },
+    {
+      "designer": "John Patrick Salazar",
+      "date": "2026-07-03"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2025-12-29"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-04-01"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-04-10"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-04-24"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-06-11"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-06-24"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-07-03"
+    }
+  ]
 }

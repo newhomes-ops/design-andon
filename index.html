@@ -1281,6 +1281,8 @@ const TYPE_TO_LEVEL = {
   'NH Commercial Project - Estimate': 'Commercial Design',
   'Tier 0 Helioscope':                'Commercial Design',
   'PVbid Project Estimate':           'Commercial Design',
+  'Commercial BOM':                   'Commercial Design',
+  'Commercial Design Revision':       'Commercial Design',
   'Solar Site Plan':               'Community-Level Design'
 };
 const LEVELS    = ['Lot-Level Design','Community-Level Design','Commercial Design'];
@@ -1301,6 +1303,8 @@ const DEFAULT_PEQ_WEIGHTS = {
   'NH Commercial Project - Estimate': 6,
   'Tier 0 Helioscope':                6,
   'PVbid Project Estimate':           6,
+  'Commercial BOM':                   3,
+  'Commercial Design Revision':       3,
   'Solar Site Plan':               2,
 };
 let peqWeights = {...DEFAULT_PEQ_WEIGHTS};
@@ -1348,7 +1352,7 @@ const DEFAULT_NEW_HIRES = [
   'Alzech Ruzner Dela Cuesta'
 ];
 let newHires = [...DEFAULT_NEW_HIRES]; /* mutable — editable via UI */
-const SLA_TYPES = ['Master Plan','Individual Plot Plan','Individual Permit Package','NH Commercial Design - Maxfit','NH Commercial Project - Estimate','Tier 0 Helioscope','PVbid Project Estimate','Master Permit Package','Future Solar Exhibit','Solar Site Plan'];
+const SLA_TYPES = ['Master Plan','Individual Plot Plan','Individual Permit Package','NH Commercial Design - Maxfit','NH Commercial Project - Estimate','Tier 0 Helioscope','PVbid Project Estimate','Commercial BOM','Commercial Design Revision','Master Permit Package','Future Solar Exhibit','Solar Site Plan'];
 
 /** Complexity-adjusted volume: uses peqWeights (same system as PEQ screen).
  *  Edit weights via ✎ Edit weights on the PEQ screen — changes apply to both
@@ -1357,9 +1361,9 @@ function weightedVolume(rows){
   return rows.reduce((sum,r)=>sum+getEquiv(colG(r)),0);
 }
 const DEFAULT_SLA_TARGETS = {
-  avg: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
-  p50: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
-  p90: { 'Master Plan':5,'Individual Plot Plan':4,'Individual Permit Package':4,'NH Commercial Design - Maxfit':5,'NH Commercial Project - Estimate':5,'Tier 0 Helioscope':5,'PVbid Project Estimate':5,'Master Permit Package':5,'Future Solar Exhibit':5,'Solar Site Plan':5 },
+  avg: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Commercial BOM':3,'Commercial Design Revision':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
+  p50: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Commercial BOM':3,'Commercial Design Revision':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
+  p90: { 'Master Plan':5,'Individual Plot Plan':4,'Individual Permit Package':4,'NH Commercial Design - Maxfit':5,'NH Commercial Project - Estimate':5,'Tier 0 Helioscope':5,'PVbid Project Estimate':5,'Commercial BOM':5,'Commercial Design Revision':5,'Master Permit Package':5,'Future Solar Exhibit':5,'Solar Site Plan':5 },
 };
 let slaTargets = {
   avg: {...DEFAULT_SLA_TARGETS.avg},
@@ -1851,7 +1855,7 @@ function buildCommDesignRow(s1Row){
  *  col C (2) → Design Started Date     → colZ  (r[25])
  *  col D (3) → Estimated Completion    → colJ  (r[9])  & colAA (r[26])
  *  col E (4) → Designer: Full Name     → colI  (r[8])
- *  col G (6) → Design Notes (type)     → hardcoded 'NH Commercial Design - Maxfit' so getLevel() works
+ *  col G (6) → Design Notes (type)     → read from CSV col G; maps to 'Commercial Design' via TYPE_TO_LEVEL
  *  col H (7) → Design Due Date         → colDue (r[33])
  *  col I (8) → Request Type            → Rework colX (r[23]): 'Revision'→'2', else '0'
  */

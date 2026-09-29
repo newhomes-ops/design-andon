@@ -4311,13 +4311,29 @@ function saveIPSettings(){
   closeIPSettings();
   reloadFile();
 }
-function openPEQSettings(){ document.getElementById('peq-settings-overlay')?.classList.add('open'); }
+function openPEQSettings(){
+  const grid=document.getElementById('peq-weights-grid');
+  if(grid){
+    grid.innerHTML=Object.keys(DEFAULT_PEQ_WEIGHTS).map(k=>{
+      const hrs=peqWeights[k]??DEFAULT_PEQ_WEIGHTS[k]??1;
+      const equiv=Math.round(hrs/DAILY_HOURS*100)+'%';
+      return `<div style="display:grid;grid-template-columns:1fr 80px 80px;align-items:center;gap:.5rem;">
+        <label style="font-size:.75rem;color:var(--text);">${k}</label>
+        <input type="number" id="pw-${k.replace(/[^a-zA-Z0-9]/g,'-')}" min="0.5" max="24" step="0.5" value="${hrs}"
+          style="text-align:center;padding:.3rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:.8rem;"
+          oninput="this.nextElementSibling.textContent=Math.round(parseFloat(this.value||0)/${DAILY_HOURS}*100)+'%'">
+        <div style="font-size:.75rem;color:var(--muted);text-align:center;">${equiv}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('peq-settings-overlay')?.classList.add('open');
+}
 function closePEQSettings(){ document.getElementById('peq-settings-overlay')?.classList.remove('open'); }
 function savePEQSettings(){
   const keys=Object.keys(DEFAULT_PEQ_WEIGHTS);
   keys.forEach(k=>{
-    const el=document.getElementById('pw-'+k);
-    if(el){ const v=parseFloat(el.value); if(!isNaN(v)) peqWeights[k]=v; }
+    const el=document.getElementById('pw-'+k.replace(/[^a-zA-Z0-9]/g,'-'));
+    if(el){ const v=parseFloat(el.value); if(!isNaN(v)&&v>0) peqWeights[k]=v; }
   });
   try{ localStorage.setItem('andon_peq_weights',JSON.stringify(peqWeights)); }catch(e){}
   closePEQSettings();

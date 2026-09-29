@@ -738,6 +738,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <div id="tr-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
           </div>
           <button class="slicer-btn" id="tr-ytd-btn" onclick="trSelectYTD()">YTD</button>
+          <button class="slicer-btn btn-last7" id="tr-last7-btn" onclick="trSelectLast7()">Last 7</button>
         </div>
       </div>
       <!-- Legend (shared) -->
@@ -792,6 +793,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
             <button class="slicer-btn" id="s6-ytd-btn" onclick="s6SelectYTD()">YTD</button>
+            <button class="slicer-btn btn-last7" id="s6-last7-btn" onclick="s6SelectLast7()">Last 7</button>
           </div>
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
@@ -858,7 +860,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
             <div id="fpy-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
           </div>
-          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button></div>
+          <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;"><span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span><button id="fpy-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button><button id="fpy-last7-btn" class="slicer-btn btn-last7" onclick="s7SelectLast7()">Last 7</button></div>
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
             <select id="s7-designer-select" class="slicer-select" onchange="s7SetDesigner(this.value)"><option value="all">All</option></select>
@@ -936,6 +938,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.2rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Period</span>
             <button id="s9-ytd-btn" class="slicer-btn" onclick="s7SelectYTD()">YTD</button>
+            <button id="s9-last7-btn" class="slicer-btn btn-last7" onclick="s7SelectLast7()">Last 7</button>
           </div>
           <div style="display:flex;align-items:center;gap:.4rem;margin-left:.4rem;">
             <span style="font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Designer</span>
@@ -1375,17 +1378,17 @@ let slaTypeMetric = 'p50'; /* avg | p50 | p90 */
 
 let fpyRawRows=[], fpyChart=null, c4FpyChart=null, l7FpyChart=null, peqDonutChart=null, peqView='daily';
 let hiddenScreens=new Set(); /* screen indices to hide from rotation */
-let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false;
+let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false, s7SelLast7=true;
 
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
 let s4SelYear=null, s4SelQ=null, s4SelMonth=null, s4SelYTD=false;
 /* ── COMBINED TEAM REPORTS (screen 5) ── */
 let trLotChart=null, trCommChart=null, trComlChart=null;
-let trSelYear=null, trSelQ=null, trSelMonth=null, trSelYTD=false;
+let trSelYear=null, trSelQ=null, trSelMonth=null, trSelYTD=false, trSelLast7=true;
 /* Per-screen date filter state for screens 0-3 (shared — same date range applies) */
 let sfFrom='', sfTo='';
 let s5SelYear=null, s5SelQ=null, s5SelMonth=null, s5SelYTD=false;
-let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false;
+let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false, s6SelLast7=true;
 let s6DesignerFilter='all'; /* SLA screen designer filter */
 let s7DesignerFilter='all'; /* FPY + Design Pass Rate designer filter */
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
@@ -1578,6 +1581,15 @@ function applyLastTenWorkDays(){
   const minDate = lastNWorkDays(7, maxDate);
   sfFrom = toYMD(minDate);
   sfTo   = toYMD(maxDate);
+}
+
+function getLast7Range(){
+  const dates=rawRows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d));
+  if(!dates.length) return null;
+  const maxDate=new Date(Math.max(...dates));
+  const minDate=lastNWorkDays(7,maxDate);
+  const endDate=new Date(maxDate); endDate.setHours(23,59,59,999);
+  return {start:minDate,end:endDate,label:'Last 7 work days'};
 }
 
 function parseDate(str){
@@ -2866,7 +2878,7 @@ function renderTeamReports(){
     allDates.filter(d=>getFiscalYear(d)===trSelYear&&getQuarter(d)===trSelQ).map(d=>d.getMonth())
   );
   document.getElementById('tr-m-slicer').innerHTML=
-    `<button class="slicer-btn ${trSelMonth===null?'active':''}" onclick="trSelectMonth(null)">All</button>`+
+    `<button class="slicer-btn ${trSelMonth===null&&!trSelLast7?'active':''}" onclick="trSelectMonth(null)">All</button>`+
     qMonths.filter(m=>availMonths.has(m)).map(m=>{
       const active=(trSelMonth===m)?'active':'';
       return `<button class="slicer-btn ${active}" onclick="trSelectMonth(${m})">${MONTH_NAMES[m]}</button>`;
@@ -2876,19 +2888,28 @@ function renderTeamReports(){
   let rangeStart, rangeEnd, rangeLabel;
   const ytdBtn=document.getElementById('tr-ytd-btn');
   if(ytdBtn) ytdBtn.classList.toggle('active',trSelYTD);
-  if(trSelYTD){
-    rangeStart=fiscalYearStart(trSelYear);
-    rangeEnd  =new Date(trSelYear,11,31,23,59,59);
-    rangeLabel=`FY${String(trSelYear).slice(2)} YTD`;
-  } else if(trSelMonth!==null){
-    const mYr=monthYrInFQ(trSelYear,trSelQ,trSelMonth);
-    rangeStart=new Date(mYr,trSelMonth,1);
-    rangeEnd  =new Date(mYr,trSelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[trSelMonth]} ${mYr}`;
-  } else {
-    const fqd=fiscalQtrDates(trSelYear,trSelQ);
-    rangeStart=fqd.start; rangeEnd=fqd.end;
-    rangeLabel=`${qtrLabel(trSelYear,trSelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+  const tr7Btn=document.getElementById('tr-last7-btn');
+  if(tr7Btn) tr7Btn.classList.toggle('active',trSelLast7);
+  if(trSelLast7){
+    const r7=getLast7Range();
+    if(r7){ rangeStart=r7.start; rangeEnd=r7.end; rangeLabel=r7.label; }
+    else { trSelLast7=false; }
+  }
+  if(!trSelLast7){
+    if(trSelYTD){
+      rangeStart=fiscalYearStart(trSelYear);
+      rangeEnd  =new Date(trSelYear,11,31,23,59,59);
+      rangeLabel=`FY${String(trSelYear).slice(2)} YTD`;
+    } else if(trSelMonth!==null){
+      const mYr=monthYrInFQ(trSelYear,trSelQ,trSelMonth);
+      rangeStart=new Date(mYr,trSelMonth,1);
+      rangeEnd  =new Date(mYr,trSelMonth+1,0,23,59,59);
+      rangeLabel=`${MONTH_NAMES[trSelMonth]} ${mYr}`;
+    } else {
+      const fqd=fiscalQtrDates(trSelYear,trSelQ);
+      rangeStart=fqd.start; rangeEnd=fqd.end;
+      rangeLabel=`${qtrLabel(trSelYear,trSelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    }
   }
   document.getElementById('tr-range-label').textContent=rangeLabel;
 
@@ -2910,15 +2931,20 @@ function renderTeamReports(){
 }
 
 function trSelectQ(year,q){
-  trSelYear=parseInt(year); trSelQ=parseInt(q); trSelMonth=null; trSelYTD=false;
+  trSelYear=parseInt(year); trSelQ=parseInt(q); trSelMonth=null; trSelYTD=false; trSelLast7=false;
   renderTeamReports();
 }
 function trSelectMonth(m){
-  trSelMonth=(m===null)?null:parseInt(m); trSelYTD=false;
+  trSelMonth=(m===null)?null:parseInt(m); trSelYTD=false; trSelLast7=false;
   renderTeamReports();
 }
 function trSelectYTD(){
-  trSelYTD=!trSelYTD; if(trSelYTD) trSelMonth=null;
+  trSelYTD=!trSelYTD; if(trSelYTD){ trSelMonth=null; trSelLast7=false; }
+  renderTeamReports();
+}
+function trSelectLast7(){
+  trSelLast7=!trSelLast7;
+  if(trSelLast7){ trSelYTD=false; trSelMonth=null; }
   renderTeamReports();
 }
 
@@ -3087,7 +3113,7 @@ function renderScreen6(){
     allDates.filter(d=>getFiscalYear(d)===s6SelYear&&getQuarter(d)===s6SelQ).map(d=>d.getMonth())
   );
   document.getElementById('sla-m-slicer').innerHTML=
-    `<button class="slicer-btn ${s6SelMonth===null?'active':''}" onclick="s6SelectMonth(null)">All</button>`+
+    `<button class="slicer-btn ${s6SelMonth===null&&!s6SelLast7?'active':''}" onclick="s6SelectMonth(null)">All</button>`+
     qMonths.filter(m=>availMonths.has(m)).map(m=>{
       const active=(s6SelMonth===m)?'active':'';
       return `<button class="slicer-btn ${active}" onclick="s6SelectMonth(${m})">${MONTH_NAMES[m]}</button>`;
@@ -3097,19 +3123,28 @@ function renderScreen6(){
   let rangeStart, rangeEnd, rangeLabel;
   const s6ytdBtn=document.getElementById('s6-ytd-btn');
   if(s6ytdBtn) s6ytdBtn.classList.toggle('active',s6SelYTD);
-  if(s6SelYTD){
-    rangeStart=fiscalYearStart(s6SelYear);
-    rangeEnd  =new Date(s6SelYear,11,31,23,59,59);
-    rangeLabel=`FY${String(s6SelYear).slice(2)} YTD`;
-  } else if(s6SelMonth!==null){
-    const mYr=monthYrInFQ(s6SelYear,s6SelQ,s6SelMonth);
-    rangeStart=new Date(mYr,s6SelMonth,1);
-    rangeEnd  =new Date(mYr,s6SelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[s6SelMonth]} ${mYr}`;
-  } else {
-    const fqd=fiscalQtrDates(s6SelYear,s6SelQ);
-    rangeStart=fqd.start; rangeEnd=fqd.end;
-    rangeLabel=`${qtrLabel(s6SelYear,s6SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+  const s6l7Btn=document.getElementById('s6-last7-btn');
+  if(s6l7Btn) s6l7Btn.classList.toggle('active',s6SelLast7);
+  if(s6SelLast7){
+    const r7=getLast7Range();
+    if(r7){ rangeStart=r7.start; rangeEnd=r7.end; rangeLabel=r7.label; }
+    else { s6SelLast7=false; }
+  }
+  if(!s6SelLast7){
+    if(s6SelYTD){
+      rangeStart=fiscalYearStart(s6SelYear);
+      rangeEnd  =new Date(s6SelYear,11,31,23,59,59);
+      rangeLabel=`FY${String(s6SelYear).slice(2)} YTD`;
+    } else if(s6SelMonth!==null){
+      const mYr=monthYrInFQ(s6SelYear,s6SelQ,s6SelMonth);
+      rangeStart=new Date(mYr,s6SelMonth,1);
+      rangeEnd  =new Date(mYr,s6SelMonth+1,0,23,59,59);
+      rangeLabel=`${MONTH_NAMES[s6SelMonth]} ${mYr}`;
+    } else {
+      const fqd=fiscalQtrDates(s6SelYear,s6SelQ);
+      rangeStart=fqd.start; rangeEnd=fqd.end;
+      rangeLabel=`${qtrLabel(s6SelYear,s6SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    }
   }
   document.getElementById('sla-quarter-label').textContent=rangeLabel;
 
@@ -3223,12 +3258,12 @@ function renderScreen6(){
 function s6SelectQ(year,q){
   s6SelYear=parseInt(year);
   s6SelQ=parseInt(q);
-  s6SelMonth=null;
+  s6SelMonth=null; s6SelLast7=false;
   renderScreen6();
 }
 
 function s6SelectMonth(m){
-  s6SelMonth=(m===null)?null:parseInt(m);
+  s6SelMonth=(m===null)?null:parseInt(m); s6SelLast7=false;
   renderScreen6();
 }
 
@@ -3314,7 +3349,7 @@ function renderScreen7(){
     allDates.filter(d=>getFiscalYear(d)===s7SelYear&&getQuarter(d)===s7SelQ).map(d=>d.getMonth())
   );
   document.getElementById('fpy-m-slicer').innerHTML=
-    `<button class="slicer-btn ${s7SelMonth===null?'active':''}" onclick="s7SelectMonth(null)">All</button>`+
+    `<button class="slicer-btn ${s7SelMonth===null&&!s7SelLast7?'active':''}" onclick="s7SelectMonth(null)">All</button>`+
     qMonths.filter(m=>availMonths.has(m)).map(m=>{
       const active=(s7SelMonth===m)?'active':'';
       return `<button class="slicer-btn ${active}" onclick="s7SelectMonth(${m})">${MONTH_NAMES[m]}</button>`;
@@ -3322,19 +3357,28 @@ function renderScreen7(){
 
   /* Date range */
   let rangeStart, rangeEnd, rangeLabel;
-  if(s7SelYTD){
-    rangeStart=fiscalYearStart(s7SelYear);
-    rangeEnd  =new Date(s7SelYear,11,31,23,59,59);
-    rangeLabel=`FY${String(s7SelYear).slice(2)} YTD`;
-  } else if(s7SelMonth!==null){
-    const mYr=monthYrInFQ(s7SelYear,s7SelQ,s7SelMonth);
-    rangeStart=new Date(mYr,s7SelMonth,1);
-    rangeEnd  =new Date(mYr,s7SelMonth+1,0,23,59,59);
-    rangeLabel=`${MONTH_NAMES[s7SelMonth]} ${mYr}`;
-  } else {
-    const fqd=fiscalQtrDates(s7SelYear,s7SelQ);
-    rangeStart=fqd.start; rangeEnd=fqd.end;
-    rangeLabel=`${qtrLabel(s7SelYear,s7SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+  const s7l7Btn=document.getElementById('fpy-last7-btn');
+  if(s7l7Btn) s7l7Btn.classList.toggle('active',s7SelLast7);
+  if(s7SelLast7){
+    const r7=getLast7Range();
+    if(r7){ rangeStart=r7.start; rangeEnd=r7.end; rangeLabel=r7.label; }
+    else { s7SelLast7=false; }
+  }
+  if(!s7SelLast7){
+    if(s7SelYTD){
+      rangeStart=fiscalYearStart(s7SelYear);
+      rangeEnd  =new Date(s7SelYear,11,31,23,59,59);
+      rangeLabel=`FY${String(s7SelYear).slice(2)} YTD`;
+    } else if(s7SelMonth!==null){
+      const mYr=monthYrInFQ(s7SelYear,s7SelQ,s7SelMonth);
+      rangeStart=new Date(mYr,s7SelMonth,1);
+      rangeEnd  =new Date(mYr,s7SelMonth+1,0,23,59,59);
+      rangeLabel=`${MONTH_NAMES[s7SelMonth]} ${mYr}`;
+    } else {
+      const fqd=fiscalQtrDates(s7SelYear,s7SelQ);
+      rangeStart=fqd.start; rangeEnd=fqd.end;
+      rangeLabel=`${qtrLabel(s7SelYear,s7SelQ)} — ${rangeStart.toLocaleDateString([],{month:'short',day:'numeric'})} to ${rangeEnd.toLocaleDateString([],{month:'short',day:'numeric'})}`;
+    }
   }
   document.getElementById('fpy-quarter-label').textContent=rangeLabel;
   const ytdBtn=document.getElementById('fpy-ytd-btn');
@@ -3345,6 +3389,8 @@ function renderScreen7(){
   if(s9mEl) s9mEl.innerHTML=document.getElementById('fpy-m-slicer').innerHTML;
   const s9ytdBtn=document.getElementById('s9-ytd-btn');
   if(s9ytdBtn) s9ytdBtn.classList.toggle('active', s7SelYTD);
+  const s9l7Btn=document.getElementById('s9-last7-btn');
+  if(s9l7Btn) s9l7Btn.classList.toggle('active',s7SelLast7);
 
   /* Populate designer dropdowns (screens 8 & 9 share same filter) */
   const allDes7=[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].sort();
@@ -3862,12 +3908,12 @@ function renderC4DesignFpyChart(rangeStart, rangeEnd, rangeLabel){
 }
 
 function s7SelectQ(year,q){
-  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null; s7SelYTD=false;
+  s7SelYear=parseInt(year); s7SelQ=parseInt(q); s7SelMonth=null; s7SelYTD=false; s7SelLast7=false;
   renderScreen7();
 }
 function s7SelectMonth(m){
   s7SelMonth=(m===null)?null:parseInt(m);
-  s7SelYTD=false;
+  s7SelYTD=false; s7SelLast7=false;
   renderScreen7();
 }
 
@@ -3904,12 +3950,22 @@ function s5SelectYTD(){
 }
 function s6SelectYTD(){
   s6SelYTD=!s6SelYTD;
-  if(s6SelYTD){ s6SelMonth=null; }
+  if(s6SelYTD){ s6SelMonth=null; s6SelLast7=false; }
+  renderScreen6();
+}
+function s6SelectLast7(){
+  s6SelLast7=!s6SelLast7;
+  if(s6SelLast7){ s6SelYTD=false; s6SelMonth=null; }
   renderScreen6();
 }
 function s7SelectYTD(){
   s7SelYTD=true;
-  s7SelMonth=null;
+  s7SelMonth=null; s7SelLast7=false;
+  renderScreen7();
+}
+function s7SelectLast7(){
+  s7SelLast7=!s7SelLast7;
+  if(s7SelLast7){ s7SelYTD=false; s7SelMonth=null; }
   renderScreen7();
 }
 function s6SetDesigner(v){ s6DesignerFilter=v; renderScreen6(); }

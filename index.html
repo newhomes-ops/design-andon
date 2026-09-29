@@ -1883,8 +1883,13 @@ function buildCommercialRow(s1Row){
 function mergeAndApply(){
   const qaMap=buildQAMap(lotQARaws);
 
-  // Keep legacy rows that completed on or before the cutoff
+  // Keep legacy rows that completed on or before the cutoff.
+  // Exception: commercial-type rows (NH Commercial Design - Maxfit, NH Commercial
+  // Project - Estimate) are exempt from the cutoff — they are NOT duplicated in
+  // Commercial.csv (which only holds Tier 0 and PVbid), so they must be retained
+  // regardless of date to avoid silently dropping post-WW22 commercial jobs.
   const legacyRows=legacyDesignRaws.filter(r=>{
+    if(getLevel(colG(r))==='Commercial Design') return true; // always keep
     const d=parseDate(colJ(r));
     if(!d||isNaN(d)) return true; // keep undated rows
     return d<=WW22_CUTOFF;

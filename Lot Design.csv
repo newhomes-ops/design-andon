@@ -16,7 +16,7 @@ a3TUS00000BrgXT,1,7/16/2026,7/17/2026,Jonna Joy Calabia,0179382,Individual Plot 
 a3TUS00000B0ujN,0,6/16/2026,6/16/2026,Brent Kliford Mara,0056456,Individual Plot Plan,6/16/2026,6/16/2026
 a3TiL000000DiOF,1,9/30/2026,10/1/2026,Jonna Joy Calabia,0179559,Individual Plot Plan,10/7/2026,10/1/2026
 a3TiL000000DiOE,1,9/30/2026,10/1/2026,Jonna Joy Calabia,0179558,Individual Plot Plan,10/7/2026,10/1/2026
-a3TiL000000DiOD,2,9/30/2026,-,Jonna Joy Calabia,0179557,Individual Plot Plan,10/7/2026,10/1/2026
+a3TiL000000DiOD,7,9/30/2026,-,Jonna Joy Calabia,0179557,Individual Plot Plan,10/7/2026,10/1/2026
 a3TUS00000BldPO,1,7/13/2026,7/14/2026,Jonna Joy Calabia,0179372,Individual Plot Plan,7/16/2026,7/14/2026
 a3TUS00000B1Ikl,191,12/23/2024,7/2/2025,Ronnel Gozon,0074744,Individual Plot Plan,6/18/2026,6/17/2026
 a3TUS00000B16v8,1,2/5/2026,2/6/2026,Jonna Joy Calabia,0039598,Individual Plot Plan,7/22/2026,7/21/2026
@@ -45,6 +45,7 @@ a3TUS00000B2upN,1,6/4/2026,6/5/2026,Jecko Gevaña,0179273,Individual Plot Plan,6
 a3TUS00000BrrSt,1,7/16/2026,7/17/2026,Jonna Joy Calabia,0179383,Individual Plot Plan,9/25/2026,7/17/2026
 a3TUS00000BrrSu,4,7/16/2026,7/20/2026,Jonna Joy Calabia,0179384,Individual Plot Plan,9/25/2026,7/20/2026
 a3TUS00000BrrSv,4,7/16/2026,7/20/2026,Jonna Joy Calabia,0179385,Individual Plot Plan,9/25/2026,7/20/2026
+a3TUS00000B1U5q,0,3/10/2026,3/10/2026,Jonna Joy Calabia,0109667,Individual Plot Plan,10/6/2026,10/6/2026
 a3TUS00000C94iE,0,8/3/2026,8/3/2026,Jonna Joy Calabia,0179406,Individual Plot Plan,8/6/2026,8/3/2026
 a3TUS00000B0sTB,1,12/2/2025,12/3/2025,John Patrick Salazar,0075060,Individual Plot Plan,12/4/2025,5/29/2026
 a3TUS00000C94iF,1,8/3/2026,8/4/2026,Jonna Joy Calabia,0179407,Individual Plot Plan,8/6/2026,8/4/2026
@@ -66,18 +67,21 @@ a3TUS00000Bry7n,4,7/16/2026,7/20/2026,Jonna Joy Calabia,0179391,Individual Plot 
 a3TUS00000B1MME,9,5/20/2026,5/29/2026,Ronnel Gozon,0089166,Individual Permit Package,5/30/2026,5/29/2026
 a3TUS00000B1pK1,1,7/30/2026,7/31/2026,Jonna Joy Calabia,0155725,Individual Plot Plan,8/25/2026,7/31/2026
 a3TUS00000B1j7T,1,6/16/2026,6/17/2026,Jecko Gevaña,0176123,Individual Plot Plan,6/16/2026,6/17/2026
+a3TiL000000H9ms,0,10/6/2026,10/6/2026,Jonna Joy Calabia,0179563,Individual Permit Package,10/9/2026,10/6/2026
+a3TiL000000H9mr,1,10/6/2026,10/7/2026,Jonna Joy Calabia,0179562,Individual Permit Package,10/9/2026,10/7/2026
 a3TUS00000B1W4d,14,5/20/2026,6/3/2026,Ronnel Gozon,0114478,Individual Permit Package,6/4/2026,6/3/2026
 a3TiL0000005ZbR,6,9/4/2026,9/10/2026,Jonna Joy Calabia,0179451,Individual Permit Package,10/28/2026,9/10/2026
 a3TUS00000Blmne,11,7/13/2026,7/24/2026,Jonna Joy Calabia,0179379,Individual Plot Plan,7/16/2026,7/24/2026
 a3TUS00000B19G2,0,3/10/2026,3/10/2026,Mary Genevieve Mendoza,0046780,Individual Plot Plan,7/9/2026,7/9/2026
 a3TUS00000B18Fi,3,2/6/2026,2/9/2026,Mary Genevieve Mendoza,0065557,Individual Plot Plan,8/12/2026,8/12/2026
 a3TUS00000B0t50,1,12/2/2025,12/3/2025,Jonna Joy Calabia,0064883,Individual Plot Plan,12/4/2025,5/29/2026
+a3TiL000000H9mt,0,10/6/2026,10/6/2026,Brent Kliford Mara,0179564,Individual Permit Package,10/9/2026,10/6/2026
 a3TUS00000B1W7a,1,7/1/2026,7/2/2026,Brent Kliford Mara,0114511,Individual Plot Plan,7/1/2026,7/2/2026
 a3TUS00000Bry7q,5,7/16/2026,7/21/2026,Jonna Joy Calabia,0179394,Individual Plot Plan,9/25/2026,7/21/2026
 a3TiL0000003TYY,6,9/1/2026,9/7/2026,Jonna Joy Calabia,0179447,Individual Plot Plan,9/23/2026,9/7/2026
 a3TiL0000003TYX,6,9/1/2026,9/7/2026,Jonna Joy Calabia,0179446,Individual Plot Plan,9/23/2026,9/7/2026
 a3TUS00000BCRuB,1,6/4/2026,6/5/2026,Mary Genevieve Mendoza,0179326,Individual Plot Plan,6/26/2026,6/5/2026
-a3TiL0000006Vyo,21,9/11/2026,-,Brent Kliford Mara,0179466,Individual Plot Plan,9/29/2026,9/22/2026
+a3TiL0000006Vyo,26,9/11/2026,-,Brent Kliford Mara,0179466,Individual Plot Plan,9/29/2026,9/22/2026
 a3TiL000000AXcD,9,9/23/2026,10/2/2026,Brent Kliford Mara,0179520,Individual Plot Plan,10/15/2026,10/2/2026
 a3TUS00000BCRuF,1,6/4/2026,6/5/2026,Ronnel Gozon,0179330,Individual Plot Plan,6/26/2026,6/5/2026
 a3TUS00000BCRuD,1,6/4/2026,6/5/2026,Mary Genevieve Mendoza,0179328,Individual Plot Plan,6/26/2026,6/5/2026
@@ -91,7 +95,9 @@ a3TiL0000006Vyn,11,9/11/2026,9/22/2026,Brent Kliford Mara,0179465,Individual Plo
 a3TUS00000BCRuC,1,6/4/2026,6/5/2026,Ronnel Gozon,0179327,Individual Plot Plan,6/26/2026,6/5/2026
 a3TUS00000BCRuA,4,6/4/2026,6/8/2026,Ronnel Gozon,0179325,Individual Plot Plan,6/26/2026,6/8/2026
 a3TUS00000B0wxO,2,5/16/2025,5/18/2025,Jonna Joy Calabia,0020102,Individual Plot Plan,5/29/2025,8/17/2026
+a3TiL000000H9gQ,0,10/6/2026,10/6/2026,Jecko Gevaña,0179561,Individual Permit Package,10/9/2026,10/6/2026
 a3TiL0000000Caf,10,8/18/2026,8/28/2026,Jonna Joy Calabia,0179440,Individual Plot Plan,9/29/2026,8/28/2026
+a3TiL000000H9gP,0,10/6/2026,10/6/2026,Jecko Gevaña,0179560,Individual Permit Package,10/9/2026,10/6/2026
 a3TUS00000BIlGf,1,6/10/2026,6/11/2026,Jonna Joy Calabia,0179343,Individual Plot Plan,6/15/2026,6/11/2026
 a3TUS00000B1hfr,0,2/27/2026,2/27/2026,Jonna Joy Calabia,0137560,Individual Plot Plan,3/3/2026,8/12/2026
 a3TUS00000B0tYQ,4,2/12/2026,2/16/2026,Jonna Joy Calabia,0006549,Individual Plot Plan,8/12/2026,8/12/2026
@@ -122,9 +128,9 @@ a3TiL0000006Vh5,5,9/11/2026,9/16/2026,Jonna Joy Calabia,0179463,Individual Plot 
 a3TUS00000B0vZZ,0,6/15/2026,6/15/2026,Jonna Joy Calabia,0008733,Individual Plot Plan,6/12/2026,6/15/2026
 a3TiL0000006Vh3,11,9/11/2026,9/22/2026,Brent Kliford Mara,0179461,Individual Plot Plan,9/29/2026,9/22/2026
 a3TiL0000006Vh4,11,9/11/2026,9/22/2026,Brent Kliford Mara,0179462,Individual Plot Plan,9/29/2026,9/22/2026
-a3TiL000000Ajzz,8,9/24/2026,-,Brent Kliford Mara,0179525,Individual Plot Plan,9/29/2026,9/28/2026
+a3TiL000000Ajzz,13,9/24/2026,-,Brent Kliford Mara,0179525,Individual Plot Plan,9/29/2026,9/28/2026
 a3TiL000000Ajzx,4,9/24/2026,9/28/2026,Brent Kliford Mara,0179523,Individual Plot Plan,9/29/2026,9/28/2026
-a3TUS00000BTxCs,101,6/23/2026,-,Mary Genevieve Mendoza,0179359,Individual Permit Package,6/23/2026,6/23/2026
+a3TUS00000BTxCs,106,6/23/2026,-,Mary Genevieve Mendoza,0179359,Individual Permit Package,6/23/2026,6/23/2026
 a3TiL000000Ajzy,4,9/24/2026,9/28/2026,Brent Kliford Mara,0179524,Individual Plot Plan,9/29/2026,9/28/2026
 a3TiL0000000BwL,16,8/18/2026,9/3/2026,Jonna Joy Calabia,0179429,Individual Plot Plan,9/4/2026,9/3/2026
 a3TUS00000B0pyl,0,6/4/2026,6/4/2026,Jecko Gevaña,0000906,Individual Plot Plan,6/12/2026,6/4/2026
@@ -208,7 +214,7 @@ a3TUS00000B1JOn,6,5/20/2026,5/26/2026,Ronnel Gozon,0085021,Individual Permit Pac
 a3TUS00000BKcNm,4,6/12/2026,6/16/2026,Jonna Joy Calabia,0179348,Individual Plot Plan,6/12/2026,6/16/2026
 a3TiL00000072Ms,7,9/16/2026,9/23/2026,Brent Kliford Mara,0179485,Individual Plot Plan,11/12/2026,9/23/2026
 a3TiL00000072Mr,7,9/16/2026,9/23/2026,Brent Kliford Mara,0179484,Individual Plot Plan,11/12/2026,9/23/2026
-a3TiL0000008tFS,10,9/22/2026,-,Jonna Joy Calabia,0179512,Individual Permit Package,9/18/2026,9/23/2026
+a3TiL0000008tFS,15,9/22/2026,-,Jonna Joy Calabia,0179512,Individual Permit Package,9/18/2026,9/23/2026
 a3TiL0000008tFR,1,9/22/2026,9/23/2026,Jonna Joy Calabia,0179511,Individual Permit Package,9/25/2026,9/23/2026
 a3TUS00000BKjkD,1,6/15/2026,6/16/2026,Jonna Joy Calabia,0179350,Individual Plot Plan,6/15/2026,6/16/2026
 a3TUS00000BKjkF,0,6/18/2026,6/18/2026,Ronnel Gozon,0179352,Individual Plot Plan,6/18/2026,6/18/2026
@@ -338,6 +344,7 @@ a3TUS00000BAaFF,0,6/3/2026,6/3/2026,Jonna Joy Calabia,0179302,Individual Plot Pl
 a3TUS00000BAaFH,0,6/3/2026,6/3/2026,Jonna Joy Calabia,0179304,Individual Plot Plan,6/26/2026,6/3/2026
 a3TiL0000007HaQ,5,9/18/2026,9/23/2026,Jecko Gevaña,0179497,Individual Plot Plan,10/6/2026,9/23/2026
 a3TUS00000BAaFD,0,6/3/2026,6/3/2026,Jonna Joy Calabia,0179300,Individual Plot Plan,6/26/2026,6/3/2026
+a3TUS00000B1iVc,0,3/10/2026,3/10/2026,Jonna Joy Calabia,0139768,Individual Plot Plan,10/6/2026,10/6/2026
 a3TUS00000B52e0,1,5/28/2026,5/29/2026,Jonna Joy Calabia,0179297,Individual Plot Plan,5/29/2026,5/29/2026
 a3TUS00000B52dy,0,5/28/2026,5/28/2026,Ronnel Gozon,0179295,Individual Plot Plan,5/29/2026,5/28/2026
 a3TUS00000B13Mu,0,9/7/2023,9/7/2023,John Mars Venus,0033169,Individual Permit Package,9/5/2023,6/1/2026

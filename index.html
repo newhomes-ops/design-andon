@@ -49,8 +49,8 @@ body.light-mode {
   --border-radius-md: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:18px;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+html{font-size:18px;height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100%;overflow:hidden;}
 
 /* ─── UPLOAD ─── */
 #upload-screen{
@@ -75,7 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .status-bar.loading{background:rgba(124,131,253,.1);color:#a5a9ff;border:1px solid rgba(124,131,253,.2);}
 
 /* ─── BOARD SHELL ─── */
-#board{display:none;min-height:100vh;flex-direction:column;}
+#board{display:none;height:100%;flex-direction:column;overflow:hidden;}
 
 /* ─── HEADER ─── */
 .board-header{
@@ -752,7 +752,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <!-- Lot-Level -->
         <div class="panel" style="display:flex;flex-direction:column;">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lot);font-weight:700;margin-bottom:.4rem;">Lot-Level</div>
-          <div style="position:relative;flex:1;min-height:230px;">
+          <div style="position:relative;flex:1;min-height:0;">
             <canvas id="trLotChart" role="img" aria-label="Lot-level weekly chart"></canvas>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-lot-summary"></div>
@@ -760,7 +760,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <!-- Community-Level -->
         <div class="panel" style="display:flex;flex-direction:column;">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--community);font-weight:700;margin-bottom:.4rem;">Community-Level</div>
-          <div style="position:relative;flex:1;min-height:230px;">
+          <div style="position:relative;flex:1;min-height:0;">
             <canvas id="trCommChart" role="img" aria-label="Community-level weekly chart"></canvas>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-comm-summary"></div>
@@ -768,7 +768,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <!-- Commercial -->
         <div class="panel" style="display:flex;flex-direction:column;">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--commercial);font-weight:700;margin-bottom:.4rem;">Commercial</div>
-          <div style="position:relative;flex:1;min-height:230px;">
+          <div style="position:relative;flex:1;min-height:0;">
             <canvas id="trComlChart" role="img" aria-label="Commercial weekly chart"></canvas>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-coml-summary"></div>
@@ -803,7 +803,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
       </div>
 
       <!-- Main two-column layout -->
-      <div style="display:grid;grid-template-columns:1fr 600px;gap:1rem;height:calc(100% - 48px);">
+      <div style="display:grid;grid-template-columns:1fr minmax(0,480px);gap:1rem;flex:1;min-height:0;">
 
         <!-- LEFT: stat panels + mini charts -->
         <div style="display:flex;flex-direction:column;gap:.7rem;min-height:0;overflow:hidden;">
@@ -885,7 +885,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <div style="display:grid;grid-template-columns:1fr;gap:.9rem;flex:2;min-height:0;">
 
           <!-- C4: Community-Level Design FPY -->
-          <div class="panel" style="display:flex;flex-direction:column;min-height:480px;">
+          <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
             <div class="panel-header" style="margin-bottom:.6rem;">
               <div style="display:flex;flex-direction:column;gap:3px;">
                 <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">C4: Community Award to Final Design Approved</div>
@@ -901,7 +901,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           </div>
 
           <!-- L7: Lot-Level Design FPY -->
-          <div class="panel" style="display:flex;flex-direction:column;min-height:480px;">
+          <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
             <div class="panel-header" style="margin-bottom:.6rem;">
               <div style="display:flex;flex-direction:column;gap:3px;">
                 <div class="panel-title" style="font-size:.78rem;letter-spacing:.1em;color:var(--text);opacity:.7;">L7: Lot Design Requested to Lot Design Completed</div>

@@ -2282,28 +2282,10 @@ function renderScreen3(designers,rows){
   const ipComl=ipTotal('Commercial Design');
   const ipAll =ipLot+ipComm+ipComl;
 
-  /* ── In Progress tiles — always live from queue CSVs ── */
+  /* ── In Progress block — always visible; tile values managed exclusively
+        by fetchQueueCSVs() to avoid race with renderBoard() ── */
   const ipBlock=document.getElementById('s3-ip-block');
-  ipBlock.style.display='';
-  if(queueCSVsLoaded){
-    /* Queue data ready — show exact counts */
-    const lot  = queueCounts.lotDesign  + queueCounts.lotQA;
-    const comm = queueCounts.commDesign + queueCounts.commQA;
-    const coml = queueCounts.commercial;
-    document.getElementById('s3-ip-all').textContent  = lot + comm + coml;
-    document.getElementById('s3-ip-lot').textContent  = lot;
-    document.getElementById('s3-ip-comm').textContent = comm;
-    document.getElementById('s3-ip-coml').textContent = coml;
-    const lotSubEl  = document.getElementById('s3-ip-lot-sub');
-    const commSubEl = document.getElementById('s3-ip-comm-sub');
-    if(lotSubEl)  lotSubEl.textContent  = `Design: ${queueCounts.lotDesign} | QA: ${queueCounts.lotQA}`;
-    if(commSubEl) commSubEl.textContent = `Design: ${queueCounts.commDesign} | QA: ${queueCounts.commQA}`;
-  } else {
-    /* Still loading */
-    ['s3-ip-all','s3-ip-lot','s3-ip-comm','s3-ip-coml'].forEach(id=>{
-      const el=document.getElementById(id); if(el) el.textContent='…';
-    });
-  }
+  if(ipBlock) ipBlock.style.display='';
 
   /* ── Design OTD ── */
   function otdSub(o){ return o.total>0?o.pass+' pass / '+o.fail+' fail':'no due dates'; }
@@ -4967,16 +4949,23 @@ function fetchQueueCSVs(){
   ];
   Promise.all(fetches).then(()=>{
     queueCSVsLoaded = true;
+    const lot  = queueCounts.lotDesign  + queueCounts.lotQA;
+    const comm = queueCounts.commDesign + queueCounts.commQA;
+    const coml = queueCounts.commercial;
     /* Keep inProgress in sync for any legacy code that reads it */
-    inProgress['Lot-Level Design']       = queueCounts.lotDesign + queueCounts.lotQA;
-    inProgress['Community-Level Design'] = queueCounts.commDesign + queueCounts.commQA;
-    inProgress['Commercial Design']      = queueCounts.commercial;
-    /* Stamp "Last updated" tile */
-    const tsEl = document.getElementById('s3-ip-ts');
-    if(tsEl) tsEl.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    /* Force a render pass — renderScreen0 now reads directly from queueCounts */
-    const designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
-    renderScreen0(designers, filteredRows);
+    inProgress['Lot-Level Design']       = lot;
+    inProgress['Community-Level Design'] = comm;
+    inProgress['Commercial Design']      = coml;
+    /* Write ALL IP tiles directly — renderScreen0 never touches these */
+    function setEl(id,val){ const e=document.getElementById(id); if(e) e.textContent=val; }
+    setEl('s3-ip-all',  lot+comm+coml);
+    setEl('s3-ip-lot',  lot);
+    setEl('s3-ip-comm', comm);
+    setEl('s3-ip-coml', coml);
+    setEl('s3-ip-lot-sub',  `Design: ${queueCounts.lotDesign} | QA: ${queueCounts.lotQA}`);
+    setEl('s3-ip-comm-sub', `Design: ${queueCounts.commDesign} | QA: ${queueCounts.commQA}`);
+    setEl('s3-ip-coml-sub', 'in progress');
+    setEl('s3-ip-ts', new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
   });
 }
 

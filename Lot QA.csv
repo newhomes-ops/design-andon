@@ -1,7 +1,10 @@
 ﻿Community Lot ID,NH Task Name,Tickets Name,Created By: Full Name,Design QA Score,Design QA Date,Design QA Result
 a3TUS00000B1eoZ,Design QA,QA-001,Mary Genevieve Mendoza,100,9/4/2026,Pass
 a3TUS00000B1HiN,Design QA,QA-001,Mary Genevieve Mendoza,100,6/25/2026,Pass
+a3TiL000000JZOh,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
+a3TiL000000JZOg,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000B1dlt,Design QA,QA-001,Mary Genevieve Mendoza,98,6/15/2026,Fail
+a3TiL000000JZOf,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000B1p0u,Design QA,QA-001,Mary Genevieve Mendoza,100,6/17/2026,Pass
 a3TUS00000B3OAm,Design QA,QA-001,Mary Genevieve Mendoza,96,5/29/2026,Fail
 a3TUS00000B3OAl,Design QA,QA-001,Mary Genevieve Mendoza,100,5/28/2026,Pass
@@ -60,6 +63,7 @@ a3TUS00000B2upN,Design QA,QA-001,Mary Genevieve Mendoza,100,6/5/2026,Pass
 a3TUS00000BrrSt,Design QA,QA-001,Mary Genevieve Mendoza,100,7/19/2026,Pass
 a3TUS00000B1ksp,Design QA,QA-001,Mary Genevieve Mendoza,100,8/18/2026,Pass
 a3TUS00000BrrSu,Design QA,QA-001,Mary Genevieve Mendoza,100,7/20/2026,Pass
+a3TiL000000Janl,Design QA,QA-001,Mary Genevieve Mendoza,100,10/8/2026,Pass
 a3TUS00000BrrSv,Design QA,QA-001,Mary Genevieve Mendoza,100,7/20/2026,Pass
 a3TUS00000B0sTB,Design QA,QA-001,Mary Genevieve Mendoza,100,6/1/2026,Pass
 a3TUS00000C94iD,Design QA,QA-001,Mary Genevieve Mendoza,100,8/3/2026,Pass
@@ -99,6 +103,8 @@ a3TUS00000B1ZLr,Design QA,QA-001,Mary Genevieve Mendoza,100,6/25/2026,Pass
 a3TUS00000B18Fi,Design QA,QA-001,Mary Genevieve Mendoza,100,8/12/2026,Pass
 a3TUS00000B0t50,Design QA,QA-001,Mary Genevieve Mendoza,100,6/1/2026,Pass
 a3TiL000000H9mt,Design QA,QA-001,Mary Genevieve Mendoza,100,10/6/2026,Pass
+a3TiL000000JZGb,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
+a3TiL000000JZGc,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000B1W7a,Design QA,QA-001,Mary Genevieve Mendoza,99,7/2/2026,Fail
 a3TUS00000B11eL,Design QA,QA-001,Mary Genevieve Mendoza,100,8/20/2026,Pass
 a3TUS00000Bry7q,Design QA,QA-001,Mary Genevieve Mendoza,100,7/21/2026,Pass
@@ -107,6 +113,7 @@ a3TiL0000003TYX,Design QA,QA-001,Mary Genevieve Mendoza,100,9/7/2026,Pass
 a3TiL0000003TYY,Design QA,QA-001,Mary Genevieve Mendoza,98,9/7/2026,Fail
 a3TUS00000BCRuB,Design QA,QA-001,Mary Genevieve Mendoza,100,6/5/2026,Pass
 a3TUS00000BCRuF,Design QA,QA-001,Mary Genevieve Mendoza,100,6/5/2026,Pass
+a3TiL0000006Vyo,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TiL000000AXcD,Design QA,QA-001,John Mars Venus,100,10/2/2026,Pass
 a3TUS00000BCRuD,Design QA,QA-001,Mary Genevieve Mendoza,100,6/5/2026,Pass
 a3TUS00000BCRuE,Design QA,QA-001,Mary Genevieve Mendoza,100,6/5/2026,Pass
@@ -178,6 +185,7 @@ a3TUS00000B0xvg,Design QA,QA-001,Mary Genevieve Mendoza,100,9/2/2026,Pass
 a3TiL0000006Vh4,Design QA,QA-001,Mary Genevieve Mendoza,98,9/22/2026,Fail
 a3TUS00000B0vZZ,Design QA,QA-001,Mary Genevieve Mendoza,100,6/16/2026,Pass
 a3TiL000000Ajzx,Design QA,QA-001,Mary Genevieve Mendoza,100,9/28/2026,Pass
+a3TiL000000Ajzz,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TiL000000Ajzy,Design QA,QA-001,Mary Genevieve Mendoza,100,9/28/2026,Pass
 a3TiL0000000BwL,Design QA,QA-001,Mary Genevieve Mendoza,100,9/4/2026,Pass
 a3TUS00000B1FSc,Design QA,QA-001,Mary Genevieve Mendoza,100,6/24/2026,Pass
@@ -188,10 +196,13 @@ a3TUS00000B1gRu,Design QA,QA-001,Mary Genevieve Mendoza,100,8/18/2026,Pass
 a3TiL0000000Bxx,Design QA,QA-001,Mary Genevieve Mendoza,100,9/4/2026,Pass
 a3TiL00000070Xz,Design QA,QA-001,Mary Genevieve Mendoza,100,9/22/2026,Pass
 a3TiL00000070Xy,Design QA,QA-001,Mary Genevieve Mendoza,100,9/22/2026,Pass
+a3TiL000000JJv2,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TiL00000070Xx,Design QA,QA-001,Mary Genevieve Mendoza,100,9/21/2026,Pass
+a3TiL000000JJv1,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000BB8C1,Design QA,QA-001,Mary Genevieve Mendoza,98,6/4/2026,Fail
 a3TUS00000BB8C3,Design QA,QA-001,Mary Genevieve Mendoza,100,6/10/2026,Pass
 a3TUS00000B1cut,Design QA,QA-001,Mary Genevieve Mendoza,99,8/3/2026,Pass
+a3TiL000000JJv0,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000BB8C4,Design QA,QA-001,Mary Genevieve Mendoza,100,6/10/2026,Pass
 a3TiL000000Ak4n,Design QA,QA-001,Mary Genevieve Mendoza,100,9/28/2026,Pass
 a3TiL000000Ak4o,Design QA,QA-001,Mary Genevieve Mendoza,99,9/28/2026,Fail
@@ -230,6 +241,7 @@ a3TUS00000B1fjz,Design QA,QA-001,Mary Genevieve Mendoza,100,6/1/2026,Pass
 a3TUS00000B3MQi,Design QA,QA-001,Mary Genevieve Mendoza,100,5/28/2026,Pass
 a3TUS00000B3MQg,Design QA,QA-001,Mary Genevieve Mendoza,100,5/28/2026,Pass
 a3TiL000000AXU9,Design QA,QA-001,John Mars Venus,100,10/1/2026,Pass
+a3TiL00000072Rh,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000B1a9u,Design QA,QA-001,Mary Genevieve Mendoza,100,6/15/2026,Pass
 a3TUS00000B3MQh,Design QA,QA-001,Mary Genevieve Mendoza,100,5/28/2026,Pass
 a3TUS00000B3MQf,Design QA,QA-001,Mary Genevieve Mendoza,100,5/28/2026,Pass
@@ -283,6 +295,7 @@ a3TUS00000BKcNm,Design QA,QA-001,Mary Genevieve Mendoza,100,6/16/2026,Pass
 a3TiL00000072Mr,Design QA,QA-001,Mary Genevieve Mendoza,100,9/24/2026,Pass
 a3TiL00000072Ms,Design QA,QA-001,Mary Genevieve Mendoza,100,9/24/2026,Pass
 a3TUS00000B1q0c,Design QA,QA-001,Mary Genevieve Mendoza,100,7/31/2026,Pass
+a3TiL0000008tFS,Design QA,QA-001,Mary Genevieve Mendoza,100,10/9/2026,Pass
 a3TUS00000B1O7R,Design QA,QA-001,Mary Genevieve Mendoza,100,6/25/2026,Pass
 a3TiL0000008tFR,Design QA,QA-001,Mary Genevieve Mendoza,100,9/24/2026,Pass
 a3TUS00000BKjkD,Design QA,QA-001,Mary Genevieve Mendoza,100,6/16/2026,Pass

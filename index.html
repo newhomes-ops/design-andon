@@ -2282,12 +2282,11 @@ function renderScreen3(designers,rows){
   const ipAll =ipLot+ipComm+ipComl;
 
   const ipBlock=document.getElementById('s3-ip-block');
-  ipBlock.style.display=ipAll===0?'none':'';
-  document.getElementById('s3-ip-all').textContent =ipAll;
-  document.getElementById('s3-ip-lot').textContent =ipLot;
-  document.getElementById('s3-ip-comm').textContent=ipComm;
-  document.getElementById('s3-ip-coml').textContent=ipComl;
-  document.getElementById('s3-ip-ts').textContent  =ipAll>0?new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
+  ipBlock.style.display=''; /* always visible — counts come from live queue CSVs */
+  document.getElementById('s3-ip-all').textContent =ipAll>0?ipAll:'…';
+  document.getElementById('s3-ip-lot').textContent =ipLot>0||ipAll>0?ipLot:'…';
+  document.getElementById('s3-ip-comm').textContent=ipComm>0||ipAll>0?ipComm:'…';
+  document.getElementById('s3-ip-coml').textContent=ipComl>0||ipAll>0?ipComl:'…';
 
   /* ── Design OTD ── */
   function otdSub(o){ return o.total>0?o.pass+' pass / '+o.fail+' fail':'no due dates'; }

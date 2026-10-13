@@ -1630,6 +1630,7 @@ const COMM_DESIGNS_QUEUE_URL = 'https://raw.githubusercontent.com/newhomes-ops/d
 const COMM_QA_QUEUE_URL      = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Community%20QA%20Queue.csv';
 const COMMERCIAL_QUEUE_URL   = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Commercial%20Queue.csv';
 let queueCounts = { lotDesign:0, lotQA:0, commDesign:0, commQA:0, commercial:0 };
+let queueCSVsLoaded = false; /* true once the first successful queue fetch completes */
 /* WW21/22 boundary: ISO WW21 2026 ends May 24 23:59:59; WW22 starts May 25 */
 const WW22_CUTOFF = new Date(2026, 4, 24, 23, 59, 59);
 let legacyDesignRaws = []; // original design.csv rows, stored for merge
@@ -2281,12 +2282,28 @@ function renderScreen3(designers,rows){
   const ipComl=ipTotal('Commercial Design');
   const ipAll =ipLot+ipComm+ipComl;
 
+  /* ── In Progress tiles — always live from queue CSVs ── */
   const ipBlock=document.getElementById('s3-ip-block');
-  ipBlock.style.display=''; /* always visible — counts come from live queue CSVs */
-  document.getElementById('s3-ip-all').textContent =ipAll>0?ipAll:'…';
-  document.getElementById('s3-ip-lot').textContent =ipLot>0||ipAll>0?ipLot:'…';
-  document.getElementById('s3-ip-comm').textContent=ipComm>0||ipAll>0?ipComm:'…';
-  document.getElementById('s3-ip-coml').textContent=ipComl>0||ipAll>0?ipComl:'…';
+  ipBlock.style.display='';
+  if(queueCSVsLoaded){
+    /* Queue data ready — show exact counts */
+    const lot  = queueCounts.lotDesign  + queueCounts.lotQA;
+    const comm = queueCounts.commDesign + queueCounts.commQA;
+    const coml = queueCounts.commercial;
+    document.getElementById('s3-ip-all').textContent  = lot + comm + coml;
+    document.getElementById('s3-ip-lot').textContent  = lot;
+    document.getElementById('s3-ip-comm').textContent = comm;
+    document.getElementById('s3-ip-coml').textContent = coml;
+    const lotSubEl  = document.getElementById('s3-ip-lot-sub');
+    const commSubEl = document.getElementById('s3-ip-comm-sub');
+    if(lotSubEl)  lotSubEl.textContent  = `Design: ${queueCounts.lotDesign} | QA: ${queueCounts.lotQA}`;
+    if(commSubEl) commSubEl.textContent = `Design: ${queueCounts.commDesign} | QA: ${queueCounts.commQA}`;
+  } else {
+    /* Still loading */
+    ['s3-ip-all','s3-ip-lot','s3-ip-comm','s3-ip-coml'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.textContent='…';
+    });
+  }
 
   /* ── Design OTD ── */
   function otdSub(o){ return o.total>0?o.pass+' pass / '+o.fail+' fail':'no due dates'; }
@@ -4946,21 +4963,15 @@ function fetchQueueCSVs(){
     csvFetch(COMMERCIAL_QUEUE_URL ).then(t=>{ queueCounts.commercial  =countRows(t,null,null);                  }).catch(()=>{}),
   ];
   Promise.all(fetches).then(()=>{
-    /* Overwrite inProgress with live queue counts — sole source of truth */
+    queueCSVsLoaded = true;
+    /* Keep inProgress in sync for any legacy code that reads it */
     inProgress['Lot-Level Design']       = queueCounts.lotDesign + queueCounts.lotQA;
     inProgress['Community-Level Design'] = queueCounts.commDesign + queueCounts.commQA;
     inProgress['Commercial Design']      = queueCounts.commercial;
-    /* Update sub-text breakdown labels */
-    const lotSub  = document.getElementById('s3-ip-lot-sub');
-    const commSub = document.getElementById('s3-ip-comm-sub');
-    const comlSub = document.getElementById('s3-ip-coml-sub');
-    if(lotSub)  lotSub.textContent  = `Design: ${queueCounts.lotDesign} | QA: ${queueCounts.lotQA}`;
-    if(commSub) commSub.textContent = `Design: ${queueCounts.commDesign} | QA: ${queueCounts.commQA}`;
-    if(comlSub) comlSub.textContent = 'in progress';
     /* Stamp "Last updated" tile */
     const tsEl = document.getElementById('s3-ip-ts');
     if(tsEl) tsEl.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    /* Re-render pipeline screen to show updated counts */
+    /* Force a render pass — renderScreen0 now reads directly from queueCounts */
     const designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
     renderScreen0(designers, filteredRows);
   });

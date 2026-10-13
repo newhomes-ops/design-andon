@@ -1395,6 +1395,21 @@ function calcQAEquivs(designer, fromD, toD){
   });
   return total;
 }
+/** Count of QA reviews completed by a designer within the date window (for display) */
+function calcQACount(designer, fromD, toD){
+  let count=0;
+  const inRange=(dateStr)=>{
+    if(!dateStr) return false;
+    const d=parseDate(dateStr);
+    if(!d||isNaN(d)) return false;
+    if(fromD&&d<fromD) return false;
+    if(toD&&d>toD) return false;
+    return true;
+  };
+  lotQARaws.forEach(r=>{if(col(r,3)===designer&&inRange(col(r,5))) count++;});
+  commDesignRaws.forEach(r=>{if(col(r,9)===designer&&inRange(col(r,12))) count++;});
+  return count;
+}
 const DEFAULT_SLA_TARGETS = {
   avg: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Commercial BOM':3,'Commercial Design Revision':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
   p50: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Commercial BOM':3,'Commercial Design Revision':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
@@ -2202,14 +2217,15 @@ function renderScreen0(designers,rows){
     const attendance =calcAttendance(d, dR);
     const designVol  =weightedVolume(dR);
     const qaVol      =calcQAEquivs(d, periodStart, periodEnd);
-    return {d, dR, q, otd, fpy, sla, attendance, vol:designVol+qaVol};
+    const qaCount    =calcQACount(d, periodStart, periodEnd);
+    return {d, dR, q, otd, fpy, sla, attendance, vol:designVol+qaVol, qaCount};
   });
 
   /* Compute grade + sort descending */
   const scored=metrics.map(m=>{
     const volNorm=Math.min(100, Math.round(m.vol/expectedEquivs*100));
     const score=calcDesignerScore(m.q, m.otd, m.fpy, m.sla, volNorm, m.attendance);
-    return {...m, volNorm, score};
+    return {...m, volNorm, qaCount:m.qaCount, score};
   }).sort((a,b)=>(b.score??-1)-(a.score??-1));
 
   if(!scored.length){
@@ -2225,7 +2241,7 @@ function renderScreen0(designers,rows){
     </div>`;
     return;
   }
-  document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,score},rank)=>{
+  document.getElementById('designer-grid').innerHTML=scored.map(({d,dR,q,otd,fpy,sla,attendance,volNorm,qaCount,score},rank)=>{
     const dTotal=dR.length;
     const lv={};
     LEVELS.forEach(l=>lv[l]=dR.filter(r=>getLevel(colG(r))===l).length);
@@ -2274,7 +2290,7 @@ function renderScreen0(designers,rows){
         ${metricBox('FPY', fpy, fpy!==null?(fpy>=90?'var(--pass)':fpy>=70?'#FFB74D':'var(--fail)'):null)}
         ${metricBox('OTD', otd, otd!==null?(otd>=90?'var(--pass)':otd>=70?'#FFB74D':'var(--fail)'):null)}
         ${metricBox('Attendance', attendance, attendance!==null?(attendance>=95?'var(--pass)':attendance>=85?'#FFB74D':'var(--fail)'):null)}
-        ${metricBox('Volume', volNorm, 'var(--text)')}
+        <div style="flex:1;background:var(--surface2);border-radius:6px;padding:.45rem .6rem;text-align:center;"><div style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem;">Volume</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;color:var(--text)">${volNorm!==null?volNorm+'%':'—'}</div>${qaCount>0?`<div style="font-size:.5rem;color:var(--muted);margin-top:.1rem;">QA: ${qaCount} review${qaCount===1?'':'s'}</div>`:''}</div>
       </div>
       ${qD!==null?`<div class="qual-bar-wrap" style="margin-top:.6rem;">
         <div class="qual-bar-label">Quality</div>
@@ -4953,11 +4969,17 @@ function fetchIPFromGitHub(){
         /* inProgress values come exclusively from live queue CSVs — do NOT restore from ip.json */
         /* Load absences from ip.json (shared across all devices) */
         if(Array.isArray(parsed.absences)){
-          absencesData=parsed.absences;
+          const ghAbs=parsed.absences;
+          let localAbs=[];
+          try{ const s=localStorage.getItem('andon_absences'); if(s) localAbs=JSON.parse(s); }catch(e){}
+          const localOnly=localAbs.filter(la=>!ghAbs.some(a=>a.designer===la.designer&&a.date===la.date));
+          absencesData=[...ghAbs,...localOnly];
           try{ localStorage.setItem('andon_absences',JSON.stringify(absencesData)); }catch(e){}
+          if(localOnly.length) pushIPToGitHub();
         }
         const designers=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
         renderScreen1(designers,filteredRows);
+        renderScreen0(designers,filteredRows);
       }
     })
     .catch(()=>{}); /* silent fail — IP stays at last known value */

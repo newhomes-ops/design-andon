@@ -4955,12 +4955,13 @@ function fetchQueueCSVs(){
       return key && (row[key]||'').trim()===matchVal;
     }).length;
   }
+  /* All queue CSVs are pre-filtered to in-progress — count every row */
   const fetches=[
-    csvFetch(LOT_DESIGNS_QUEUE_URL).then(t=>{ queueCounts.lotDesign  =countRows(t,'Task Status','Open');        }).catch(()=>{}),
-    csvFetch(LOT_QA_QUEUE_URL     ).then(t=>{ queueCounts.lotQA      =countRows(t,'Task Status','Open');        }).catch(()=>{}),
-    csvFetch(COMM_DESIGNS_QUEUE_URL).then(t=>{ queueCounts.commDesign =countRows(t,'Status','In Progress');     }).catch(()=>{}),
-    csvFetch(COMM_QA_QUEUE_URL    ).then(t=>{ queueCounts.commQA     =countRows(t,'Status','In Progress');      }).catch(()=>{}),
-    csvFetch(COMMERCIAL_QUEUE_URL ).then(t=>{ queueCounts.commercial  =countRows(t,null,null);                  }).catch(()=>{}),
+    csvFetch(LOT_DESIGNS_QUEUE_URL ).then(t=>{ queueCounts.lotDesign  =countRows(t,null,null); }).catch(()=>{}),
+    csvFetch(LOT_QA_QUEUE_URL      ).then(t=>{ queueCounts.lotQA      =countRows(t,null,null); }).catch(()=>{}),
+    csvFetch(COMM_DESIGNS_QUEUE_URL).then(t=>{ queueCounts.commDesign =countRows(t,null,null); }).catch(()=>{}),
+    csvFetch(COMM_QA_QUEUE_URL     ).then(t=>{ queueCounts.commQA     =countRows(t,null,null); }).catch(()=>{}),
+    csvFetch(COMMERCIAL_QUEUE_URL  ).then(t=>{ queueCounts.commercial  =countRows(t,null,null); }).catch(()=>{}),
   ];
   Promise.all(fetches).then(()=>{
     queueCSVsLoaded = true;

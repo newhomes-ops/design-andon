@@ -1309,6 +1309,9 @@ const DEFAULT_PEQ_WEIGHTS = {
   'Commercial BOM':                   3,
   'Commercial Design Revision':       3,
   'Solar Site Plan':               2,
+  /* QA review weights — shown in Edit Weights overlay */
+  'Lot QA Review':                 1,
+  'Community QA Review':           1,
 };
 let peqWeights = {...DEFAULT_PEQ_WEIGHTS};
 /* ── ATTENDANCE ABSENCES — [{designer, date:'YYYY-MM-DD'}] ── */
@@ -1362,6 +1365,35 @@ const SLA_TYPES = ['Master Plan','Individual Plot Plan','Individual Permit Packa
  *  the PEQ table AND the Volume score on Designer Performance. */
 function weightedVolume(rows){
   return rows.reduce((sum,r)=>sum+getEquiv(colG(r)),0);
+}
+
+/**
+ * QA reviewer volume — adds equiv-days for QA reviews completed by a designer.
+ *   Lot QA (lotQARaws)      : col[3] = reviewer, col[5] = QA date
+ *   Community QA (commDesignRaws): col[9] = reviewer, col[12] = QA date
+ * fromD / toD are Date objects (inclusive). Pass null to skip date filtering.
+ */
+function calcQAEquivs(designer, fromD, toD){
+  let total = 0;
+  const inRange = (dateStr) => {
+    if(!dateStr) return false;
+    const d = parseDate(dateStr);
+    if(!d || isNaN(d)) return false;
+    if(fromD && d < fromD) return false;
+    if(toD   && d > toD)   return false;
+    return true;
+  };
+  /* Lot QA reviews */
+  lotQARaws.forEach(r => {
+    if(col(r,3) === designer && inRange(col(r,5)))
+      total += getEquiv('Lot QA Review');
+  });
+  /* Community QA reviews */
+  commDesignRaws.forEach(r => {
+    if(col(r,9) === designer && inRange(col(r,12)))
+      total += getEquiv('Community QA Review');
+  });
+  return total;
 }
 const DEFAULT_SLA_TARGETS = {
   avg: { 'Master Plan':3,'Individual Plot Plan':2,'Individual Permit Package':2,'NH Commercial Design - Maxfit':3,'NH Commercial Project - Estimate':3,'Tier 0 Helioscope':3,'PVbid Project Estimate':3,'Commercial BOM':3,'Commercial Design Revision':3,'Master Permit Package':3,'Future Solar Exhibit':3,'Solar Site Plan':3 },
@@ -2160,7 +2192,7 @@ function renderScreen0(designers,rows){
   /* expectedEquivs = work days (each full day = 1.0 equiv when all hours used) */
   const expectedEquivs = workDaysInPeriod;
 
-  /* Pre-compute all metrics */
+  /* Pre-compute all metrics (vol includes QA reviews from lotQARaws / commDesignRaws) */
   const metrics=designers.map(d=>{
     const dR=rows.filter(r=>colI(r)===d);
     const q          =avgQual(dR);
@@ -2168,7 +2200,9 @@ function renderScreen0(designers,rows){
     const fpy        =calcDesignerFPY(dR);
     const sla        =calcDesignerSLAPct(dR);
     const attendance =calcAttendance(d, dR);
-    return {d, dR, q, otd, fpy, sla, attendance, vol:weightedVolume(dR)};
+    const designVol  =weightedVolume(dR);
+    const qaVol      =calcQAEquivs(d, periodStart, periodEnd);
+    return {d, dR, q, otd, fpy, sla, attendance, vol:designVol+qaVol};
   });
 
   /* Compute grade + sort descending */
@@ -4503,6 +4537,7 @@ function addAbsence(){
   if(absencesData.some(a=>a.designer===designer&&a.date===date)){ alert('This absence is already logged.'); return; }
   absencesData.push({designer, date});
   saveAbsencesLocal();
+  pushIPToGitHub(); /* sync absences to ip.json so they persist across reloads */
   renderAbsenceList();
   const designers2=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
   renderScreen0(designers2, filteredRows);
@@ -4510,6 +4545,7 @@ function addAbsence(){
 function deleteAbsence(idx){
   absencesData.splice(idx,1);
   saveAbsencesLocal();
+  pushIPToGitHub(); /* sync absences to ip.json so they persist across reloads */
   renderAbsenceList();
   const designers2=[...new Set(filteredRows.map(r=>colI(r)).filter(Boolean))].sort();
   renderScreen0(designers2, filteredRows);
@@ -4559,7 +4595,7 @@ function generatePerformanceMemo(){
   /* Capacity-based volume — same formula as Designer Performance cards */
   const memoWorkDays   = Math.max(1, countWeekdays(new Date(fromStr), new Date(toStr)));
   const memoExpected   = memoWorkDays; /* 1.0 equiv per work day */
-  const vol            = weightedVolume(dRows);
+  const vol            = weightedVolume(dRows) + calcQAEquivs(designer, fromD, toD);
   const volNorm        = Math.min(100, Math.round(vol/memoExpected*100));
   const q          =avgQual(dRows);
   const otdObj     =calcOTD(dRows);

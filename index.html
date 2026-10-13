@@ -2149,7 +2149,18 @@ function renderBoard(){
 
 /* SCREEN 0 — Designer cards with scoring */
 function renderScreen0(designers,rows){
-  /* Pre-compute all metrics so we can normalize volume across the team */
+  /* Capacity-based volume target:
+     expectedEquivs = work days in period × 1.0 day-equivalent
+     (getEquiv already converts hours → day fractions via ÷ DAILY_HOURS)
+     volNorm = min(100, round(designer.weightedVolume / expectedEquivs × 100))
+     Capped at 100 — exceeding capacity is still full credit. */
+  const periodStart = sfFrom ? new Date(sfFrom) : (rows.length ? new Date(Math.min(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d)))) : new Date());
+  const periodEnd   = sfTo   ? new Date(sfTo)   : (rows.length ? new Date(Math.max(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d)))) : new Date());
+  const workDaysInPeriod = Math.max(1, countWeekdays(periodStart, periodEnd));
+  /* expectedEquivs = work days (each full day = 1.0 equiv when all hours used) */
+  const expectedEquivs = workDaysInPeriod;
+
+  /* Pre-compute all metrics */
   const metrics=designers.map(d=>{
     const dR=rows.filter(r=>colI(r)===d);
     const q          =avgQual(dR);
@@ -2159,11 +2170,10 @@ function renderScreen0(designers,rows){
     const attendance =calcAttendance(d, dR);
     return {d, dR, q, otd, fpy, sla, attendance, vol:weightedVolume(dR)};
   });
-  const maxVol=Math.max(1,...metrics.map(m=>m.vol));
 
   /* Compute grade + sort descending */
   const scored=metrics.map(m=>{
-    const volNorm=Math.round(m.vol/maxVol*100);
+    const volNorm=Math.min(100, Math.round(m.vol/expectedEquivs*100));
     const score=calcDesignerScore(m.q, m.otd, m.fpy, m.sla, volNorm, m.attendance);
     return {...m, volNorm, score};
   }).sort((a,b)=>(b.score??-1)-(a.score??-1));
@@ -4546,11 +4556,11 @@ function generatePerformanceMemo(){
     return dt>=fromD && dt<=toD;
   });
   if(!dRows.length){ alert('No completed designs found for this designer in the selected date range.'); return; }
-  const maxVol=Math.max(1,...[...new Set(rawRows.map(r=>colI(r)).filter(Boolean))].map(d2=>{
-    return weightedVolume(rawRows.filter(r=>colI(r)===d2&&(()=>{const dt=parseDate(colJ(r));return dt&&dt>=fromD&&dt<=toD;})()));
-  }));
-  const vol        =weightedVolume(dRows);
-  const volNorm    =Math.round(vol/maxVol*100);
+  /* Capacity-based volume — same formula as Designer Performance cards */
+  const memoWorkDays   = Math.max(1, countWeekdays(new Date(fromStr), new Date(toStr)));
+  const memoExpected   = memoWorkDays; /* 1.0 equiv per work day */
+  const vol            = weightedVolume(dRows);
+  const volNorm        = Math.min(100, Math.round(vol/memoExpected*100));
   const q          =avgQual(dRows);
   const otdObj     =calcOTD(dRows);
   const fpy        =calcDesignerFPY(dRows);

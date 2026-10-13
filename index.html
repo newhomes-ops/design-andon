@@ -4944,7 +4944,9 @@ function fetchIPFromGitHub(){
    Commercial Queue   : all rows              → commercial count
    ═══════════════════════════════════════════════════════════ */
 function fetchQueueCSVs(){
-  function csvFetch(url){ return fetch(url,{cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }); }
+  /* Use ghFetch so the token→API route is used when raw.githubusercontent.com
+     is blocked by the corporate proxy (same pattern as all other CSV fetches). */
+  function csvFetch(url){ return ghFetch(url,{cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }); }
   function countRows(text, colName, matchVal){
     const parsed=Papa.parse(text,{header:true,skipEmptyLines:true});
     if(!parsed.data||!parsed.data.length) return 0;
@@ -4957,11 +4959,11 @@ function fetchQueueCSVs(){
   }
   /* All queue CSVs are pre-filtered to in-progress — count every row */
   const fetches=[
-    csvFetch(LOT_DESIGNS_QUEUE_URL ).then(t=>{ queueCounts.lotDesign  =countRows(t,null,null); }).catch(()=>{}),
-    csvFetch(LOT_QA_QUEUE_URL      ).then(t=>{ queueCounts.lotQA      =countRows(t,null,null); }).catch(()=>{}),
-    csvFetch(COMM_DESIGNS_QUEUE_URL).then(t=>{ queueCounts.commDesign =countRows(t,null,null); }).catch(()=>{}),
-    csvFetch(COMM_QA_QUEUE_URL     ).then(t=>{ queueCounts.commQA     =countRows(t,null,null); }).catch(()=>{}),
-    csvFetch(COMMERCIAL_QUEUE_URL  ).then(t=>{ queueCounts.commercial  =countRows(t,null,null); }).catch(()=>{}),
+    csvFetch(LOT_DESIGNS_QUEUE_URL ).then(t=>{ queueCounts.lotDesign  =countRows(t,null,null); }).catch(e=>{ console.warn('Queue fetch failed (Lot Design):',e); }),
+    csvFetch(LOT_QA_QUEUE_URL      ).then(t=>{ queueCounts.lotQA      =countRows(t,null,null); }).catch(e=>{ console.warn('Queue fetch failed (Lot QA):',e); }),
+    csvFetch(COMM_DESIGNS_QUEUE_URL).then(t=>{ queueCounts.commDesign =countRows(t,null,null); }).catch(e=>{ console.warn('Queue fetch failed (Comm Design):',e); }),
+    csvFetch(COMM_QA_QUEUE_URL     ).then(t=>{ queueCounts.commQA     =countRows(t,null,null); }).catch(e=>{ console.warn('Queue fetch failed (Comm QA):',e); }),
+    csvFetch(COMMERCIAL_QUEUE_URL  ).then(t=>{ queueCounts.commercial  =countRows(t,null,null); }).catch(e=>{ console.warn('Queue fetch failed (Commercial):',e); }),
   ];
   Promise.all(fetches).then(()=>{
     queueCSVsLoaded = true;

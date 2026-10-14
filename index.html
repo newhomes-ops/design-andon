@@ -1319,7 +1319,7 @@ let peqWeights = {...DEFAULT_PEQ_WEIGHTS};
 /* ── ATTENDANCE ABSENCES — [{designer, date:'YYYY-MM-DD'}] ── */
 let absencesData = [];
 
-/* ── DESIGNER SCORING WEIGHTS ── Quality/OTD/Volume/SLA/FPY/Attendance — must sum to 100 */
+/* ── DESIGNER SCORING WEIGHTS ── Quality/OTD/Productivity/SLA/FPY/Attendance — must sum to 100 */
 const DEFAULT_SCORING_WEIGHTS = {quality:35, otd:25, volume:20, sla:10, fpy:10, attendance:0};
 let scoringWeights = {...DEFAULT_SCORING_WEIGHTS};
 /* Read-only fallback token — safe to embed (public repo, no write scope).
@@ -1364,7 +1364,7 @@ const SLA_TYPES = ['Master Plan','Individual Plot Plan','Individual Permit Packa
 
 /** Complexity-adjusted volume: uses peqWeights (same system as PEQ screen).
  *  Edit weights via ✎ Edit weights on the PEQ screen — changes apply to both
- *  the PEQ table AND the Volume score on Designer Performance. */
+ *  the PEQ table AND the Productivity score on Designer Performance. */
 function weightedVolume(rows){
   return rows.reduce((sum,r)=>sum+getEquiv(colG(r)),0);
 }
@@ -1572,7 +1572,7 @@ function gradeColor(score){
 
 /**
  * Compute weighted overall score 0–100 for a designer.
- * volume is normalized: designer count / maxVolume * 100.
+ * productivity is normalized: avg daily PEQ equiv-days / 1.0 × 100, capped at 100.
  * Metrics that have no data (null) are excluded from the weighted average.
  */
 function calcDesignerScore(qual, otd, fpyPct, slaPct, volumeNorm, attendancePct){
@@ -2322,7 +2322,7 @@ function renderScreen0(designers,rows){
         ${metricBox('FPY', fpy, fpy!==null?(fpy>=90?'var(--pass)':fpy>=70?'#FFB74D':'var(--fail)'):null)}
         ${metricBox('OTD', otd, otd!==null?(otd>=90?'var(--pass)':otd>=70?'#FFB74D':'var(--fail)'):null)}
         ${metricBox('Attendance', attendance, attendance!==null?(attendance>=95?'var(--pass)':attendance>=85?'#FFB74D':'var(--fail)'):null)}
-        <div style="flex:1;background:var(--surface2);border-radius:6px;padding:.45rem .6rem;text-align:center;"><div style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem;">Volume</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;color:var(--text)">${volNorm!==null?volNorm+'%':'—'}</div>${qaCount>0?`<div style="font-size:.5rem;color:var(--muted);margin-top:.1rem;">QA: ${qaCount} review${qaCount===1?'':'s'}</div>`:''}</div>
+        <div style="flex:1;background:var(--surface2);border-radius:6px;padding:.45rem .6rem;text-align:center;"><div style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem;">Productivity</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;color:var(--text)">${volNorm!==null?volNorm+'%':'—'}</div>${qaCount>0?`<div style="font-size:.5rem;color:var(--muted);margin-top:.1rem;">QA: ${qaCount} review${qaCount===1?'':'s'}</div>`:''}</div>
       </div>
       ${qD!==null?`<div class="qual-bar-wrap" style="margin-top:.6rem;">
         <div class="qual-bar-label">Quality</div>
@@ -4426,7 +4426,7 @@ function renderScreen8(designers,rows){
     const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`
       <div style="font-size:.62rem;color:var(--dim);margin-bottom:.6rem;">
-        Weights shown are the <em>current</em> values (editable via ✎ Edit weights). These weights drive both the PEQ table above and the <strong>Volume</strong> score on Designer Performance.
+        Weights shown are the <em>current</em> values (editable via ✎ Edit weights). These weights drive both the PEQ table above and the <strong>Productivity</strong> score on Designer Performance.
       </div>
       <table class="peq-table" style="width:100%;table-layout:auto;">
         <thead><tr>
@@ -4434,7 +4434,7 @@ function renderScreen8(designers,rows){
           <th>Proc. Time</th>
           <th>Daily Target</th>
           <th>Weight</th>
-          <th>Volume Impact</th>
+          <th>Productivity Impact</th>
         </tr></thead>
         <tbody>
         ${refTypes.map(type=>{
@@ -4502,7 +4502,7 @@ function savePEQSettings(){
 }
 
 /* ── SCORING WEIGHTS EDITOR ── */
-const SCORING_METRIC_LABELS = {quality:'Quality (QA Score)', otd:'OTD (On-Time Delivery)', volume:'Volume (Completed Designs)', sla:'SLA (Met SLA Target)', fpy:'FPY (First Pass Yield)', attendance:'Attendance'};
+const SCORING_METRIC_LABELS = {quality:'Quality (QA Score)', otd:'OTD (On-Time Delivery)', volume:'Productivity (avg daily PEQ)', sla:'SLA (Met SLA Target)', fpy:'FPY (First Pass Yield)', attendance:'Attendance'};
 
 function openScoringWeights(){
   const grid=document.getElementById('scoring-weights-grid');
@@ -4784,7 +4784,7 @@ async function buildAndDownloadMemo(d){
     {label:'FPY (First Pass Yield)', score:d.fpy,                               weight:d.weights.fpy||0},
     {label:'SLA Compliance',         score:d.sla,                               weight:d.weights.sla||0},
     {label:'Attendance',             score:d.attendance,                         weight:d.weights.attendance||0},
-    {label:'Volume (normalized)',    score:d.volNorm,                            weight:d.weights.volume||0},
+    {label:'Productivity (avg daily)',    score:d.volNorm,                            weight:d.weights.volume||0},
   ];
   function otdColor(r){ const comp=parseDate(colJ(r)),due=parseDate(colDue(r)); if(!comp||!due) return '888888'; return comp<=due?'1A7C3E':'CC2222'; }
   function fpyColor(r){ const v=(colAD(r)||'').toLowerCase(); return v==='pass'?'1A7C3E':v?'CC2222':'888888'; }
@@ -4800,7 +4800,7 @@ async function buildAndDownloadMemo(d){
   body+=mHdrPara('Attachments:',d.fileNum+'.docx',{bottomBorder:true});
   body+=mSpacer();
   body+=mHeading('I.   Introduction');
-  body+=mBodyPara(`This memorandum presents a comprehensive performance evaluation for ${d.designerFull}, covering the period from ${fmtD(d.fromStr)} to ${fmtD(d.toStr)}. The assessment is based on six weighted metrics: Quality, OTD, FPY, SLA Compliance, Attendance, and Volume.`);
+  body+=mBodyPara(`This memorandum presents a comprehensive performance evaluation for ${d.designerFull}, covering the period from ${fmtD(d.fromStr)} to ${fmtD(d.toStr)}. The assessment is based on six weighted metrics: Quality, OTD, FPY, SLA Compliance, Attendance, and Productivity.`);
   body+=mSpacer();
   body+=mHeading('II.   Performance Summary');
   body+=mBodyPara(`Overall Grade: ${d.score!==null?d.score+'%':'N/A'}  |  Total Completed: ${d.vol} designs  |  Period: ${fmtD(d.fromStr)} – ${fmtD(d.toStr)}`);
@@ -4831,7 +4831,7 @@ async function buildAndDownloadMemo(d){
   body+=mBodyPara(`Score: ${d.attendance!==null?mScoreLabel(d.attendance):'N/A'}. ${d.absCount>0?d.absCount+' absence(s) recorded during this review period.':'No absences recorded during this review period.'}`);
   if(d.absences.length){ body+=mSpacer(); const AW=[4680,4680]; let at=mOpenTable(AW); at+=mRow(mHdrCell('Designer',AW[0]),mHdrCell('Absence Date',AW[1])); d.absences.forEach((a,i)=>{ const fill=i%2===0?'EDF2F9':'FFFFFF'; at+=mRow(mCell(engr(a.designer),AW[0],fill),mCell(a.date,AW[1],fill,{center:true})); }); at+=mCloseTable(); body+=at; }
   body+=mSpacer();
-  body+=mHeading('VIII.   Volume & Design Output');
+  body+=mHeading('VIII.   Productivity & Design Output');
   body+=mBodyPara(`Total completed: ${d.vol} designs (${d.volNorm}% of team peak). Level breakdown: ${LEVELS.map(l=>l+': '+(d.lvCounts[l]||0)).join(' | ')}.`);
   body+=mSpacer();
   body+=mJobTable(d.dRows,[{header:'Config ID',w:1900,fn:r=>col(r,0)||'—'},{header:'Design Type',w:2800,fn:r=>colG(r)||'—'},{header:'Level',w:2200,fn:r=>getLevel(colG(r))},{header:'Completed',w:1500,fn:r=>{const dt=parseDate(colJ(r));return dt?dt.toLocaleDateString('en-US'):'—';}},{header:'Rework',w:960,fn:r=>col(r,23)?'Yes':'No',colorFn:r=>col(r,23)?'CC2222':'1A7C3E'}]);

@@ -1514,23 +1514,19 @@ function avgQual(rows){const v=rows.map(r=>parseQual(colAF(r))).filter(x=>x!==nu
  * Returns null if no rows have SLA data.
  */
 function calcDesignerSLAPct(dRows){
-  const slaVals=[];
-  let targetSum=0, targetCnt=0;
+  /* Per-job pass/fail: a job passes if its days taken ≤ its p50 target.
+     This matches the Status column in the extracted memo SLA table. */
+  let pass=0, total=0;
   dRows.forEach(r=>{
     const sla=getSLA(r);
     if(sla===null) return;
     const target=slaTargets.p50[colG(r)];
     if(target===undefined) return;
-    slaVals.push(sla);
-    targetSum+=target;
-    targetCnt++;
+    total++;
+    if(sla<=target) pass++;
   });
-  if(!slaVals.length) return null;
-  const sorted=[...slaVals].sort((a,b)=>a-b);
-  const actualP50=percentile(sorted,50);
-  const avgTarget=targetSum/targetCnt;
-  if(actualP50<=avgTarget) return 100;
-  return Math.max(0, Math.round(avgTarget/actualP50*100));
+  if(!total) return null;
+  return Math.round(pass/total*100);
 }
 
 /** FPY (First Pass Yield / Pass Rate) for a designer */

@@ -164,6 +164,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 .designer-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
   gap:1.1rem;
+  overflow-y:auto;flex:1;min-height:0;
+  padding-bottom:.5rem;
 }
 .designer-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s;}
 .designer-card:hover{border-color:var(--border2);}
@@ -2344,19 +2346,18 @@ function renderScreen0(designers,rows){
           ${isNew?`<span class="new-hire-tag">NEW HIRE</span>`:''}
         </div>
         <div class="card-top-right">
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.1rem;">
+          <!-- Grade block: score + quality pill + completed -->
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;">
             <div style="display:flex;align-items:baseline;gap:.15rem;">
               <span style="font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;color:${gC}">${score!==null?score:'—'}</span>
               ${score!==null?`<span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;line-height:1;color:${gC}">%</span>`:''}
             </div>
-            <div style="font-size:.55rem;color:var(--muted);letter-spacing:.06em;">overall grade</div>
-          </div>
-          <div style="margin-left:.8rem;">
-            <div class="qual-badge">
-              <span class="qual-pct" style="color:${qC}">${qD!==null?qD:'—'}</span>
-              <span class="qual-unit" style="color:${qC}">% quality</span>
-            </div>
-            <div class="d-total">${dTotal} completed</div>
+            <div style="font-size:.52rem;color:var(--muted);letter-spacing:.06em;">overall grade</div>
+            ${qD!==null?`<div style="display:flex;align-items:center;gap:.25rem;background:${qC}18;border:1px solid ${qC}44;border-radius:4px;padding:.1rem .4rem;margin-top:.1rem;">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;line-height:1;color:${qC}">${qD}%</span>
+              <span style="font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;color:${qC};opacity:.8;">quality</span>
+            </div>`:''}
+            <div style="font-size:.52rem;color:var(--dim);letter-spacing:.04em;">${dTotal} completed</div>
           </div>
         </div>
       </div>
@@ -2368,11 +2369,6 @@ function renderScreen0(designers,rows){
         ${metricBox('Attendance', attendance, attendance!==null?(attendance>=95?'var(--pass)':attendance>=85?'#FFB74D':'var(--fail)'):null)}
         <div style="flex:1;background:var(--surface2);border-radius:6px;padding:.45rem .6rem;text-align:center;"><div style="font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem;">Productivity</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;color:var(--text)">${volNorm!==null?volNorm+'%':'—'}</div>${qaCount>0?`<div style="font-size:.5rem;color:var(--muted);margin-top:.1rem;">QA: ${qaCount} review${qaCount===1?'':'s'}</div>`:''}</div>
       </div>
-      ${qD!==null?`<div class="qual-bar-wrap" style="margin-top:.6rem;">
-        <div class="qual-bar-label">Quality</div>
-        <div class="qual-bar-bg"><div class="qual-bar-fill" style="width:${qD}%;background:${qC}"></div></div>
-        <div class="qual-bar-val" style="color:${qC}">${qD}%</div>
-      </div>`:''}
       <div class="card-levels" style="margin-top:.5rem;">
         ${LEVELS.map(l=>{
           const k=LV_KEY[l],c=lv[l],p=Math.round(c/maxLv*100);

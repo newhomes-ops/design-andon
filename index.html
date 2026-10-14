@@ -2228,15 +2228,16 @@ function renderBoard(){
 
 /* SCREEN 0 — Designer cards with scoring */
 function renderScreen0(designers,rows){
-  /* Capacity-based volume target:
-     expectedEquivs = work days in period × 1.0 day-equivalent
-     (getEquiv already converts hours → day fractions via ÷ DAILY_HOURS)
-     volNorm = min(100, round(designer.weightedVolume / expectedEquivs × 100))
-     Capped at 100 — exceeding capacity is still full credit. */
+  /* Capacity-based productivity target:
+     Use elapsed work days (start → today) not the full range end, so mid-quarter
+     Productivity % matches the PEQ screen's "days tracked" denominator.
+     For completed periods (periodEnd < today) the full range is used as-is. */
   const periodStart = sfFrom ? new Date(sfFrom) : (rows.length ? new Date(Math.min(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d)))) : new Date());
   const periodEnd   = sfTo   ? new Date(sfTo)   : (rows.length ? new Date(Math.max(...rows.map(r=>parseDate(colJ(r))).filter(d=>d&&!isNaN(d)))) : new Date());
-  const workDaysInPeriod = Math.max(1, countWeekdays(periodStart, periodEnd));
-  /* expectedEquivs = work days (each full day = 1.0 equiv when all hours used) */
+  const today = new Date(); today.setHours(0,0,0,0);
+  const effectivePeriodEnd = (periodEnd > today) ? today : periodEnd;
+  const workDaysInPeriod = Math.max(1, countWeekdays(periodStart, effectivePeriodEnd));
+  /* expectedEquivs = elapsed work days (each full day = 1.0 equiv when all hours used) */
   const expectedEquivs = workDaysInPeriod;
 
   /* Pre-compute all metrics (vol includes QA reviews from lotQARaws / commDesignRaws) */

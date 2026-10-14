@@ -765,8 +765,8 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         <span class="leg-item"><span class="leg-dot" style="background:#FFB74D"></span>Design rework</span>
         <span class="leg-item"><span class="leg-dot" style="background:#CE93D8;border-radius:50%;width:8px;height:8px;"></span>Rework rate %</span>
       </div>
-      <!-- 3 panels -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;flex:1;min-height:0;">
+      <!-- 5 panels -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;flex:1;min-height:0;">
         <!-- Lot-Level -->
         <div class="panel" style="display:flex;flex-direction:column;">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lot);font-weight:700;margin-bottom:.4rem;">Lot-Level</div>
@@ -790,6 +790,22 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             <canvas id="trComlChart" role="img" aria-label="Commercial weekly chart"></canvas>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-coml-summary"></div>
+        </div>
+        <!-- Cobalt Resi -->
+        <div class="panel" style="display:flex;flex-direction:column;">
+          <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cobalt);font-weight:700;margin-bottom:.4rem;">Cobalt Resi</div>
+          <div style="position:relative;flex:1;min-height:0;overflow:hidden;">
+            <canvas id="trCoblChart" role="img" aria-label="Cobalt Resi weekly chart"></canvas>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-cobl-summary"></div>
+        </div>
+        <!-- Direct Resi -->
+        <div class="panel" style="display:flex;flex-direction:column;">
+          <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--direct);font-weight:700;margin-bottom:.4rem;">Direct Resi</div>
+          <div style="position:relative;flex:1;min-height:0;overflow:hidden;">
+            <canvas id="trDireChart" role="img" aria-label="Direct Resi weekly chart"></canvas>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:.7rem;" id="tr-dire-summary"></div>
         </div>
       </div>
     </div>
@@ -1452,7 +1468,7 @@ let s7SelYear=null, s7SelQ=null, s7SelMonth=null, s7SelYTD=false, s7SelLast7=tru
 let rawRows=[], filteredRows=[], trendChart=null, weeklyChart=null, commWeeklyChart=null, slaChart=null;
 let s4SelYear=null, s4SelQ=null, s4SelMonth=null, s4SelYTD=false;
 /* ── COMBINED TEAM REPORTS (screen 5) ── */
-let trLotChart=null, trCommChart=null, trComlChart=null;
+let trLotChart=null, trCommChart=null, trComlChart=null, trCoblChart=null, trDireChart=null;
 let trSelYear=null, trSelQ=null, trSelMonth=null, trSelYTD=false, trSelLast7=true;
 /* Per-screen date filter state for screens 0-3 (shared — same date range applies) */
 let sfFrom='', sfTo='';
@@ -3062,10 +3078,14 @@ function renderTeamReports(){
   const lotRows  = filterLevel('Lot-Level Design');
   const commRows = filterLevel('Community-Level Design');
   const comlRows = filterLevel('Commercial Design');
+  const coblRows = filterLevel('Cobalt Resi');
+  const direRows = filterLevel('Direct Resi');
 
   trLotChart  = renderTeamChart('trLotChart', 'tr-lot-summary',  lotRows,  '#4FC3F7', trLotChart,  'Lot-Level');
   trCommChart = renderTeamChart('trCommChart','tr-comm-summary', commRows, '#69F0AE', trCommChart, 'Community-Level');
   trComlChart = renderTeamChart('trComlChart','tr-coml-summary', comlRows, '#FFB74D', trComlChart, 'Commercial');
+  trCoblChart = renderTeamChart('trCoblChart','tr-cobl-summary', coblRows, '#BA68C8', trCoblChart, 'Cobalt Resi');
+  trDireChart = renderTeamChart('trDireChart','tr-dire-summary', direRows, '#F06292', trDireChart, 'Direct Resi');
 }
 
 function trSelectQ(year,q){

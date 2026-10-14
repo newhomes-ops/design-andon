@@ -4363,12 +4363,15 @@ function renderScreen8(designers,rows){
       <tbody>
         ${sortedDes.map(d=>{
           const dayVals=dates.map(dk=>matrix[d][dk]!==undefined?Math.round(matrix[d][dk]*100):null);
-          const filled=dayVals.filter(v=>v!==null);
-          const avg=filled.length?Math.round(filled.reduce((s,v)=>s+v,0)/filled.length):null;
+          /* Denominator = all work days shown minus days the designer was absent */
+          const absentDays=absencesData.filter(a=>a.designer===d&&dates.includes(a.date)).length;
+          const activeDays=Math.max(1,dates.length-absentDays);
+          const totalPEQ=dayVals.reduce((s,v)=>s+(v!==null?v:0),0);
+          const avg=Math.round(totalPEQ/activeDays);
           return `<tr>
             <td class="name-col">${engr(d)}</td>
             ${dayVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}
-            <td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg!==null?avg:''}</td>
+            <td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg||''}</td>
           </tr>`;
         }).join('')}
         <tr style="border-top:2px solid var(--border2);">
@@ -4395,9 +4398,10 @@ function renderScreen8(designers,rows){
       <tbody>
         ${sortedDes.map(d=>{
           const vals=weeks.map(w=>wkMap[d][w]!==undefined?Math.round(wkMap[d][w]*100):null);
-          const filled=vals.filter(v=>v!==null);
-          const avg=filled.length?Math.round(filled.reduce((s,v)=>s+v,0)/filled.length):null;
-          return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg!==null?avg:''}</td></tr>`;
+          /* Denominator = all weeks in view (zero-output weeks count as zero, not excluded) */
+          const totalPEQ=vals.reduce((s,v)=>s+(v!==null?v:0),0);
+          const avg=weeks.length?Math.round(totalPEQ/weeks.length):null;
+          return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg||''}</td></tr>`;
         }).join('')}
       </tbody></table>`;
   } else if(peqView==='quarterly'){

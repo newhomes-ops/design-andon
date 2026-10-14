@@ -1672,9 +1672,6 @@ let commStrucURL  = 'https://raw.githubusercontent.com/newhomes-ops/design-andon
 /* ââ WW22+ COMMERCIAL SOURCE ââ */
 let commCommercialURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Commercial.csv';
 
-/* ── LOT COBALT SOURCE (TaskRay lot-level) ── */
-let lotCobaltURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Cobalt.csv';
-
 /* ââ QUEUE CSV URLs (live in-progress counts) ââ */
 const LOT_DESIGNS_QUEUE_URL  = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Designs%20Queue.csv';
 const LOT_QA_QUEUE_URL       = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20QA%20Queue.csv';
@@ -1689,6 +1686,7 @@ let legacyDesignRaws = []; // original design.csv rows, stored for merge
 let lotDesignRaws = [], lotQARaws = [], lotElecRaws = [], lotStrucRaws = [];
 let commDesignRaws = [], commElecRaws = [], commStrucRaws = [];
 let commCommercialRaws = [];
+let lotCobaltURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Cobalt.csv';
 let lotCobaltRaws = [];
 
 let autoReloadTimer = null;
@@ -1953,19 +1951,18 @@ function buildCommercialRow(s1Row){
 
 /**
  * Build a 34-element row from Lot Cobalt.csv (TaskRay lot-level report).
- *  col B (1) => Task Name: 'Layout and Upgrade Review' = new design, else = rework
- *  col C (2) => Owner: Full Name (designer)
- *  col H (7) => Actual Completion Date
+ * col B (1) Task Name: 'Layout and Upgrade Review' = new design, else = rework.
+ * col C (2) Owner: Full Name (designer). col H (7) Actual Completion Date.
  */
 function buildLotCobaltRow(s){
   const taskName=col(s,1);
   const isRework=taskName!=='Layout and Upgrade Review';
   const r=new Array(34).fill('');
-  r[0] =col(s,0);            // TaskRay Task ID
-  r[6] ='Cobalt Resi';       // Design type
-  r[8] =col(s,2);            // Owner: Full Name
-  r[9] =col(s,7);            // Actual Completion Date
-  r[23]=isRework?'2':'';     // Rework flag
+  r[0] =col(s,0);
+  r[6] ='Cobalt Resi';
+  r[8] =col(s,2);
+  r[9] =col(s,7);
+  r[23]=isRework?'2':'';
   r[25]=col(s,7);
   r[26]=col(s,7);
   return r;

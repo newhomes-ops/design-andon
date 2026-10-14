@@ -24,6 +24,8 @@
   --community:  #69F0AE;
   --comm-bg:    rgba(105,240,174,0.08);
   --commercial: #FFB74D;
+  --cobalt:     #BA68C8;
+  --direct:     #F06292;
   --coml-bg:    rgba(255,183,77,0.08);
   --quality:    #CE93D8;
   --accent:     #7C83FD;
@@ -43,6 +45,8 @@ body.light-mode {
   --community:  #444444;
   --comm-bg:    rgba(0,0,0,0.04);
   --commercial: #888888;
+  --cobalt:     #7B1FA2;
+  --direct:     #C2185B;
   --coml-bg:    rgba(0,0,0,0.04);
   --quality:    #222222;
   --accent:     #000000;
@@ -194,6 +198,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 .level-cell.lot        .lv-count{color:var(--lot);}
 .level-cell.community  .lv-count{color:var(--community);}
 .level-cell.commercial .lv-count{color:var(--commercial);}
+.level-cell.cobalt     .lv-count{color:var(--cobalt);}
+.level-cell.direct     .lv-count{color:var(--direct);}
 .lv-bar-bg{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:.2rem;}
 .lv-bar-fill{height:100%;border-radius:2px;transition:width .6s ease;}
 .level-cell.lot        .lv-bar-fill{background:var(--lot);}
@@ -333,6 +339,8 @@ body.light-mode .level-cell.community .lv-name,
 body.light-mode .level-cell.community .lv-count { color:#444 !important; }
 body.light-mode .level-cell.commercial .lv-name,
 body.light-mode .level-cell.commercial .lv-count { color:#888 !important; }
+body.light-mode .level-cell.cobalt     .lv-count { color:#7B1FA2 !important; }
+body.light-mode .level-cell.direct     .lv-count { color:#C2185B !important; }
 body.light-mode .qual-bar-label { color:#444 !important; }
 body.light-mode .ip-cell-val { color:#000 !important; }
 body.light-mode .ip-panel-title span { color:#000 !important; }
@@ -1277,7 +1285,8 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 const TYPE_TO_LEVEL = {
   'Individual Plot Plan':          'Lot-Level Design',
   'Individual Permit Package':     'Lot-Level Design',
-  'Cobalt Resi':                   'Lot-Level Design',
+  'Cobalt Resi':                   'Cobalt Resi',
+  'Direct Resi':                   'Direct Resi',
   'Master Permit Package':         'Community-Level Design',
   'Master Plan':                   'Community-Level Design',
   'Future Solar Exhibit':          'Community-Level Design',
@@ -1289,11 +1298,11 @@ const TYPE_TO_LEVEL = {
   'Commercial Design Revision':       'Commercial Design',
   'Solar Site Plan':               'Community-Level Design'
 };
-const LEVELS    = ['Lot-Level Design','Community-Level Design','Commercial Design'];
-const LV_KEY    = {'Lot-Level Design':'lot','Community-Level Design':'community','Commercial Design':'commercial'};
-const LV_SHORT  = {'Lot-Level Design':'Lot','Community-Level Design':'Community','Commercial Design':'Commercial'};
-const LV_COLOR  = {'Lot-Level Design':'var(--lot)','Community-Level Design':'var(--community)','Commercial Design':'var(--commercial)'};
-const LV_COLHEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
+const LEVELS    = ['Lot-Level Design','Community-Level Design','Commercial Design','Cobalt Resi','Direct Resi'];
+const LV_KEY    = {'Lot-Level Design':'lot','Community-Level Design':'community','Commercial Design':'commercial','Cobalt Resi':'cobalt','Direct Resi':'direct'};
+const LV_SHORT  = {'Lot-Level Design':'Lot','Community-Level Design':'Community','Commercial Design':'Commercial','Cobalt Resi':'Cobalt','Direct Resi':'Direct'};
+const LV_COLOR  = {'Lot-Level Design':'var(--lot)','Community-Level Design':'var(--community)','Commercial Design':'var(--commercial)','Cobalt Resi':'var(--cobalt)','Direct Resi':'var(--direct)'};
+const LV_COLHEX = {'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D','Cobalt Resi':'#BA68C8','Direct Resi':'#F06292'};
 const D_COLORS  = ['#7C83FD','#4FC3F7','#69F0AE','#FFB74D','#FF8A65','#CE93D8','#80DEEA','#FFCC02','#F48FB1','#A5D6A7'];
 const ROTATE_MS = 20000;
 const DAILY_HOURS = 6;
@@ -1304,6 +1313,7 @@ const DEFAULT_PEQ_WEIGHTS = {
   'Individual Plot Plan':          1,
   'Individual Permit Package':     2,
   'Cobalt Resi':                   2,
+  'Direct Resi':                   2,
   'NH Commercial Design - Maxfit':    6,
   'NH Commercial Project - Estimate': 6,
   'Tier 0 Helioscope':                6,
@@ -1441,7 +1451,7 @@ let s6SelYear=null, s6SelQ=null, s6SelMonth=null, s6SelYTD=false, s6SelLast7=tru
 let s6DesignerFilter='all'; /* SLA screen designer filter */
 let s7DesignerFilter='all'; /* FPY + Design Pass Rate designer filter */
 let currentScreen=0, paused=false, rotateTimer=null, barAnim=null;
-let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0 };
+let inProgress = { 'Lot-Level Design':0, 'Community-Level Design':0, 'Commercial Design':0, 'Cobalt Resi':0, 'Direct Resi':0 };
 let initialFilterSet=false; // set to true after first mergeAndApply so auto-reloads don't reset filter
 /* { 'Lot-Level Design': n, 'Community-Level Design': n, 'Commercial Design': n } */
 function ipTotal(type){ return (inProgress[type]||0); }
@@ -1688,6 +1698,8 @@ let commDesignRaws = [], commElecRaws = [], commStrucRaws = [];
 let commCommercialRaws = [];
 let lotCobaltURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Cobalt.csv';
 let lotCobaltRaws = [];
+let lotDirectURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Direct.csv';
+let lotDirectRaws = [];
 
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
@@ -1741,7 +1753,7 @@ function parseDesignCSV(text, firstLoad){
     fetchQueueCSVs();
     updateScreenDots();
     // If new sources already finished loading (they raced ahead), merge now
-    if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length || lotCobaltRaws.length){
+    if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length || lotCobaltRaws.length || lotDirectRaws.length){
       mergeAndApply();
       return;
     }
@@ -1751,7 +1763,7 @@ function parseDesignCSV(text, firstLoad){
     buildScreenQuarterSlicers();
     // If new-source data is already in memory, re-merge so we don't
     // overwrite the merged rawRows with legacy-only CSV data (race condition fix).
-    if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length || lotCobaltRaws.length){
+    if(lotDesignRaws.length || commDesignRaws.length || commCommercialRaws.length || lotCobaltRaws.length || lotDirectRaws.length){
       mergeAndApply();
     } else {
       // New sources not loaded yet — suppress stale legacy-only render.
@@ -1817,7 +1829,8 @@ function fetchAllNewSources(){
     [commElecURL,'Community Electrical', d=>{commElecRaws=d;}],
     [commStrucURL,'Community Structural', d=>{commStrucRaws=d;}],
     [commCommercialURL,'Commercial', d=>{commCommercialRaws=d;}],
-    [lotCobaltURL,'Lot Cobalt', d=>{lotCobaltRaws=d;}]
+    [lotCobaltURL,'Lot Cobalt', d=>{lotCobaltRaws=d;}],
+    [lotDirectURL,'Lot Direct', d=>{lotDirectRaws=d;}]
   ];
   const done=()=>mergeAndApply();
   if(getGHToken()){
@@ -1973,6 +1986,19 @@ function buildLotCobaltRow(s){
   r[26]=col(s,7);
   return r;
 }
+function buildLotDirectRow(s){
+  const taskName=col(s,1);
+  const isRework=taskName!=='Layout and Upgrade Review';
+  const r=new Array(34).fill('');
+  r[0] =col(s,0);
+  r[6] ='Direct Resi';
+  r[8] =col(s,2);
+  r[9] =col(s,7);
+  r[23]=isRework?'2':'';
+  r[25]=col(s,7);
+  r[26]=col(s,7);
+  return r;
+}
 
 function mergeAndApply(){
   const qaMap=buildQAMap(lotQARaws);
@@ -2021,7 +2047,14 @@ function mergeAndApply(){
     })
     .map(r=>buildLotCobaltRow(r));
 
-  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows];
+
+  const newDirectRows=lotDirectRaws
+    .filter(r=>{
+      const d=parseDate(col(r,7));
+      return d&&!isNaN(d)&&d>WW22_CUTOFF;
+    })
+    .map(r=>buildLotDirectRow(r));
+  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows];
   buildScreenQuarterSlicers();
   if(!initialFilterSet){ applyLastTenWorkDays(); initialFilterSet=true; }
   applyFilters();
@@ -3099,7 +3132,7 @@ function renderSLATypeCharts(rows, weeks){
   }
 
   /* Group types by design level, skip types with zero data in period */
-  const LV_COLOR_HEX2={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
+  const LV_COLOR_HEX2={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D','Cobalt Resi':'#BA68C8','Direct Resi':'#F06292'};
 
   /* Check which types have any data */
   const typesWithData=types.filter(t=>weeks.some(wk=>typeWeekMap[t][wk]?.length>0));
@@ -3263,7 +3296,7 @@ function renderScreen6(){
   });
 
   /* Compute SLA stats per level */
-  const LV_COLOR_HEX={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D'};
+  const LV_COLOR_HEX={'Lot-Level Design':'#4FC3F7','Community-Level Design':'#69F0AE','Commercial Design':'#FFB74D','Cobalt Resi':'#BA68C8','Direct Resi':'#F06292'};
   const lmB=document.body.classList.contains('light-mode');const LV_BG={'Lot-Level Design':lmB?'rgba(0,0,0,.03)':'rgba(79,195,247,.07)','Community-Level Design':lmB?'rgba(0,0,0,.03)':'rgba(105,240,174,.07)','Commercial Design':lmB?'rgba(0,0,0,.03)':'rgba(255,183,77,.07)'};
 
   document.getElementById('sla-stat-panels').innerHTML=LEVELS.map(level=>{

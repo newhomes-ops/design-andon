@@ -560,38 +560,38 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
             ⏳ In progress
             <span style="margin-left:.75rem;font-size:.62rem;font-weight:400;color:var(--muted);">Live — from queue reports</span>
           </div>
-          <div class="summary-tiles">
-            <div class="summary-tile" style="background:rgba(255,183,77,.06)">
+          <div class="summary-tiles" style="grid-template-columns:repeat(7,1fr);">
+            <div class="summary-tile" style="background:rgba(255,183,77,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--muted)">Total</div>
               <div class="tc-value s3" id="s3-ip-all" style="color:var(--text)">—</div>
               <div class="tc-sub">all levels</div>
             </div>
-            <div class="summary-tile" style="background:rgba(79,195,247,.06)">
+            <div class="summary-tile" style="background:rgba(79,195,247,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--muted)">Lot-level</div>
               <div class="tc-value s3" id="s3-ip-lot" style="color:var(--lot)">—</div>
               <div class="tc-sub" id="s3-ip-lot-sub">in progress</div>
             </div>
-            <div class="summary-tile" style="background:rgba(105,240,174,.06)">
-              <div class="tc-label" style="color:var(--muted)">Community-level</div>
+            <div class="summary-tile" style="background:rgba(105,240,174,.06);padding:.9rem 1rem;">
+              <div class="tc-label" style="color:var(--muted)">Community</div>
               <div class="tc-value s3" id="s3-ip-comm" style="color:var(--community)">—</div>
               <div class="tc-sub" id="s3-ip-comm-sub">in progress</div>
             </div>
-            <div class="summary-tile" style="background:rgba(255,183,77,.06)">
+            <div class="summary-tile" style="background:rgba(255,183,77,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--muted)">Commercial</div>
               <div class="tc-value s3" id="s3-ip-coml" style="color:var(--commercial)">—</div>
               <div class="tc-sub" id="s3-ip-coml-sub">in progress</div>
             </div>
-            <div class="summary-tile" style="background:rgba(186,104,200,.06)">
+            <div class="summary-tile" style="background:rgba(186,104,200,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--cobalt)">Cobalt Resi</div>
               <div class="tc-value s3" id="s3-ip-cobl" style="color:var(--cobalt)">—</div>
               <div class="tc-sub" id="s3-ip-cobl-sub">report pending</div>
             </div>
-            <div class="summary-tile" style="background:rgba(240,98,146,.06)">
+            <div class="summary-tile" style="background:rgba(240,98,146,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--direct)">Direct Resi</div>
               <div class="tc-value s3" id="s3-ip-dire" style="color:var(--direct)">—</div>
               <div class="tc-sub" id="s3-ip-dire-sub">report pending</div>
             </div>
-            <div class="summary-tile" style="background:rgba(255,183,77,.04)">
+            <div class="summary-tile" style="background:rgba(255,183,77,.04);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--muted)">Last updated</div>
               <div class="tc-value s3" id="s3-ip-ts" style="color:var(--muted);font-size:1.6rem;margin-top:.4rem">—</div>
             </div>

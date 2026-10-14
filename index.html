@@ -556,11 +556,12 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
         <!-- IN PROGRESS -->
         <div class="summary-block" id="s3-ip-block">
-          <div class="summary-block-title" style="color:var(--text);">
+          <div class="summary-block-title" style="color:var(--text);display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;">
             ⏳ In progress
-            <span style="margin-left:.75rem;font-size:.62rem;font-weight:400;color:var(--muted);">Live — from queue reports</span>
+            <span style="font-size:.62rem;font-weight:400;color:var(--muted);">Live — from queue reports</span>
+            <span style="font-size:.6rem;color:var(--dim);margin-left:auto;">Updated: <span id="s3-ip-ts" style="color:var(--muted);">—</span></span>
           </div>
-          <div class="summary-tiles" style="grid-template-columns:repeat(7,1fr);">
+          <div class="summary-tiles" style="grid-template-columns:repeat(6,1fr);">
             <div class="summary-tile" style="background:rgba(255,183,77,.06);padding:.9rem 1rem;">
               <div class="tc-label" style="color:var(--muted)">Total</div>
               <div class="tc-value s3" id="s3-ip-all" style="color:var(--text)">—</div>
@@ -590,10 +591,6 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
               <div class="tc-label" style="color:var(--direct)">Direct Resi</div>
               <div class="tc-value s3" id="s3-ip-dire" style="color:var(--direct)">—</div>
               <div class="tc-sub" id="s3-ip-dire-sub">report pending</div>
-            </div>
-            <div class="summary-tile" style="background:rgba(255,183,77,.04);padding:.9rem 1rem;">
-              <div class="tc-label" style="color:var(--muted)">Last updated</div>
-              <div class="tc-value s3" id="s3-ip-ts" style="color:var(--muted);font-size:1.6rem;margin-top:.4rem">—</div>
             </div>
           </div>
         </div>

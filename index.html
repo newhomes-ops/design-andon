@@ -5135,7 +5135,8 @@ function pushIPToGitHub(){
       if(!r.ok){ r.json().then(e=>showStatus('IP sync failed: '+(e.message||r.status),'error')).catch(()=>showStatus('IP sync failed: HTTP '+r.status,'error')); }
       else{ showStatus('Absences saved ','success'); }
     })
-  function saveIP(){
+}
+function saveIP(){
   LEVELS.forEach(lv=>{
     const el=document.getElementById('ip-'+lv.replace(/\s+/g,'-'));
     if(el) inProgress[lv]=parseInt(el.value)||0;

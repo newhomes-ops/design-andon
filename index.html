@@ -489,6 +489,7 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
           <div class="screen-dot" onclick="goTo(6)" title="SLA report"></div>
           <div class="screen-dot" onclick="goTo(7)" title="FPY report"></div>
           <div class="screen-dot" onclick="goTo(8)" title="Design Pass Rate"></div>
+          <div class="screen-dot" onclick="goTo(9)" title="Design Rework"></div>
         </div>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <button class="btn-xs hi" onclick="openIP()" style="border-color:var(--border2);color:var(--text);" id="ip-btn">✎ In Progress</button>
@@ -1095,6 +1096,68 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
         </div>
       </div><!-- /pass rate grid -->
     </div><!-- /screen-9 -->
+
+    <!-- SCREEN 10: Design Rework -->
+    <div class="screen" id="screen-10">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN REWORK</div>
+          <div id="rw-range-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em;color:var(--muted)"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:.35rem;">
+            <span style="font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Qtr</span>
+            <div id="rw-q-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.35rem;">
+            <span style="font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
+            <div id="rw-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+          </div>
+          <button class="slicer-btn" id="rw-ytd-btn" onclick="rwSelectYTD()">YTD</button>
+          <button class="slicer-btn btn-last7" id="rw-last7-btn" onclick="rwSelectLast7()">Last 7</button>
+          <select id="rw-designer-select" class="slicer-select" onchange="rwSetDesigner(this.value)" style="margin-left:.4rem;"><option value="all">All designers</option></select>
+        </div>
+      </div>
+
+      <!-- Summary tiles -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.7rem;" id="rw-summary-tiles">
+        <div class="panel" style="padding:.7rem 1rem;">
+          <div style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Total Reworks</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--text)" id="rw-stat-total">—</div>
+        </div>
+        <div class="panel" style="padding:.7rem 1rem;">
+          <div style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Avg SLA (days)</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--text)" id="rw-stat-sla">—</div>
+        </div>
+        <div class="panel" style="padding:.7rem 1rem;">
+          <div style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Longest Turnaround</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--text)" id="rw-stat-max">—</div>
+        </div>
+        <div class="panel" style="padding:.7rem 1rem;">
+          <div style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">Designers Involved</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--text)" id="rw-stat-designers">—</div>
+        </div>
+      </div>
+
+      <!-- Main: Pareto + Designer table -->
+      <div style="display:grid;grid-template-columns:1fr minmax(0,320px);gap:.8rem;flex:1;min-height:0;">
+
+        <!-- Pareto chart panel -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-title" style="margin-bottom:.4rem;">REWORK REASON — PARETO</div>
+          <div style="position:relative;flex:1;min-height:0;overflow:hidden;">
+            <canvas id="rwParetoChart" role="img" aria-label="Pareto chart of rework reasons"></canvas>
+          </div>
+        </div>
+
+        <!-- By-designer panel -->
+        <div class="panel" style="display:flex;flex-direction:column;min-height:0;">
+          <div class="panel-title" style="margin-bottom:.4rem;">BY DESIGNER</div>
+          <div style="flex:1;overflow-y:auto;min-height:0;" id="rw-designer-list"></div>
+        </div>
+
+      </div>
+    </div><!-- /screen-10 -->
 
       </div><!-- /screens-wrapper -->
 
@@ -1722,6 +1785,11 @@ let lotCobaltURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/
 let lotCobaltRaws = [];
 let lotDirectURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Direct.csv';
 let lotDirectRaws = [];
+let lotReworkURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Design%20Rework.csv';
+let lotReworkRaws = [];
+/* Rework screen state */
+let rwSelYear=null, rwSelQ=null, rwSelMonth=null, rwSelYTD=true, rwSelLast7=false;
+let rwDesignerFilter='all', rwParetoChart=null;
 
 let autoReloadTimer = null;
 let fpyAutoReloadTimer = null;
@@ -1852,7 +1920,8 @@ function fetchAllNewSources(){
     [commStrucURL,'Community Structural', d=>{commStrucRaws=d;}],
     [commCommercialURL,'Commercial', d=>{commCommercialRaws=d;}],
     [lotCobaltURL,'Lot Cobalt', d=>{lotCobaltRaws=d;}],
-    [lotDirectURL,'Lot Direct', d=>{lotDirectRaws=d;}]
+    [lotDirectURL,'Lot Direct', d=>{lotDirectRaws=d;}],
+    [lotReworkURL,'Lot Rework', d=>{lotReworkRaws=d; if(currentScreen===9) renderReworkScreen();}]
   ];
   const done=()=>mergeAndApply();
   if(getGHToken()){
@@ -2245,6 +2314,7 @@ function goTo(i){
   if(i===6) renderScreen6();
   if(i===7) renderScreen7();
   if(i===8) renderScreen7();
+  if(i===9) renderReworkScreen();
 }
 
 function togglePause(){
@@ -5141,6 +5211,248 @@ function updateScreenDots(){
    ═══════════════════════════════════════════════════ */
 
 /* ── THEME ── */
+/* ── SCREEN 10 — DESIGN REWORK ── */
+function rwParseDate(str){
+  if(!str||!str.trim()) return null;
+  const d=new Date(str.trim());
+  return isNaN(d)?null:d;
+}
+function rwDaysBetween(a,b){
+  if(!a||!b) return null;
+  const diff=Math.round((b-a)/(1000*60*60*24));
+  return diff>=0?diff:null;
+}
+function rwGetRows(){
+  /* Apply current slicer selection and designer filter */
+  const now=new Date();
+  return lotReworkRaws.filter(r=>{
+    const start=rwParseDate(r[7]);
+    if(!start) return false;
+    const designer=(r[3]||'').trim();
+    if(rwDesignerFilter!=='all' && designer!==rwDesignerFilter) return false;
+    if(rwSelLast7){
+      return (now-start)/(1000*60*60*24)<=7;
+    }
+    const yr=start.getFullYear();
+    const mo=start.getMonth()+1;
+    const q=Math.ceil(mo/3);
+    if(rwSelYTD){
+      return yr===now.getFullYear();
+    }
+    if(rwSelYear && yr!==rwSelYear) return false;
+    if(rwSelQ && q!==rwSelQ) return false;
+    if(rwSelMonth && mo!==rwSelMonth) return false;
+    return true;
+  });
+}
+function rwBuildSlicers(){
+  /* Derive available years and months from data */
+  const years=[...new Set(lotReworkRaws.map(r=>{
+    const d=rwParseDate(r[7]); return d?d.getFullYear():null;
+  }).filter(Boolean))].sort((a,b)=>b-a);
+
+  const qEl=document.getElementById('rw-q-slicer');
+  const mEl=document.getElementById('rw-m-slicer');
+  if(!qEl||!mEl) return;
+
+  /* Quarter buttons */
+  qEl.innerHTML=['Q1','Q2','Q3','Q4'].map((q,i)=>{
+    const active=rwSelQ===(i+1)?'background:var(--accent);color:#000;':''
+    return `<button class="slicer-btn" style="${active}" onclick="rwSelectQ(${i+1})">${q}</button>`;
+  }).join('');
+
+  /* Month buttons — only show months present in data */
+  const months=[...new Set(lotReworkRaws.map(r=>{
+    const d=rwParseDate(r[7]); return d?d.getMonth()+1:null;
+  }).filter(Boolean))].sort((a,b)=>a-b);
+  const MNAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  mEl.innerHTML=months.map(m=>{
+    const active=rwSelMonth===m?'background:var(--accent);color:#000;':'';
+    return `<button class="slicer-btn" style="${active}" onclick="rwSelectMonth(${m})">${MNAMES[m-1]}</button>`;
+  }).join('');
+
+  /* YTD / Last7 buttons */
+  const ytdBtn=document.getElementById('rw-ytd-btn');
+  const l7Btn=document.getElementById('rw-last7-btn');
+  if(ytdBtn) ytdBtn.style.cssText+=rwSelYTD?';background:var(--accent);color:#000;':'';
+  if(l7Btn) l7Btn.style.cssText+=rwSelLast7?';background:var(--accent);color:#000;':'';
+
+  /* Designer dropdown */
+  const sel=document.getElementById('rw-designer-select');
+  if(sel){
+    const designers=[...new Set(lotReworkRaws.map(r=>(r[3]||'').trim()).filter(Boolean))].sort();
+    sel.innerHTML='<option value="all">All designers</option>'+
+      designers.map(d=>`<option value="${d}"${rwDesignerFilter===d?' selected':''}>${d}</option>`).join('');
+  }
+}
+function rwUpdateRangeLabel(){
+  const el=document.getElementById('rw-range-label');
+  if(!el) return;
+  if(rwSelLast7){ el.textContent='Last 7 Days'; return; }
+  if(rwSelYTD){ el.textContent='YTD '+new Date().getFullYear(); return; }
+  const MNAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let label=rwSelYear?String(rwSelYear):'';
+  if(rwSelQ) label+=(label?' ':'')+'Q'+rwSelQ;
+  if(rwSelMonth) label+=(label?' ':'')+(MNAMES[rwSelMonth-1]||'');
+  el.textContent=label||'All Time';
+}
+function renderReworkScreen(){
+  if(!lotReworkRaws.length) return;
+  rwBuildSlicers();
+  rwUpdateRangeLabel();
+  const rows=rwGetRows();
+
+  /* Summary tiles */
+  const slaDays=rows.map(r=>{
+    const s=rwParseDate(r[7]), e=rwParseDate(r[8]);
+    return rwDaysBetween(s,e);
+  }).filter(v=>v!==null);
+  const total=rows.length;
+  const avgSLA=slaDays.length?Math.round(slaDays.reduce((a,b)=>a+b,0)/slaDays.length):null;
+  const maxSLA=slaDays.length?Math.max(...slaDays):null;
+  const designers=new Set(rows.map(r=>(r[3]||'').trim()).filter(Boolean)).size;
+
+  const setTile=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val!==null?val:'—'; };
+  setTile('rw-stat-total',total);
+  setTile('rw-stat-sla',avgSLA!==null?avgSLA+'d':null);
+  setTile('rw-stat-max',maxSLA!==null?maxSLA+'d':null);
+  setTile('rw-stat-designers',designers||null);
+
+  /* Pareto: count by sub-category */
+  const counts={};
+  rows.forEach(r=>{
+    const cat=(r[5]||'').trim()||'Uncategorized';
+    counts[cat]=(counts[cat]||0)+1;
+  });
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const labels=sorted.map(([k])=>k);
+  const values=sorted.map(([,v])=>v);
+  const totalCat=values.reduce((a,b)=>a+b,0);
+  let cumPct=0;
+  const cumLine=values.map(v=>{ cumPct+=v; return totalCat?Math.round(cumPct/totalCat*100):0; });
+
+  const canvas=document.getElementById('rwParetoChart');
+  if(canvas){
+    if(rwParetoChart){ rwParetoChart.destroy(); rwParetoChart=null; }
+    /* Fit canvas to parent */
+    const parent=canvas.parentElement;
+    canvas.width=parent.offsetWidth||600;
+    canvas.height=parent.offsetHeight||300;
+    const isDark=!document.body.classList.contains('light-mode');
+    const textColor=isDark?'#ccc':'#333';
+    const gridColor=isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.08)';
+    rwParetoChart=new Chart(canvas,{
+      type:'bar',
+      data:{
+        labels,
+        datasets:[
+          {
+            type:'bar',
+            label:'Count',
+            data:values,
+            backgroundColor:'rgba(79,195,247,.7)',
+            borderColor:'#4FC3F7',
+            borderWidth:1,
+            yAxisID:'y'
+          },
+          {
+            type:'line',
+            label:'Cumulative %',
+            data:cumLine,
+            borderColor:'#FFB74D',
+            backgroundColor:'rgba(255,183,77,.15)',
+            pointBackgroundColor:'#FFB74D',
+            pointRadius:3,
+            tension:.3,
+            yAxisID:'y2'
+          }
+        ]
+      },
+      options:{
+        responsive:false,
+        animation:false,
+        plugins:{
+          legend:{display:true,labels:{color:textColor,font:{size:10}}},
+          tooltip:{mode:'index',intersect:false}
+        },
+        scales:{
+          x:{ticks:{color:textColor,font:{size:9},maxRotation:35,minRotation:0},grid:{color:gridColor}},
+          y:{
+            position:'left',
+            beginAtZero:true,
+            ticks:{color:textColor,font:{size:9},stepSize:10},
+            grid:{color:gridColor},
+            title:{display:true,text:'Count',color:textColor,font:{size:9}}
+          },
+          y2:{
+            position:'right',
+            min:0,max:100,
+            ticks:{color:'#FFB74D',font:{size:9},callback:v=>v+'%'},
+            grid:{drawOnChartArea:false},
+            title:{display:true,text:'Cumulative %',color:'#FFB74D',font:{size:9}}
+          }
+        }
+      }
+    });
+  }
+
+  /* By-designer list */
+  const byDes={};
+  rows.forEach(r=>{
+    const name=(r[3]||'').trim()||'Unknown';
+    if(!byDes[name]) byDes[name]={count:0,days:[]};
+    byDes[name].count++;
+    const s=rwParseDate(r[7]), e=rwParseDate(r[8]);
+    const d=rwDaysBetween(s,e);
+    if(d!==null) byDes[name].days.push(d);
+  });
+  const desList=Object.entries(byDes).sort((a,b)=>b[1].count-a[1].count);
+  const desEl=document.getElementById('rw-designer-list');
+  if(desEl){
+    desEl.innerHTML=desList.map(([name,{count,days}])=>{
+      const avg=days.length?Math.round(days.reduce((a,b)=>a+b,0)/days.length):null;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.35rem .5rem;border-bottom:1px solid var(--border);">
+        <div style="font-size:.72rem;color:var(--text);font-weight:600;">${name}</div>
+        <div style="display:flex;gap:.7rem;align-items:baseline;">
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;color:var(--accent)">${count}</div>
+            <div style="font-size:.46rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim)">reworks</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;color:var(--muted)">${avg!==null?avg+'d':'—'}</div>
+            <div style="font-size:.46rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim)">avg sla</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('')||'<div style="padding:.5rem;color:var(--dim);font-size:.7rem;">No data for selected period.</div>';
+  }
+}
+/* Slicer handlers */
+function rwSelectQ(q){
+  rwSelYTD=false; rwSelLast7=false;
+  rwSelQ=(rwSelQ===q)?null:q;
+  rwSelMonth=null;
+  renderReworkScreen();
+}
+function rwSelectMonth(m){
+  rwSelYTD=false; rwSelLast7=false;
+  rwSelMonth=(rwSelMonth===m)?null:m;
+  rwSelQ=null;
+  renderReworkScreen();
+}
+function rwSelectYTD(){
+  rwSelYTD=true; rwSelLast7=false; rwSelQ=null; rwSelMonth=null;
+  renderReworkScreen();
+}
+function rwSelectLast7(){
+  rwSelLast7=true; rwSelYTD=false; rwSelQ=null; rwSelMonth=null;
+  renderReworkScreen();
+}
+function rwSetDesigner(val){
+  rwDesignerFilter=val;
+  renderReworkScreen();
+}
+
 function toggleTheme(){
   document.body.classList.toggle('light-mode');
   try{ localStorage.setItem('andon_theme', document.body.classList.contains('light-mode')?'light':'dark'); }catch(e){}
@@ -5207,7 +5519,7 @@ function saveIP(){
 }
 
 /* ── SETTINGS OVERLAY ── */
-const SCREEN_TITLES=['Totals & In Progress','Designer Scorecard','Level Groups','Trend & Ranking','Productivity Equiv.','Team Reports','SLA Report','FPY Report','Design Pass Rate'];
+const SCREEN_TITLES=['Totals & In Progress','Designer Scorecard','Level Groups','Trend & Ranking','Productivity Equiv.','Team Reports','SLA Report','FPY Report','Design Pass Rate','Design Rework'];
 function openSettings(){
   /* Screen visibility checkboxes */
   const vis=document.getElementById('settings-screen-visibility');

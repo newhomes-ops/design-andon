@@ -5212,6 +5212,15 @@ function updateScreenDots(){
 
 /* ── THEME ── */
 /* ── SCREEN 10 — DESIGN REWORK ── */
+/* Column accessors (Papa.parse with header:true → objects) */
+const RW_COL={
+  designer:'Last Modified By: Full Name',
+  subCat:'Rework Sub-Category',
+  startDate:'Created Date',
+  endDate:'Rework Completed Date',
+  designType:'Community Lot: Type of Design'
+};
+function rwGet(r,col){ return (r[RW_COL[col]]||'').trim(); }
 function rwParseDate(str){
   if(!str||!str.trim()) return null;
   const d=new Date(str.trim());
@@ -5226,9 +5235,9 @@ function rwGetRows(){
   /* Apply current slicer selection and designer filter */
   const now=new Date();
   return lotReworkRaws.filter(r=>{
-    const start=rwParseDate(r[7]);
+    const start=rwParseDate(rwGet(r,'startDate'));
     if(!start) return false;
-    const designer=(r[3]||'').trim();
+    const designer=rwGet(r,'designer');
     if(rwDesignerFilter!=='all' && designer!==rwDesignerFilter) return false;
     if(rwSelLast7){
       return (now-start)/(1000*60*60*24)<=7;
@@ -5248,7 +5257,7 @@ function rwGetRows(){
 function rwBuildSlicers(){
   /* Derive available years and months from data */
   const years=[...new Set(lotReworkRaws.map(r=>{
-    const d=rwParseDate(r[7]); return d?d.getFullYear():null;
+    const d=rwParseDate(rwGet(r,'startDate')); return d?d.getFullYear():null;
   }).filter(Boolean))].sort((a,b)=>b-a);
 
   const qEl=document.getElementById('rw-q-slicer');
@@ -5263,7 +5272,7 @@ function rwBuildSlicers(){
 
   /* Month buttons — only show months present in data */
   const months=[...new Set(lotReworkRaws.map(r=>{
-    const d=rwParseDate(r[7]); return d?d.getMonth()+1:null;
+    const d=rwParseDate(rwGet(r,'startDate')); return d?d.getMonth()+1:null;
   }).filter(Boolean))].sort((a,b)=>a-b);
   const MNAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   mEl.innerHTML=months.map(m=>{
@@ -5280,7 +5289,7 @@ function rwBuildSlicers(){
   /* Designer dropdown */
   const sel=document.getElementById('rw-designer-select');
   if(sel){
-    const designers=[...new Set(lotReworkRaws.map(r=>(r[3]||'').trim()).filter(Boolean))].sort();
+    const designers=[...new Set(lotReworkRaws.map(r=>rwGet(r,'designer')).filter(Boolean))].sort();
     sel.innerHTML='<option value="all">All designers</option>'+
       designers.map(d=>`<option value="${d}"${rwDesignerFilter===d?' selected':''}>${d}</option>`).join('');
   }
@@ -5304,13 +5313,13 @@ function renderReworkScreen(){
 
   /* Summary tiles */
   const slaDays=rows.map(r=>{
-    const s=rwParseDate(r[7]), e=rwParseDate(r[8]);
+    const s=rwParseDate(rwGet(r,'startDate')), e=rwParseDate(rwGet(r,'endDate'));
     return rwDaysBetween(s,e);
   }).filter(v=>v!==null);
   const total=rows.length;
   const avgSLA=slaDays.length?Math.round(slaDays.reduce((a,b)=>a+b,0)/slaDays.length):null;
   const maxSLA=slaDays.length?Math.max(...slaDays):null;
-  const designers=new Set(rows.map(r=>(r[3]||'').trim()).filter(Boolean)).size;
+  const designers=new Set(rows.map(r=>rwGet(r,'designer')).filter(Boolean)).size;
 
   const setTile=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val!==null?val:'—'; };
   setTile('rw-stat-total',total);
@@ -5321,7 +5330,7 @@ function renderReworkScreen(){
   /* Pareto: count by sub-category */
   const counts={};
   rows.forEach(r=>{
-    const cat=(r[5]||'').trim()||'Uncategorized';
+    const cat=rwGet(r,'subCat')||'Uncategorized';
     counts[cat]=(counts[cat]||0)+1;
   });
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
@@ -5399,10 +5408,10 @@ function renderReworkScreen(){
   /* By-designer list */
   const byDes={};
   rows.forEach(r=>{
-    const name=(r[3]||'').trim()||'Unknown';
+    const name=rwGet(r,'designer')||'Unknown';
     if(!byDes[name]) byDes[name]={count:0,days:[]};
     byDes[name].count++;
-    const s=rwParseDate(r[7]), e=rwParseDate(r[8]);
+    const s=rwParseDate(rwGet(r,'startDate')), e=rwParseDate(rwGet(r,'endDate'));
     const d=rwDaysBetween(s,e);
     if(d!==null) byDes[name].days.push(d);
   });

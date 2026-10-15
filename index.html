@@ -1099,24 +1099,17 @@ body.light-mode .leg-dot { filter:grayscale(1) brightness(0.3); }
 
     <!-- SCREEN 10: Design Rework -->
     <div class="screen" id="screen-10">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-          <div class="section-label" style="color:var(--text);margin-bottom:0;">DESIGN REWORK</div>
-          <div id="rw-range-label" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em;color:var(--muted)"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:.35rem;">
-            <span style="font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Qtr</span>
-            <div id="rw-q-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:.35rem;">
-            <span style="font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Month</span>
-            <div id="rw-m-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
-          </div>
-          <button class="slicer-btn" id="rw-ytd-btn" onclick="rwSelectYTD()">YTD</button>
-          <button class="slicer-btn btn-last7" id="rw-last7-btn" onclick="rwSelectLast7()">Last 7</button>
-          <select id="rw-designer-select" class="slicer-select" onchange="rwSetDesigner(this.value)" style="margin-left:.4rem;"><option value="all">All designers</option></select>
-        </div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;">
+        <div class="section-label" style="color:var(--text);margin-bottom:0;margin-right:.4rem;">DESIGN REWORK</div>
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);">Quarter</span>
+        <div id="rw-q-slicer" style="display:flex;gap:.3rem;flex-wrap:wrap;"></div>
+        <span style="font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-left:.4rem;">Range</span>
+        <input type="date" id="sf-from-9" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(this.value, document.getElementById('sf-to-9').value)">
+        <span style="font-size:.68rem;color:var(--dim);">to</span>
+        <input type="date" id="sf-to-9" style="font-size:.76rem;padding:.35rem .7rem;border-radius:var(--border-radius-md);border:1px solid var(--border2);background:var(--surface2);color:var(--text);" onchange="screenFilterChange(document.getElementById('sf-from-9').value, this.value)">
+        <button class="btn-xs btn-last7" onclick="resetScreenFilter()">Last 7 work days</button>
+        <button class="slicer-btn" id="ytd-btn-9" onclick="setYTDFilter()">YTD</button>
+        <select id="rw-designer-select" class="slicer-select" onchange="rwSetDesigner(this.value)" style="margin-left:.4rem;"><option value="all">All designers</option></select>
       </div>
 
       <!-- Summary tiles -->
@@ -2173,11 +2166,12 @@ function applyFilters(){
     return true;
   });
   renderBoard();
+  if(currentScreen===9 && lotReworkRaws.length) renderReworkScreen();
 }
 
 function syncScreenFilters(){
   /* Keep all 4 screen date inputs in sync */
-  [0,1,2,3,8].forEach(i=>{
+  [0,1,2,3,8,9].forEach(i=>{
     const f=document.getElementById('sf-from-'+i);
     const t=document.getElementById('sf-to-'+i);
     if(f) f.value=sfFrom;
@@ -2202,12 +2196,14 @@ function buildScreenQuarterSlicers(){
     const el=document.getElementById('screen-q-slicer-'+i);
     if(el) el.innerHTML=html;
   });
+  const rwQEl=document.getElementById('rw-q-slicer');
+  if(rwQEl) rwQEl.innerHTML=html;
   syncScreenQuarterSlicers();
 }
 
 function syncScreenQuarterSlicers(){
   /* All quarter slicer containers */
-  const slicerIds=['screen-q-slicer-0','screen-q-slicer-1','screen-q-slicer-2','screen-q-slicer-3','peq-q-slicer-0'];
+  const slicerIds=['screen-q-slicer-0','screen-q-slicer-1','screen-q-slicer-2','screen-q-slicer-3','peq-q-slicer-0','rw-q-slicer'];
   slicerIds.forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
@@ -2251,7 +2247,7 @@ function screenFilterChange(from, to){
 
 function resetScreenFilter(){
   globalYTD=false;
-  ['0','1','2','3','4'].forEach(n=>{
+  ['0','1','2','3','4','9'].forEach(n=>{
     const btn=document.getElementById('ytd-btn-'+n);
     if(btn) btn.classList.remove('active');
   });
@@ -4147,7 +4143,7 @@ function setYTDFilter(){
   if(globalYTD){
     const y=new Date().getFullYear();
     const from=`${y}-01-01`, to=`${y}-12-31`;
-    ['0','1','2','3','8'].forEach(n=>{
+    ['0','1','2','3','8','9'].forEach(n=>{
       const f=document.getElementById('sf-from-'+n);
       const t=document.getElementById('sf-to-'+n);
       if(f) f.value=from;
@@ -4157,7 +4153,7 @@ function setYTDFilter(){
   } else {
     resetScreenFilter();
   }
-  ['0','1','2','3','4'].forEach(n=>{
+  ['0','1','2','3','4','9'].forEach(n=>{
     const btn=document.getElementById('ytd-btn-'+n);
     if(btn) btn.classList.toggle('active',globalYTD);
   });
@@ -5232,25 +5228,24 @@ function rwDaysBetween(a,b){
   return diff>=0?diff:null;
 }
 function rwGetRows(){
-  /* Apply current slicer selection and designer filter */
-  const now=new Date();
+  /* Use the global sfFrom/sfTo date filter (same as all other screens),
+     applied to the rework start date. Optional designer filter. */
+  const ff=sfFrom, ft=sfTo;
   return lotReworkRaws.filter(r=>{
     const start=rwParseDate(rwGet(r,'startDate'));
     if(!start) return false;
+    if(ff){
+      const p=ff.split('-');
+      const from=new Date(+p[0],+p[1]-1,+p[2],0,0,0);
+      if(start<from) return false;
+    }
+    if(ft){
+      const p=ft.split('-');
+      const to=new Date(+p[0],+p[1]-1,+p[2],23,59,59);
+      if(start>to) return false;
+    }
     const designer=rwGet(r,'designer');
     if(rwDesignerFilter!=='all' && designer!==rwDesignerFilter) return false;
-    if(rwSelLast7){
-      return (now-start)/(1000*60*60*24)<=7;
-    }
-    const yr=start.getFullYear();
-    const mo=start.getMonth()+1;
-    const q=Math.ceil(mo/3);
-    if(rwSelYTD){
-      return yr===now.getFullYear();
-    }
-    if(rwSelYear && yr!==rwSelYear) return false;
-    if(rwSelQ && q!==rwSelQ) return false;
-    if(rwSelMonth && mo!==rwSelMonth) return false;
     return true;
   });
 }
@@ -5305,10 +5300,16 @@ function rwUpdateRangeLabel(){
   if(rwSelMonth) label+=(label?' ':'')+(MNAMES[rwSelMonth-1]||'');
   el.textContent=label||'All Time';
 }
+function rwBuildDesignerDropdown(){
+  const sel=document.getElementById('rw-designer-select');
+  if(!sel) return;
+  const designers=[...new Set(lotReworkRaws.map(r=>rwGet(r,'designer')).filter(Boolean))].sort();
+  sel.innerHTML='<option value="all">All designers</option>'+
+    designers.map(d=>`<option value="${d}"${rwDesignerFilter===d?' selected':''}>${d}</option>`).join('');
+}
 function renderReworkScreen(){
   if(!lotReworkRaws.length) return;
-  rwBuildSlicers();
-  rwUpdateRangeLabel();
+  rwBuildDesignerDropdown();
   const rows=rwGetRows();
 
   /* Summary tiles */

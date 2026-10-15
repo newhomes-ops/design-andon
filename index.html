@@ -2057,6 +2057,37 @@ function buildCommercialRow(s1Row){
  * col B (1) Task Name: 'Layout and Upgrade Review' = new design, else = rework.
  * col C (2) Owner: Full Name (designer). col H (7) Actual Completion Date.
  */
+/**
+ * Build a 34-element row from Lot Design Rework.csv.
+ * Each rework job is treated as a completed lot-level design (real work done).
+ * colG (6)  = Type of Design (Individual Plot Plan / Individual Permit Package → Lot-Level Design)
+ * colI (8)  = Designer (Last Modified By: Full Name)
+ * colJ (9)  = Rework Completed Date (the "completion" date for charts)
+ * colZ (25) = Created Date (rework start)
+ * colX (23) = '2' marks as rework
+ * r[1]      = SLA days (completed − created)
+ */
+function buildLotReworkRow(s){
+  const designer=(s['Last Modified By: Full Name']||'').trim();
+  const designType=(s['Community Lot: Type of Design']||'').trim()||'Individual Plot Plan';
+  const startStr=(s['Created Date']||'').trim();
+  const endStr=(s['Rework Completed Date']||'').trim();
+  const start=startStr?new Date(startStr):null;
+  const end=endStr?new Date(endStr):null;
+  const slaVal=(start&&end&&!isNaN(start)&&!isNaN(end))
+    ?Math.max(0,Math.round((end-start)/(1000*60*60*24))).toString():'';
+  const r=new Array(34).fill('');
+  r[0] =(s['Community Lot: Community Lot ID']||'').trim();
+  r[1] =slaVal;          // Days open / SLA
+  r[6] =designType;      // Type of Design → colG (maps to Lot-Level Design via TYPE_TO_LEVEL)
+  r[8] =designer;        // Designer       → colI
+  r[9] =endStr;          // Completed Date → colJ
+  r[23]='2';             // Rework flag    → colX
+  r[25]=startStr;        // Start Date     → colZ
+  r[26]=endStr;          // Completion     → colAA
+  return r;
+}
+
 function buildLotCobaltRow(s){
   const taskName=col(s,1);
   const isRework=taskName!=='Layout and Upgrade Review';
@@ -2138,7 +2169,18 @@ function mergeAndApply(){
       return d&&!isNaN(d)&&d>WW22_CUTOFF;
     })
     .map(r=>buildLotDirectRow(r));
-  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows];
+
+  /* Lot Rework rows: each rework job counts as completed lot-level design work.
+     Use Rework Completed Date as the "done" date; skip rows with no completed date. */
+  const newReworkRows=lotReworkRaws
+    .filter(r=>{
+      const endStr=(r['Rework Completed Date']||'').trim();
+      const d=endStr?new Date(endStr):null;
+      return d&&!isNaN(d)&&d>WW22_CUTOFF;
+    })
+    .map(r=>buildLotReworkRow(r));
+
+  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows,...newReworkRows];
   buildScreenQuarterSlicers();
   if(!initialFilterSet){ applyLastTenWorkDays(); initialFilterSet=true; }
   applyFilters();

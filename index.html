@@ -4524,14 +4524,13 @@ function renderScreen8(designers,rows){
       <tbody>
         ${sortedDes.map(d=>{
           const dayVals=dates.map(dk=>matrix[d][dk]!==undefined?Math.round(matrix[d][dk]*100):null);
-          /* Denominator = all work days shown minus days the designer was absent */
           const absentDays=absencesData.filter(a=>a.designer===d&&dates.includes(a.date)).length;
           const activeDays=Math.max(1,dates.length-absentDays);
           const totalPEQ=dayVals.reduce((s,v)=>s+(v!==null?v:0),0);
           const avg=Math.round(totalPEQ/activeDays);
           return `<tr>
             <td class="name-col">${engr(d)}</td>
-            ${dayVals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}
+            ${dayVals.map((v,i)=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};cursor:${v!==null?'pointer':'default'};" ${v!==null?`onclick="showPEQDetail('${d.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}','${dates[i]}')"`:''} title="${v!==null?'Click for design type breakdown':''}">${v!==null?v:''}</td>`).join('')}
             <td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg||''}</td>
           </tr>`;
         }).join('')}
@@ -4543,47 +4542,73 @@ function renderScreen8(designers,rows){
       </tbody>
     </table>`;
   } else if(peqView==='weekly'){
+    /* Each cell = daily average for that week (total PEQ ÷ work days with data in that week) */
     const wkMap={};
+    const wkDays={};  /* count of unique dates per week */
     designers.forEach(d=>{wkMap[d]={};});
     rows.forEach(r=>{
       const dt=parseDate(colJ(r)); if(!dt||isNaN(dt)) return;
       const wk=isoWeek(dt); const des=colI(r);
+      const dk=toYMD(dt);
       if(!wkMap[des]) wkMap[des]={};
       wkMap[des][wk]=(wkMap[des][wk]||0)+getEquiv(colG(r));
+      if(!wkDays[wk]) wkDays[wk]=new Set();
+      wkDays[wk].add(dk);
     });
     const weeks=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?isoWeek(dt):null;}).filter(Boolean))].sort();
     const sortedDes=designerData.map(d=>d.name);
     const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`<table class="peq-table">
-      <thead><tr><th class="name-col">Designer</th>${weeks.map(w=>`<th>${w}</th>`).join('')}<th class="avg-col">Avg</th></tr></thead>
+      <thead><tr><th class="name-col">Designer</th>${weeks.map(w=>`<th>${w}<div style="font-size:.48rem;color:var(--dim);font-weight:400;">${wkDays[w]?wkDays[w].size+'d':''}</div></th>`).join('')}<th class="avg-col">Avg/Day</th></tr></thead>
       <tbody>
         ${sortedDes.map(d=>{
-          const vals=weeks.map(w=>wkMap[d][w]!==undefined?Math.round(wkMap[d][w]*100):null);
-          /* Denominator = all weeks in view (zero-output weeks count as zero, not excluded) */
-          const totalPEQ=vals.reduce((s,v)=>s+(v!==null?v:0),0);
-          const avg=weeks.length?Math.round(totalPEQ/weeks.length):null;
+          /* Per-week daily avg: sum ÷ work days observed in that week */
+          const vals=weeks.map(w=>{
+            const sum=wkMap[d][w];
+            if(sum===undefined||sum===0) return null;
+            const days=wkDays[w]?wkDays[w].size:1;
+            return Math.round(sum/days*100);
+          });
+          /* Overall avg: total PEQ ÷ total distinct days across all weeks */
+          const totalDays=weeks.reduce((s,w)=>s+(wkDays[w]?wkDays[w].size:0),0)||1;
+          const totalPEQ=weeks.reduce((s,w)=>s+(wkMap[d][w]||0),0);
+          const avg=Math.round(totalPEQ/totalDays*100);
           return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg||''}</td></tr>`;
         }).join('')}
       </tbody></table>`;
   } else if(peqView==='quarterly'){
+    /* Each cell = daily average for that quarter (total PEQ ÷ work days with data in that quarter) */
     const qMap={};
+    const qDays={};  /* count of unique dates per quarter */
     designers.forEach(d=>{qMap[d]={};});
     rows.forEach(r=>{
       const dt=parseDate(colJ(r)); if(!dt||isNaN(dt)) return;
       const qk=qtrKey(dt); const des=colI(r);
+      const dk=toYMD(dt);
       if(!qMap[des]) qMap[des]={};
       qMap[des][qk]=(qMap[des][qk]||0)+getEquiv(colG(r));
+      if(!qDays[qk]) qDays[qk]=new Set();
+      qDays[qk].add(dk);
     });
     const quarters=[...new Set(rows.map(r=>{const dt=parseDate(colJ(r));return dt&&!isNaN(dt)?qtrKey(dt):null;}).filter(Boolean))].sort();
     const sortedDes=designerData.map(d=>d.name);
     const el=document.getElementById('peq-daily-table');
     if(el) el.innerHTML=`<table class="peq-table">
-      <thead><tr><th class="name-col">Designer</th>${quarters.map(q=>`<th>${q}</th>`).join('')}<th class="avg-col">Total</th></tr></thead>
+      <thead><tr><th class="name-col">Designer</th>${quarters.map(q=>`<th>${q}<div style="font-size:.48rem;color:var(--dim);font-weight:400;">${qDays[q]?qDays[q].size+'d':''}</div></th>`).join('')}<th class="avg-col">Avg/Day</th></tr></thead>
       <tbody>
         ${sortedDes.map(d=>{
-          const vals=quarters.map(q=>qMap[d][q]!==undefined?Math.round(qMap[d][q]*100):null);
-          const total=Math.round(vals.filter(v=>v!==null).reduce((s,v)=>s+v,0));
-          return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col">${total||''}</td></tr>`;
+          /* Per-quarter daily avg: sum ÷ work days observed in that quarter */
+          const vals=quarters.map(q=>{
+            const sum=qMap[d][q];
+            if(sum===undefined||sum===0) return null;
+            const days=qDays[q]?qDays[q].size:1;
+            return Math.round(sum/days*100);
+          });
+          /* Overall avg across all quarters */
+          const totalDays=quarters.reduce((s,q)=>s+(qDays[q]?qDays[q].size:0),0)||1;
+          const totalPEQ=quarters.reduce((s,q)=>s+(qMap[d][q]||0),0);
+          const avg=Math.round(totalPEQ/totalDays*100);
+          return `<tr><td class="name-col">${engr(d)}</td>${vals.map(v=>`<td style="background:${cellColor(v)};color:${cellTextColor(v)};">${v!==null?v:''}</td>`).join('')}<td class="avg-col" style="background:${cellColor(avg)};color:${cellTextColor(avg)};">${avg||''}</td></tr>`;
         }).join('')}
       </tbody></table>`;
   } else if(peqView==='matrix'){
@@ -5249,6 +5274,75 @@ function updateScreenDots(){
    ═══════════════════════════════════════════════════ */
 
 /* ── THEME ── */
+/* ── PEQ DAILY CELL DETAIL POPUP ── */
+function showPEQDetail(designer, dk){
+  const srcRows=filteredRows; // use current global filtered set
+  const dayRows=srcRows.filter(r=>colI(r)===designer&&(()=>{const d=parseDate(colJ(r));return d&&!isNaN(d)&&toYMD(d)===dk;})());
+  if(!dayRows.length) return;
+  const typeCounts={};
+  dayRows.forEach(r=>{
+    const t=colG(r)||'Unknown';
+    if(!typeCounts[t]) typeCounts[t]={count:0,peq:0};
+    typeCounts[t].count++;
+    typeCounts[t].peq+=getEquiv(t);
+  });
+  const totalPEQ=dayRows.reduce((s,r)=>s+getEquiv(colG(r)),0);
+  function cc(pct){
+    const lm=document.body.classList.contains('light-mode');
+    if(pct>=100) return lm?'rgba(0,0,0,.06)':'rgba(105,240,174,.18)';
+    if(pct>=75)  return lm?'rgba(0,0,0,.03)':'rgba(105,240,174,.09)';
+    if(pct>=50)  return lm?'rgba(0,0,0,.04)':'rgba(255,183,77,.15)';
+    return 'rgba(255,138,101,.15)';
+  }
+  function ctc(pct){
+    if(pct>=100) return '#69F0AE';
+    if(pct>=75)  return '#a5d6a7';
+    if(pct>=50)  return '#FFB74D';
+    return '#FF8A65';
+  }
+  const typeRows=Object.entries(typeCounts).sort((a,b)=>b[1].peq-a[1].peq).map(([type,{count,peq}])=>{
+    const p=Math.round(peq*100);
+    return `<tr>
+      <td style="font-size:.72rem;color:var(--text);padding:.3rem .5rem;border-bottom:1px solid var(--border);">${type}</td>
+      <td style="text-align:center;font-size:.72rem;color:var(--muted);padding:.3rem .4rem;border-bottom:1px solid var(--border);">${count}</td>
+      <td style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;background:${cc(p)};color:${ctc(p)};padding:.3rem .4rem;border-bottom:1px solid var(--border);">${p}%</td>
+    </tr>`;
+  }).join('');
+  let overlay=document.getElementById('peq-detail-overlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='peq-detail-overlay';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:flex;align-items:center;justify-content:center;';
+    overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+    document.body.appendChild(overlay);
+  }
+  const [yr,mo,dy]=dk.split('-');
+  const dateLabel=`${parseInt(mo)}/${parseInt(dy)}/${yr}`;
+  const totalP=Math.round(totalPEQ*100);
+  overlay.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.2rem 1.4rem;min-width:300px;max-width:460px;box-shadow:0 8px 32px rgba(0,0,0,.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;gap:1rem;">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.06em;color:var(--text);">${engr(designer)}</div>
+        <div style="font-size:.6rem;color:var(--muted);letter-spacing:.05em;margin-top:.1rem;">${dateLabel} · design type breakdown</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:${ctc(totalP)};">${totalP}%</div>
+        <div style="font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);">daily PEQ</div>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr>
+        <th style="text-align:left;font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:.2rem .5rem;border-bottom:1px solid var(--border2);">Design Type</th>
+        <th style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:.2rem .4rem;border-bottom:1px solid var(--border2);">Jobs</th>
+        <th style="font-size:.52rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:.2rem .4rem;border-bottom:1px solid var(--border2);">PEQ</th>
+      </tr></thead>
+      <tbody>${typeRows}</tbody>
+    </table>
+    <div style="margin-top:.6rem;font-size:.52rem;color:var(--dim);text-align:right;">${dayRows.length} job${dayRows.length!==1?'s':''} total · click outside to close</div>
+  </div>`;
+  overlay.style.display='flex';
+}
+
 /* ── SCREEN 10 — DESIGN REWORK ── */
 /* Column accessors (Papa.parse with header:true → objects) */
 const RW_COL={

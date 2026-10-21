@@ -1,7 +1,9 @@
 {
-  "Lot-Level Design": 5,
-  "Community-Level Design": 2,
-  "Commercial Design": 3,
+  "Lot-Level Design": 42,
+  "Community-Level Design": 0,
+  "Commercial Design": 0,
+  "Cobalt Resi": 0,
+  "Direct Resi": 0,
   "absences": [
     {
       "designer": "Jonna Joy Calabia",
@@ -210,6 +212,10 @@
     {
       "designer": "Mary Genevieve Mendoza",
       "date": "2026-09-17"
+    },
+    {
+      "designer": "John Mars Venus",
+      "date": "2026-10-20"
     }
   ]
 }

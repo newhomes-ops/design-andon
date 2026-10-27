@@ -1368,6 +1368,7 @@ const TYPE_TO_LEVEL = {
   'Individual Plot Plan':          'Lot-Level Design',
   'Individual Permit Package':     'Lot-Level Design',
   'Cobalt Resi':                   'Cobalt Resi',
+  'Cobalt Resi Rework':            'Cobalt Resi',
   'Direct Resi':                   'Direct Resi',
   'Master Permit Package':         'Community-Level Design',
   'Master Plan':                   'Community-Level Design',
@@ -1395,6 +1396,7 @@ const DEFAULT_PEQ_WEIGHTS = {
   'Individual Plot Plan':          1,
   'Individual Permit Package':     2,
   'Cobalt Resi':                   2,
+  'Cobalt Resi Rework':            1,   // 50% of Cobalt Resi — synthetic rework assumption
   'Direct Resi':                   2,
   'NH Commercial Design - Maxfit':    6,
   'NH Commercial Project - Estimate': 6,
@@ -2193,6 +2195,24 @@ function mergeAndApply(){
     })
     .map(r=>buildLotCobaltRow(r));
 
+  /* Cobalt synthetic rework: for each new (non-rework) Cobalt job, generate a
+     corresponding rework row on the same day. Type 'Cobalt Resi Rework' carries
+     50% PEQ weight (1 hr vs 2 hr) — no separate CSV needed. */
+  const newCobaltReworkRows=newCobaltRows
+    .filter(r=>r[23]!=='2')   // only non-rework base jobs
+    .map(r=>{
+      const rw=new Array(34).fill('');
+      rw[0] =r[0];
+      rw[1] =r[1];              // SLA same as parent job
+      rw[6] ='Cobalt Resi Rework';
+      rw[8] =r[8];              // same designer
+      rw[9] =r[9];              // same completion date
+      rw[23]='2';               // rework flag
+      rw[25]=r[25];
+      rw[26]=r[26];
+      return rw;
+    });
+
   const newDirectRows=lotDirectRaws
     .filter(r=>{
       const d=parseDate(col(r,5));
@@ -2220,7 +2240,7 @@ function mergeAndApply(){
     })
     .map(r=>buildLotDirectReworkRow(r));
 
-  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows,...newReworkRows,...newDirectReworkRows];
+  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newCobaltReworkRows,...newDirectRows,...newReworkRows,...newDirectReworkRows];
   buildScreenQuarterSlicers();
   if(!initialFilterSet){ applyLastTenWorkDays(); initialFilterSet=true; }
   applyFilters();

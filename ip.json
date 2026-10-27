@@ -1,7 +1,7 @@
 {
-  "Lot-Level Design": 42,
-  "Community-Level Design": 0,
-  "Commercial Design": 0,
+  "Lot-Level Design": 33,
+  "Community-Level Design": 1,
+  "Commercial Design": 1,
   "Cobalt Resi": 0,
   "Direct Resi": 0,
   "absences": [
@@ -216,6 +216,10 @@
     {
       "designer": "John Mars Venus",
       "date": "2026-10-20"
+    },
+    {
+      "designer": "John Patrick Salazar",
+      "date": "2026-07-15"
     }
   ]
 }

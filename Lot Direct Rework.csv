@@ -1,0 +1,189 @@
+"Activity ID","Subject","TaskRay Project: Project Name","Created By: Full Name","Assigned To: Full Name","Created Date","Completed Date/Time","Status","Comments"
+"00TUS000016dtlS","Design QA ? Corrections","1024CALD","CHI LEUNG","Jecko Gevaña","8/4/2026","8/5/2026, 10:14 AM","Completed","Ground conductor connection shown on the single-line diagram (SLD) is incorrect. Downstream of the neutral-to-ground bond at the fused AC disconnect (ACD) for a supply-side connection, the ground conductor is a grounding electrode conductor (GEC) and must terminate directly at the grounding electrode (GE), not at the main service panel (MSP) ground bar.
+
+GEC is typically a 6 AWG bare copper conductor, installed without conduit, running directly from the fused ACD to the grounding electrode. Please update the design template for supply-side connections to reflect the correct GEC routing and termination.
+
+For this specific design, the interconnection can be simplified by revising to a 40A breaker in the existing 150A/150A MSP with PCS-BBoC enabled, eliminating the need for the current supply-side interconnection configuration. Include additional breakers on BOM for breaker consolidation to create space."
+"00TUS000016dmfT","Design QA ? Corrections","2307THOM","CHI LEUNG","Jecko Gevaña","8/4/2026","8/5/2026, 11:42 AM","Completed","GEC from fused ACD should not be run in same conduit with hot and neutral conductors, please update wire callout D to remove 6AWG EGC and add notation to identify 6AWG Bare Cu as GEC."
+"00TUS000016gyts","Design QA - Corrections","7157JOHN","Rivers Jackson","Jecko Gevaña","8/5/2026","8/5/2026, 4:20 PM","Completed","- The snow load is too high; our records show it should be 30
+- LIDAR should be turned on on Aurora; it seems accurate based on the site survey. We might need to add a couple panels to meet production."
+"00TUS000016hUKC","Design QA - Corrections","304NTOML","Rivers Jackson","Jecko Gevaña","8/5/2026","8/6/2026, 3:17 PM","Completed","- We should follow the fire setbacks from Aurora. We will have to relocate panels to accommodate them.
+- Snow load is too high; our records for this region show it should be 30."
+"00TUS000016hvS7","Design QA - Corrections","1634BOBI","Rivers Jackson","Jecko Gevaña","8/5/2026","8/7/2026, 11:29 AM","Completed","- The panels on the overhang in the front of the house need to be relocated because this is a Lightreach account. We need to make sure we're still in production.
+- Snow load is listed at 71; our records show it should be 25."
+"00TUS000016ijlc","Design QA - Corrections","1171BHAN","Rivers Jackson","Jecko Gevaña","8/5/2026","8/7/2026, 4:03 PM","Completed","- Based on the product by market sheet, we should switch to the REC460 panels instead of the QTron 430s. We should also use the IQ8X domestic microinverters. We should keep the same number of panels that the proposal has.
+- It looks like the bus bar ratings are 150A. We'll need to use PCS in that case and call it out with the note on the electrical diagram."
+"00TUS000016lj0z","Design QA - Corrections","7157JOHN","Rivers Jackson","Jecko Gevaña","8/6/2026","8/6/2026, 10:55 AM","Completed","- When we add panels on a LIghtreach project, we only need to add them until we're in the range of -5% to +10% of the proposed production. 3 panels were added here, but we can reduce that to 2 and still be at about -3.5%."
+"00TUS000016mNt6","Design QA - Corrections","1024CALD","Rivers Jackson","Jecko Gevaña","8/6/2026","8/7/2026, 10:24 AM","Completed","- Our structural engineer said we need to reroof to comp shingle and install on that. Please treat the roof as though it were comp shingle (instaflash 2 mounts, etc.)
+- We can't have the 3 panels on the overhang because of Lightreach. Please move them up to the main roof section.
+- Roofs 1 and 2 on A-1 and S-1 were not consistently labeled. We are moving the panels, but be careful and make sure they line up."
+"00TUS000016mGZg","Design QA - Corrections","1871BROW","Rivers Jackson","Jecko Gevaña","8/6/2026","8/7/2026, 5:26 PM","Completed","- The snow load should be 30, not 76.
+- The Aurora layout with the auto-placed fire setbacks has many panels on the setbacks. We need to move them off of the setbacks. Also, there are two panels on the southern section in front of a window that need to be moved because setbacks are required in front of windows.
+- The main service panel's bus bar rating is 225A. After consulting with our electrician, he said we can tandem breakers to make room for a breaker instead of tapping. Please leave this note on the electrical diagram near the main panel: ""Tandem 4 15A breakers to make room for PV breaker. Land PV breaker in farthest position from the main disconnect."" We also don't need PCS because the bus bar rating is 225A."
+"00TUS000016le51","Design QA - Corrections","233WDRIS","Rivers Jackson","Jecko Gevaña","8/6/2026","8/7/2026, 6:10 PM","Completed","- With corrugated metal roofs, we should use Sunmodo MRB-S mounts instead of the Protea ones listed.
+- Because LIDAR is off, we need to provide the two sets of Lightreach requirements as described in the new requirements. This is what it says:
+
+""When the Aurora LiDAR shading model is inaccurate (for example, it models shade from a tree or structure that no longer exists, or otherwise does not reflect current site conditions), prepare and upload two complete sets of production deliverables: one set with LiDAR shading ON and one set with LiDAR shading OFF. In the LiDAR-OFF set, include a note on one of the production model screenshots explaining why LiDAR shading was turned off. The discrepancy must be substantiated with proof, satellite imagery or site survey photos, demonstrating the condition (for example, a removed tree). Both deliverable sets and the supporting proof must be included in the design package.""
+
+Please include one of the site survey photos as proof that the tree is gone, and include the LIDAR-on deliverables even though we're using the LIDAR-off metrics."
+"00TUS000016yqNz","Design QA - Corrections","6448REEN","Rivers Jackson","Jecko Gevaña","8/10/2026","8/10/2026, 6:08 PM","Completed","- Our electrician has determined this is a split bus panel and we'll need to upgrade it. Please follow his following note:
+
+""Please leave the meter as is and install a new 225/200 exterior load center next it with feed-through lugs. Replace the interior split bus panel with a new 200/200 load center and refeed it with 4/0-4/0-4/0-2/0 AL, SER. 
+Land our solar breaker in the new exterior load center. """
+"00TUS000016xR8X","Design QA - Corrections","1871BROW","Rivers Jackson","Jecko Gevaña","8/10/2026","8/13/2026, 8:31 AM","Completed","- 3 of the panels on the western roof face are still on fire setbacks when auto-generating them. Please relocate those as well."
+"00TUS0000170tMt","Design QA - Corrections","7613NGUY","Rivers Jackson","Jecko Gevaña","8/11/2026","8/11/2026, 4:16 PM","Completed","- Panels were placed on an overhang and on a roof face that is less than 10 degrees. We need to move them.
+- The main service panel is a split bus panel. We need to do a line side tap here."
+"00TUS0000173Gto","Design QA - Corrections","1152VEMA","Rivers Jackson","Jecko Gevaña","8/11/2026","8/12/2026, 8:20 AM","Completed","- We have a new policy for setbacks from all house lines because of problems with installations. Please include 0.66 ft setbacks (8 inches) from all house lines, and 0.5 ft (6 in) setbacks from all obstructions. Also, if there is an overhead mast, please include a 3ft setback from that. These are in addition to the standard fire setbacks. Please relocate panels to account for these changes."
+"00TiL000004QMzQ","Design: Missing Photos to Complete Design","313BTOLL","Jecko Gevaña","Jecko Gevaña","8/19/2026","9/3/2026, 4:02 PM","Completed","RESURVEY REQUIRED
+REQUESTED DATE: 08/19/2026
+RESURVEY EXPLANATION: There is insufficient information regarding the existing PV system.
+REQUEST DETAILS:
+- Existing module details (manufacturer and model/type)
+- Microinverter details
+- PV breaker size and details for the existing panel
+- Sub-panel photos with the dead front ON and OFF
+- Confirmation of whether the existing system is under lease or PPA
+- Single-Line Diagram (SLD) of the existing PV system"
+"00TiL000005aHUG","Design QA - Corrections","141MWAGN","Rivers Jackson","Jecko Gevaña","8/21/2026","8/21/2026, 4:33 PM","Completed","- Two of the panels were placed over the carport. Please relocate them. We might need to add 1 panel to meet production."
+"00TiL000007u9JO","Design QA - Correction","3544HELM","CHI LEUNG","Jecko Gevaña","8/26/2026","8/26/2026, 3:27 PM","Completed","- Undersized wiring in section D. 3AWG Cu is required for 90A OCPD. 
+- Interconnection is load side tap, not supply-side connection, N-G bond and GEC are not required. Correct section D wiring to 3AWG Cu w/ 8AWG EGC matching tag C.
+- Update ground wire connection to reflect EGC from fused disconnect to MSP w/ load side tap interconnection. 
+- Include new meter disconnect leader on site plan."
+"00TiL000007yh2U","QA note for: Jecko Gevana","1308TERR","Gavin David","Jecko Gevaña","8/26/2026","8/28/2026, 9:05 AM","Completed","This should be a line side tap. There is not enough room in main panel for PV breakers."
+"00TiL000007v9qe","Design QA - Corrections","141MWAGN","Rivers Jackson","Jecko Gevaña","8/26/2026","8/28/2026, 4:20 PM","Completed","It looks like there is a generator on site. After consulting with Chi, we should switch to a line-side tap to ensure we avoid the generator."
+"00TiL000008pM0H","NOTE FOR: JECKO GEVANA","7GRODAWS","Gavin David","Jecko Gevaña","8/28/2026","8/28/2026, 4:36 PM","Completed","This needs to be a line side tap because we are not sure we can tandem the remaining slots based on limited label information."
+"00TiL000008rbUy","NOTE FOR: JECKO GEVANA","313BTOLL","Gavin David","Jecko Gevaña","8/28/2026","8/31/2026, 2:27 PM","Completed","Fixes per ET instruction:
+1.) The AC disconnect in the existing system must be relocated on the plans to be between the ENPHASE IQ COMBINER 4 panel and the (E) sub panel. 
+2.) Please label the existing system's AC disconnect as (E) instead of (N). 
+3. The PV aggregate breaker (PVA) in the new ENPHASE IQ COMBINER 6C panel must be updated. In the plans: please create a wired connection in the plans which connects the new system's AC disconnect to the PVA breaker's circuit as if the AC disconnect was a breaker. 
+(EXPLANATION: The AC disconnect must be connected to the PVA breaker's circuit or else the AC disconnect will only be able to shut off the battery and not the entire solar system)"
+"00TiL00000A0F85","Design QA - Corrections","322HBURR","Rivers Jackson","Jecko Gevaña","8/31/2026","9/1/2026, 11:36 AM","Completed","- With the new Aurora memo (changing simulation to ""Auto""), we can remove two panels and still be in production, adding 1 instead of 3. Please redesign with this in mind.
+- Panels are listed as REC4600 instead of REC460.
+- The address is listed as Tazewell instead of North Tazewell."
+"00TiL00000AyYMY","QA: Fail","3473MANN","Gavin David","Jecko Gevaña","9/2/2026","9/3/2026, 10:42 AM","Completed","Design should be a PV breaker with PCS. The generator note is misleading, please disregard it. Fire setbacks were not large enough per the 33% rule. Please refer to the ""new layout"" image posted in the design folder (note that the overhang is still avoided)."
+"00TiL00000AyIiq","Design QA - Corrections","313BTOLL","Rivers Jackson","Jecko Gevaña","9/2/2026","9/3/2026, 1:44 PM","Completed","- Our minimum number of panels is 7. We need to design with a 7th panel and we'll open a change order because we will be over production."
+"00TiL00000G1YI9","Design QA - Corrections","310PPICK","Rivers Jackson","Jecko Gevaña","9/14/2026","9/14/2026, 2:37 PM","Completed","- Please add a 2-space panel with a breaker to the plans and the BOM because the length of the tap conductor exceeds 10 feet.
+- Please update the AHJ to Marion town."
+"00TiL00000FylQP","Assigned to Enphase","7461JACO","Jecko Gevaña","Jecko Gevaña","9/14/2026","9/22/2026, 10:11 AM","Completed","Trigger: System Size Correction
+Correction Needed:
+ To qualify for the Distributed Generation Program, a DC nameplate reduction to 12.94 kW is needed for approval. Revision to the DC Nameplate must be captured on both the application and electric drawings. You may also elect to submit additional documentation that meet the company's Receipt and/or Design Software Report Policy to justify a larger system size."
+"00TiL00000J5iDj","Design QA - Corrections","5113BLAI","Rivers Jackson","Jecko Gevaña","9/21/2026","9/21/2026, 1:34 PM","Completed","- Please redesign with solar only, no battery. There is no viable location to place the battery according to the ETs."
+"00TiL00000cmr4P","M2: Holding - Design Correction","1710DELF","LeoMiguel DePerio","Jecko Gevaña","10/26/2026","10/26/2026, 4:43 PM","Completed","DESIGN CORRECTION NEEDED
+
+The approved plan set does not match the actual combiner installation. The plan set shows (2) 15A breakers and (1) 10A breaker in the microinverter combiner, while the installed equipment shows (3) 15A breakers.
+Please review the installed equipment and provide an updated as-built plan set that accurately reflects the actual combiner breaker configuration and associated electrical calculations.
+Please upload the revised plan set and supporting documentation after corrections are completed."
+"00TiL00000crGk4","M2: Holding - Design Correction","6334FARN","Stanley Agellon","Jecko Gevaña","10/26/2026","10/27/2026, 9:46 AM","Completed","Planset Correction.
+
+Actual installed shows AC Disconnect with 30A fuses. Planset showing Non Fuse (30 A PV Breaker)"
+"00TiL00000O6S5v","Rework - ADU","","Ronnel Gozon","Ronnel Gozon","9/30/2026","9/30/2026, 1:48 PM","Completed","As-built design"
+"00TiL00000Duq04","PIDC QA Result","2504RIOS-1","Mark Kevin Olivar","Mark Kevin Olivar","9/9/2026","9/9/2026, 10:38 AM","Completed","Resolution:
+Update the battery inverter model in the application from IQ8BL to IQBATTERY-10C-1P-NA {240V}. This is the CEC-listed model that should be accepted by SCE.
+Set the inverter quantity to 1 per IQ Battery 10C."
+"00TiL00000DuEXq","QA Complete","2809GILL","Mark Kevin Olivar","Mark Kevin Olivar","9/9/2026","9/9/2026, 11:29 AM","Completed","Removed rev cloud and response letter"
+"00TUS000016ZoJG","Design QA - Corrections","1090MILL","Rivers Jackson","Brent Kliford Mara","8/3/2026","8/4/2026, 4:17 PM","Completed","The sales rep turned off LIDAR when calculating the proposal, so we need to add panels until we are within 5% production to meet Lightreach standards."
+"00TUS000016dyd9","Design QA - Corrections","149MHICK","Rivers Jackson","Brent Kliford Mara","8/4/2026","8/4/2026, 4:28 PM","Completed","- This design looks okay, but we don't have any photos of the main service panel with the deadfront off. We should get those photos and make sure the panel looks good before we continue."
+"00TUS000016dpjZ","Design QA - Corrections","501HBECK","Rivers Jackson","Brent Kliford Mara","8/4/2026","8/5/2026, 2:12 PM","Completed","- The utility company in the plans does not match the bill.
+- It looks like we can tandem breakers instead of tapping here."
+"00TUS000016e8qv","Design QA - Corrections","6454HYDE","Rivers Jackson","Brent Kliford Mara","8/4/2026","8/5/2026, 3:29 PM","Completed","- The utility company on the plans does not match the bill.
+- Panels are placed on an overhang at the front of the house, which violates Lightreach requirements. We need to move them.
+- It doesn't look like we have photos of the meter/main combo with the deadfront off, but the label indicates there are breaker spots. We should request the photos and land a breaker outside in the meter/main combo if the photos show that is possible."
+"00TUS000016gKDP","Design QA - Corrections","7507PRIC","Rivers Jackson","Brent Kliford Mara","8/5/2026","8/6/2026, 3:12 PM","Completed","- The proposal has REC470 panels, but this sales region only allows REC460 panels. We should use the 460s and the IQ8X domestic microinverters and not add any panels to the design.
+- The current design on Aurora is inaccurate, and there are panels on the valleys of the roof. We need to adjust them so the layout is correct.
+- For the interconnection method, here it is better to relocate breakers to the sub panel and land our PV breaker in the main panel. This enables us to use PCS. Please leave the following note on E-1: ""Relocate loads to sub panel to make room for PV breaker in main panel. Land PV breaker in the main panel in the farthest position from the main disconnect.""
+- Because of the system size, we need a note detailing PCS being enabled."
+"00TUS000016hQJR","Design: Missing Photos to Complete Design","6454HYDE","Brent Kliford Mara","Brent Kliford Mara","8/5/2026","8/6/2026, 3:36 PM","Completed","RESURVEY REQUIRED:
+REQUEST DETAILS: 
+- Photos of the meter/main combo with the deadfront off"
+"00TUS000016hFXh","M2: Holding","3562HENS","Mark Arevalo","Brent Kliford Mara","8/5/2026","8/11/2026, 10:32 AM","Completed","Please match the As-Built Plan Set and the Aurora layout with the install photos"
+"00TUS000016lUq5","Design QA - Corrections","6454HYDE","Rivers Jackson","Brent Kliford Mara","8/6/2026","8/6/2026, 4:37 PM","Completed","- Our electrician recommends adding the sub panel on the electrical diagram being fed by the feed-through lugs for clarity. Otherwise the interconnection looks great.
+- Lightreach changed their requirements for the deliverables when we turn LIDAR off. This is what they say: 
+
+""When the Aurora LiDAR shading model is inaccurate (for example, it models shade from a tree or structure that no longer exists, or otherwise does not reflect current site conditions), prepare and upload two complete sets of production deliverables: one set with LiDAR shading ON and one set with LiDAR shading OFF. In the LiDAR-OFF set, include a note on one of the production model screenshots explaining why LiDAR shading was turned off. The discrepancy must be substantiated with proof, satellite imagery or site survey photos, demonstrating the condition (for example, a removed tree). Both deliverable sets and the supporting proof must be included in the design package.""
+
+We need to run the simulation with LIDAR on just to show the difference even though you are correct in saying that the LIDAR should be turned off. We also need to include one of the site survey photos that shows the large tree in the LIDAR is not there anymore."
+"00TUS000016nJju","Design QA - Corrections","7507PRIC","Rivers Jackson","Brent Kliford Mara","8/6/2026","8/7/2026, 3:11 PM","Completed","- The aurora now looks great (thank you!), but when the fire setbacks are auto-placed, a few panels are obstructing them. We need to relocate them.
+- We can also remove 1 panel from the 4 that were initially added, leaving us with 3 extra. I adjusted the Aurora a little bit and it seems like we are in production with only 3 extra panels.
+- On the current plan set, the module is listed as REC4600 instead of REC460."
+"00TUS000016nKhe","Design QA - Corrections","1090MILL","CHI LEUNG","Brent Kliford Mara","8/6/2026","8/7/2026, 8:53 AM","Completed","6AWG Cu is only rated for 65A, undersize for 70A OCPD, please upsize tag C wiring to 4AWG Cu."
+"00TUS000016nKxj","Design QA - Corrections","501HBECK","CHI LEUNG","Brent Kliford Mara","8/6/2026","8/7/2026, 10:34 AM","Completed","- MSP brand is Cutler-Hammer but shown as GTE Sylvania on plan. 
+- BOM will need 1x 20/30 quad breaker (BRD220230) to make space for POI breaker. 
+- Add 60A Eaton type BR (BR260) POI breaker to BOM."
+"00TUS000016xUuT","Design QA - Corrections","511FUNRO","Rivers Jackson","Brent Kliford Mara","8/10/2026","8/10/2026, 3:46 PM","Completed","- Rafters are 16"" apart.
+- We cannot land a breaker in the split bus panel. Our master electrician recommends upgrading the existing meter to a 225/200A meter/main combo panel with a 125A feeder breaker. This feeder breaker will feed a new 125A sub panel (no main breaker), replacing the split bus panel. Land our PV breaker outside in the new meter/main combo panel."
+"00TUS000017Cr4E","Design QA - Corrections","3009WOLF","Rivers Jackson","Brent Kliford Mara","8/13/2026","8/14/2026, 9:20 AM","Completed","Electricians say electrical is good.
+- From what we can tell, it seems like Roof 1 and the other section across from it are both 39 degrees because there isn't a steeper roof section we can see. We're going to need to relocate those panels.
+- Because LIDAR is off, we need two sets of deliverables, one with LIDAR on and one with LIDAR off."
+"00TiL000004We8E","Design QA - Corrections","3009WOLF","Rivers Jackson","Brent Kliford Mara","8/19/2026","8/20/2026, 10:02 AM","Completed","- After taking a closer look, we need to keep LIDAR on, even though there is the note from the site survey and the proposal had it on. Please update the plans to reflect the new layout on Aurora. I spoke with Tia, and technically we could remove a panel, but we want to avoid the single-panel array and ensure we're in production."
+"00TiL000004ccAH","Design QA - Corrections","741CFLEE","Gavin David","Brent Kliford Mara","8/19/2026","8/21/2026, 9:56 AM","Completed","The proposal on this account calls for 430s and iq8hc microinverters, but the design has premium panels for some reason. Change this to follow the proposal."
+"00TiL000004bnkT","Design QA ? Corrections","5161HIGG","CHI LEUNG","Brent Kliford Mara","8/19/2026","8/19/2026, 4:45 PM","Completed","Suggest revising interconnection to distribution panel inside garage due to feed thru MSP w/out OCPD at load side protecting feeder, not compliant to 705.12(B)(6)."
+"00TiL000005T1j6","Design QA - Corrections","741CFLEE","Gavin David","Brent Kliford Mara","8/21/2026","8/21/2026, 11:26 AM","Completed","I have changed the layout and aurora to meet lightreach requirements. Please redesign as such."
+"00TiL000005XwFc","Design QA - Corrections","298OSTEV","Rivers Jackson","Brent Kliford Mara","8/21/2026","8/21/2026, 3:43 PM","Completed","- We removed panels to avoid the overhang on the front of the house and on the eastern side, where the addition is. Please follow the aurora layout.
+- The rafter spacing looks like 16, not 18."
+"00TiL000007uWRB","Design QA - Correction","112SMANN","CHI LEUNG","Brent Kliford Mara","8/26/2026","8/26/2026, 2:41 PM","Completed","- PCS is required for interconneciton, please update to reflect interconnection following 705.13 and add language and warning labels required for PCS. 
+- Call out minimum 1"" PVC sche 40 for underground trench, confirm if PVC conduit can be added to BOM.
+- Fire setback is not required on uninhabitable structure, can remove FSB from detached garage. Optimize layout for production if possible after FSB removal."
+"00TiL000007vp1m","Design QA - Correction","1307GEOR","CHI LEUNG","Brent Kliford Mara","8/26/2026","8/26/2026, 3:02 PM","Completed","- Undersized wiring for section D. 4AWG wiring is required for 80A OCPD. 
+- Ground wire from fused ACD is GEC, not EGC, please separate ground wire from section D, add new section for 6AWG Bare Cu, GEC, not run in conduit. 
+- Update SFDC home upgrade field or add log review task about washer relocation for working clearance in front of MSP, or MPU required."
+"00TiL000007s1xm","Design QA - Corrections","3009WOLF","Rivers Jackson","Brent Kliford Mara","8/26/2026","8/26/2026, 3:17 PM","Completed","Spoke with Chi, we do need a main breaker in the new sub-panel. Everything else looks good."
+"00TiL000007rzUM","Design QA - Corrections","741CFLEE","Rivers Jackson","Brent Kliford Mara","8/26/2026","8/26/2026, 4:42 PM","Completed","There has been some confusion with this project. Because we do not have proof of the trees being removed, we need to meet production with the information we do have. Please update the design to reflect ""DESIGN 08-26-26"" on Aurora. It will meet production with LIDAR turned off and the proper trees drawn. Please complete the Lightreach deliverables with LIDAR off and LIDAR on and show that some of the trees have already been cut down."
+"00TiL000007wFiy","Design QA - Corrections","523MMORI","Rivers Jackson","Brent Kliford Mara","8/26/2026","8/27/2026, 1:51 PM","Completed","We have some panels on a balcony. Please relocate them. There is an updated design on Aurora that is within production with 25 panels."
+"00TiL000008KWhR","Design QA - Corrections","112SMANN","Rivers Jackson","Brent Kliford Mara","8/27/2026","8/27/2026, 2:25 PM","Completed","- I spoke with Bryant about the trenching. We can trench from any point on the main home to any point on the detached structure. Because of this, we should trench from the southeastern side of the sidewalk and home, directly to the detached structure. This enables us to avoid all concrete.
+- We need to include a home upgrades note to trim the tree that is leaning on the detached structure."
+"00TiL000008rZj7","Design QA - Corrections","523MMORI","Rivers Jackson","Brent Kliford Mara","8/28/2026","8/28/2026, 4:09 PM","Completed","- After further consideration, we have determined that the sub panel is not exterior rated, but is placed outdoors. We need to do an MPU, replacing the existing panel with a NEMA 3R 200A load center (no main breaker). We will now line side tap in the main breaker enclosure instead of landing a breaker in the sub panel."
+"00TiL000008zHdl","RESURVEY REQUIRED","4721WRIG","Brent Kliford Mara","Brent Kliford Mara","8/28/2026","9/3/2026, 12:57 PM","Completed","REQUESTED DATE: 08-28-2026
+RESURVEY EXPLANATION: There is no pull back shot of Utility meter to assess clearance around it. No roof pitch photos. Main circuit breaker and side wall sticker photo is blurry.
+INTERIOR ACCESS REQUIRED: Yes
+REQUEST DETAILS: - Pull back shot of utility meter
+                 - Measurements around the utility meter
+                 - Roof pitch photos
+                 - Clear Main circuit breaker photo
+                 - Clear Side wall sticker photo"
+"00TiL00000Adu1l","Design Review - Correction","2806FEAG","CHI LEUNG","Brent Kliford Mara","9/1/2026","9/2/2026, 8:05 AM","Completed","- Optimize branch length to 7,7,9 to align with array layout and to avoid jumper. 
+- Update PCS controlled current value to 120A (80% of 150A) with 150/150 rated MSP."
+"00TiL00000B9PFg","Pre-Install Design Corrections","941NADAM","LeoMiguel DePerio","Brent Kliford Mara","9/2/2026","9/4/2026, 8:53 AM","Completed","The planset currently shows we installed 3 20 amp stringing breakers although we installed 4 20 stringing breakers. Please update the planset to match install."
+"00TiL00000B9ToC","Design review - Corrections","1161PAYN","CHI LEUNG","Brent Kliford Mara","9/2/2026","9/3/2026, 2:36 PM","Completed","- IQ meter collar is not approved in Dominion Energy territory. Design will need separate 200A meter enclosure for IQ meter collar, between UM and existing MSP. 
+- Design can still utilize IQ combiner 6C with <=80A of PV output. 4x 20A PV output circuits to PV1-PV4 slot + 1x 80A ESS output circuit to B1 slot.
+- Combine ESS output to single circuit, size wiring to 80A = 4AWG Cu, adjust conduit accordingly.
+- Verify available wall space next to UM group all equipment together. 
+- System output will be limited to 100A continuous with IQ combiner 6C. Reduce wire size for section E and F wiring to 125A rated = 1 AWG Cu, adjust conduit size accordingly.
+- Switch interconnection to 125A breaker in MSP w/ PCS enable, add PCS language on SLD and include PCS warning label.
+- Utilize 3P non-fused ACD, connect AC sense wiring from IQ combiner 6C to 3rd pole in ACD. ACD can act as system level RSD initiation device."
+"00TiL00000DwFX3","Design QA","4721WRIG","Brent Kliford Mara","Brent Kliford Mara","9/9/2026","9/9/2026, 10:11 AM","Completed","Ready for QA"
+"00TiL00000Dz8Fj","Design QA - Completed","109LBUNG","Brent Kliford Mara","Brent Kliford Mara","9/9/2026","9/9/2026, 12:32 PM","Completed","Design Revision Completed"
+"00TiL00000EZWQA","Design QA - Corrections","3531DICK","Rivers Jackson","Brent Kliford Mara","9/10/2026","9/10/2026, 3:38 PM","Completed","- Please revise the trenching path to go directly from the southeastern wall of the roof to the northwestern wall of the detached structure. The current path indicates we are trenching much more than necessary. We don't need to trench directly from the meter, just from building to building.
+- Please change the rafter sizing to 2x10 instead of 3x10."
+"00TiL00000EtAbf","QA Completed","4516BURC","Brent Kliford Mara","Brent Kliford Mara","9/11/2026","9/11/2026, 8:39 AM","Completed","QA Completed"
+"00TiL00000Ewfb9","Design QA - Corrections","1632CATH","Rivers Jackson","Brent Kliford Mara","9/11/2026","9/11/2026, 10:38 AM","Completed","Please see Zach's log review titled ""ET Review complete (FAIL)"" for details."
+"00TiL00000F0CtS","Updated BOM and CAD file not uploaded to Design Folder","5715STUC","Brent Kliford Mara","Brent Kliford Mara","9/11/2026","9/11/2026, 11:15 AM","Completed","QA - Failed. Updated BOM and CAD file not uploaded to Design Folder"
+"00TiL00000F0n3T","Assigned to Enphase","6277GART","Brent Kliford Mara","Brent Kliford Mara","9/11/2026","9/11/2026, 12:03 PM","Completed","ALL equipment on the electrical diagram needs to be labeled as new or existing prior to the PV installation. Include also the catalog number of AC Disconnect in three-line diagram."
+"00TiL00000FwCL8","Assigned to Enphase","5715STUC","Brent Kliford Mara","Brent Kliford Mara","9/14/2026","9/14/2026, 8:59 AM","Completed","Updated BOM and CAD file not uploaded to Design Folder"
+"00TiL00000FzWP6","Corrections Assigned to Enphase to Complete","3382ERSK","Brent Kliford Mara","Brent Kliford Mara","9/14/2026","9/14/2026, 10:52 AM","Completed","PLAN SET TYPE: Solar Only
+TRIGGER: Installer Change
+REWORK REQUEST: Relocating panels due to an overhang not captured during site survey. Pitch is at 22 & 21
+
+All changes must be clouded and revision letter stating the changes included on Sunpower letterhead."
+"00TiL00000FzOwQ","Corrections Assigned to Enphase to Complete","232CGRAM","Brent Kliford Mara","Brent Kliford Mara","9/14/2026","9/14/2026, 11:10 AM","Completed","Description
+PLAN SET TYPE: Solar Only
+TRIGGER: Installer Change
+REWORK REQUEST: The One-Line Diagram is missing the ACD make and model, which needs to be added. The Site Plan is missing the nearest cross street, which should also be included. Additionally, update the owner?s name on the Permit Pack to SUSAN GRAMLING, as reflected on the utility bill.
+
+All changes must be clouded and revision letter stating the changes included on Sunpower letterhead."
+"00TiL00000G0Ahb","Corrections Assigned to Enphase to Complete","4440SMIT","Brent Kliford Mara","Brent Kliford Mara","9/14/2026","9/14/2026, 11:24 AM","Completed","Description
+PLAN SET TYPE: Solar Only
+TRIGGER: Installer Change
+REWORK REQUEST: 2 obstructions not captured on design. Relocate 1 panel to North side and adjust Main array configuration
+
+All changes must be clouded and revision letter stating the changes included on Sunpower letterhead."
+"00TiL00000G06ai","Corrections Assigned to Enphase to Complete","5436LUCA","Brent Kliford Mara","Brent Kliford Mara","9/14/2026","9/14/2026, 11:37 AM","Completed","Description
+PLAN SET TYPE: Solar Only
+TRIGGER:
+REWORK REQUEST: Operating AC Current on the AC Disco Label is incorrect. Should be 33.25
+
+All changes must be clouded and revision letter stating the changes included on Sunpower letterhead."
+"00TiL00000G3u6N","Design QA - Corrections","1161PAYN","Rivers Jackson","Brent Kliford Mara","9/14/2026","9/14/2026, 4:11 PM","Completed","- Please design the batteries to be in the garage instead of outside."
+"00TiL00000J1q8W","Design QA - Corrections","513SBOLD","Rivers Jackson","Brent Kliford Mara","9/21/2026","9/21/2026, 11:59 AM","Completed","- Please follow newlayout.png. We will refrain from placing panels on the northeastern part of the home because the production is so poor and because we need a change order anyway."
+"00TiL00000TNG70","M2: Holding - Design Correction","1515WARD","Generose Calong Calong","Brent Kliford Mara","10/9/2026","10/12/2026, 4:51 PM","Completed","revise the SLD to update the 2 circuit breakers from 15 to 20."
+"00TiL00000W4e4q","M2: Holding - Design Correction","1421STEE","Stanley Agellon","Brent Kliford Mara","10/14/2026","10/16/2026, 4:43 PM","Completed","Need Array design correction base on the actual installed."
+"00TiL00000bWjGK","M2: Holding - Design Correction","402ADANI","Nicole Malabanan","Brent Kliford Mara","10/23/2026","10/23/2026, 4:13 PM","Completed","Please update the number of PV breaker to match actual installed."

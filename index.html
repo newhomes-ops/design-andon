@@ -1780,6 +1780,8 @@ let lotDirectURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/
 let lotDirectRaws = [];
 let lotReworkURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Design%20Rework.csv';
 let lotReworkRaws = [];
+let lotDirectReworkURL = 'https://raw.githubusercontent.com/newhomes-ops/design-andon/main/Lot%20Direct%20Rework.csv';
+let lotDirectReworkRaws = [];
 /* Rework screen state */
 let rwSelYear=null, rwSelQ=null, rwSelMonth=null, rwSelYTD=true, rwSelLast7=false;
 let rwDesignerFilter='all', rwParetoChart=null;
@@ -1914,7 +1916,8 @@ function fetchAllNewSources(){
     [commCommercialURL,'Commercial', d=>{commCommercialRaws=d;}],
     [lotCobaltURL,'Lot Cobalt', d=>{lotCobaltRaws=d;}],
     [lotDirectURL,'Lot Direct', d=>{lotDirectRaws=d;}],
-    [lotReworkURL,'Lot Rework', d=>{lotReworkRaws=d; if(currentScreen===9) renderReworkScreen();}]
+    [lotReworkURL,'Lot Rework', d=>{lotReworkRaws=d; if(currentScreen===9) renderReworkScreen();}],
+    [lotDirectReworkURL,'Lot Direct Rework', d=>{lotDirectReworkRaws=d;}]
   ];
   const done=()=>mergeAndApply();
   if(getGHToken()){
@@ -2116,6 +2119,33 @@ function buildLotDirectRow(s){
   return r;
 }
 
+/* Build a 34-element row from Lot Direct Rework.csv.
+   Columns (Papa.parse header:true objects):
+     Assigned To: Full Name  → designer (Col E)
+     Created Date            → start date (Col F) — M/D/YYYY
+     Completed Date/Time     → end date  (Col G) — M/D/YYYY, H:MM AM
+   Each row counts as completed Direct Resi work flagged as rework (colX='2'). */
+function buildLotDirectReworkRow(s){
+  const designer = (s['Assigned To: Full Name']||'').trim();
+  const startStr = (s['Created Date']||'').trim();
+  const endRaw   = (s['Completed Date/Time']||'').trim();
+  const endStr   = endRaw ? endRaw.split(',')[0].trim() : '';
+  const start = startStr ? new Date(startStr) : null;
+  const end   = endStr   ? new Date(endStr)   : null;
+  const slaVal = (start&&end&&!isNaN(start)&&!isNaN(end))
+    ? Math.max(0,Math.round((end-start)/(1000*60*60*24))).toString() : '';
+  const r = new Array(34).fill('');
+  r[0]  = (s['TaskRay Project: Project Name']||'').trim();
+  r[1]  = slaVal;
+  r[6]  = 'Direct Resi';
+  r[8]  = designer;   // colI
+  r[9]  = endStr;     // colJ — completion date used for all date filters
+  r[23] = '2';        // colX — rework flag
+  r[25] = startStr;   // colZ
+  r[26] = endStr;     // colAA
+  return r;
+}
+
 function mergeAndApply(){
   const qaMap=buildQAMap(lotQARaws);
 
@@ -2180,7 +2210,17 @@ function mergeAndApply(){
     })
     .map(r=>buildLotReworkRow(r));
 
-  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows,...newReworkRows];
+  /* Lot Direct Rework rows: TaskRay correction tasks assigned to Direct Resi designers */
+  const newDirectReworkRows=lotDirectReworkRaws
+    .filter(r=>{
+      const endRaw=(r['Completed Date/Time']||'').trim();
+      const endStr=endRaw?endRaw.split(',')[0].trim():'';
+      const d=endStr?new Date(endStr):null;
+      return d&&!isNaN(d)&&d>WW22_CUTOFF;
+    })
+    .map(r=>buildLotDirectReworkRow(r));
+
+  rawRows=[...legacyRows,...newLotRows,...newCommRows,...newCommercialRows,...newCobaltRows,...newDirectRows,...newReworkRows,...newDirectReworkRows];
   buildScreenQuarterSlicers();
   if(!initialFilterSet){ applyLastTenWorkDays(); initialFilterSet=true; }
   applyFilters();
